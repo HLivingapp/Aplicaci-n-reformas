@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { nuevoId } from "@/lib/id";
-import { anadirDocumento, DOCUMENTOS } from "@/lib/proveedores";
+import { createHash } from "node:crypto";
+import { anadirDocumento, DOCUMENTOS, errorDocumento } from "@/lib/proveedores";
 import { cargarTodo, db, guardarCambios } from "@/lib/servidor/repo";
 import type { TipoDocProveedor } from "@/lib/types";
 
@@ -25,19 +26,22 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   if (!(archivo instanceof File) || !(tipo in DOCUMENTOS)) return NextResponse.json({ mensaje: "Falta el archivo o el tipo de documento" }, { status: 400 });
   if (archivo.size > MAX) return NextResponse.json({ mensaje: "El archivo supera 10 MB" }, { status: 400 });
   if (caduca && !/^\d{4}-\d{2}-\d{2}$/.test(caduca)) return NextResponse.json({ mensaje: "Fecha de caducidad no válida" }, { status: 400 });
+  const malFecha = errorDocumento(tipo, caduca || undefined);
+  if (malFecha) return NextResponse.json({ mensaje: malFecha }, { status: 400 });
   const bytes = new Uint8Array(await archivo.arrayBuffer());
   const f = formato(bytes);
   if (!f) return NextResponse.json({ mensaje: "Solo se admiten PDF, JPG o PNG" }, { status: 400 });
 
   const antes = await cargarTodo();
   const p = antes.proveedores.find((x) => x.token === token);
-  if (!p) return NextResponse.json({ mensaje: "Enlace no válido" }, { status: 404 });
+  if (!p || p.estado === "rechazado") return NextResponse.json({ mensaje: "Enlace no válido" }, { status: 404 });
   const id = nuevoId();
   const ruta = `${p.id}/${id}.${f.ext}`;
   const { error } = await db().storage.from("proveedores").upload(ruta, bytes, { contentType: f.mime });
   if (error) return NextResponse.json({ mensaje: "No se pudo guardar el archivo" }, { status: 500 });
   const despues = structuredClone(antes);
-  anadirDocumento(despues, token, { id, tipo, ruta, nombre: archivo.name.slice(0, 120), caduca: caduca || undefined });
+  const huella = createHash("sha256").update(bytes).digest("hex");
+  anadirDocumento(despues, token, { id, tipo, ruta, nombre: archivo.name.slice(0, 120), caduca: caduca || undefined, huella });
   await guardarCambios(antes, despues);
   return NextResponse.json({ ok: true });
 }

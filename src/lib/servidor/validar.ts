@@ -1,6 +1,6 @@
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
-import { ESPECIALIDADES, ZONAS, type AltaProveedor } from "../proveedores";
+import { ESPECIALIDADES, nifValido, ZONAS, type AltaProveedor } from "../proveedores";
 import type { DatosReforma, Vivienda } from "../types";
 
 const texto = (x: unknown, max: number) => (typeof x === "string" ? x.slice(0, max) : "");
@@ -58,7 +58,7 @@ export function validarAlta(b: unknown): AltaProveedor | null {
     })),
     presentacion: texto(a.presentacion, 2000).trim(),
   };
-  if (!r.razonSocial || !/^[A-Z0-9]{8,10}$/.test(r.nif) || !r.contacto || (!r.telefono && !r.email)) return null;
+  if (!r.razonSocial || !nifValido(r.nif) || !r.contacto || (!r.telefono && !r.email)) return null;
   if (r.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) return null;
   return r;
 }

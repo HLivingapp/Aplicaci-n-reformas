@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Tarjeta, Titulo, Vacio } from "@/components/ui";
-import { avisosCaducidad, cumpleRequisitos, DOCUMENTOS, ESPECIALIDADES, homologado, requisitos } from "@/lib/proveedores";
+import { avisos, avisosCaducidad, cumpleRequisitos, DOCUMENTOS, ESPECIALIDADES, homologado, requisitos } from "@/lib/proveedores";
 import { useDatos } from "@/lib/store";
 import type { Proveedor } from "@/lib/types";
 import { ESTADO_PROVEEDOR } from "@/components/Proveedor";
 
 const FILTROS = [
-  { k: "revisar", texto: "Por revisar", f: (p: Proveedor) => p.estado === "pendiente" || p.documentos.some((d) => d.estado === "pendiente") },
+  { k: "avisos", texto: "Con avisos", f: (p: Proveedor) => p.estado !== "rechazado" && avisos(p).length > 0 },
   { k: "homologados", texto: "Homologados", f: (p: Proveedor) => homologado(p) },
+  { k: "incompletos", texto: "Incompletos", f: (p: Proveedor) => p.estado === "pendiente" },
   { k: "todos", texto: "Todos", f: () => true },
 ] as const;
 
@@ -19,8 +20,8 @@ const especialidad = (v: string) => ESPECIALIDADES.find((e) => e.valor === v)?.t
 
 export default function Proveedores() {
   const { datos } = useDatos();
-  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["k"]>("revisar");
-  const avisos = avisosCaducidad(datos.proveedores);
+  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["k"]>("todos");
+  const caducan = avisosCaducidad(datos.proveedores);
   const f = FILTROS.find((x) => x.k === filtro)!;
   const lista = datos.proveedores.filter(f.f);
 
@@ -35,12 +36,15 @@ export default function Proveedores() {
       >
         Proveedores
       </Titulo>
+      <p className="mb-4 text-sm text-stone-500">
+        Los reformistas se homologan solos al completar los requisitos, bajo su declaración responsable. Solo hace falta mirar los que tienen avisos y hacer comprobaciones al azar.
+      </p>
 
-      {avisos.length > 0 && (
+      {caducan.length > 0 && (
         <Tarjeta className="mb-4 border-amber-200 bg-amber-50">
           <h2 className="mb-2 text-sm font-semibold text-amber-950">Documentos que caducan</h2>
           <ul className="space-y-1 text-sm">
-            {avisos.map((a) => (
+            {caducan.map((a) => (
               <li key={a.documento.id}>
                 <Link href={`/empresa/proveedores/${a.proveedor.id}`} className="font-medium hover:underline">{a.proveedor.razonSocial}</Link>: {DOCUMENTOS[a.documento.tipo].texto}{" "}
                 <span className={a.situacion === "caducado" ? "text-red-700" : "text-amber-800"}>
@@ -66,7 +70,7 @@ export default function Proveedores() {
         {lista.map((p) => {
           const reqs = requisitos(p);
           const ok = reqs.filter((r) => r.ok).length;
-          const porRevisar = p.documentos.filter((d) => d.estado === "pendiente").length;
+          const nAvisos = avisos(p).length;
           return (
             <Link key={p.id} href={`/empresa/proveedores/${p.id}`}>
               <Tarjeta className="transition hover:border-teal-600">
@@ -79,7 +83,8 @@ export default function Proveedores() {
                 </div>
                 <div className="mt-2 flex flex-wrap gap-3 text-xs text-stone-500">
                   <span>Requisitos {ok}/{reqs.length}{cumpleRequisitos(p) ? " ✅" : ""}</span>
-                  {porRevisar > 0 && <span className="font-medium text-amber-700">{porRevisar} documentos por revisar</span>}
+                  {nAvisos > 0 && <span className="font-medium text-amber-700">⚠️ {nAvisos} {nAvisos === 1 ? "aviso" : "avisos"}</span>}
+                  {p.aprobadoAutomatico && p.estado === "aprobado" && <span>Aprobado automáticamente</span>}
                   <span>{p.rea.inscrito ? "Con REA" : "Sin REA (PRL)"}</span>
                   <span>Solicitud del {p.creado}</span>
                 </div>

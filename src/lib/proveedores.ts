@@ -10,6 +10,28 @@ import type { Datos, DocumentoProveedor, ObraReferencia, Proveedor, TipoDocProve
 export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
   "Acepto que la empresa trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.";
 
+export const TEXTO_DECLARACION_RESPONSABLE =
+  "Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, deudas con Hacienda o la Seguridad Social). Acepto que la empresa haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.";
+
+const LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+/** Comprueba el dígito o letra de control de un DNI, NIE o CIF español. */
+export function nifValido(entrada: string): boolean {
+  const n = entrada.toUpperCase().replace(/[\s.-]/g, "");
+  if (/^\d{8}[A-Z]$/.test(n)) return LETRAS_DNI[Number(n.slice(0, 8)) % 23] === n[8];
+  if (/^[XYZ]\d{7}[A-Z]$/.test(n)) return LETRAS_DNI[Number("XYZ".indexOf(n[0]) + n.slice(1, 8)) % 23] === n[8];
+  const m = /^([ABCDEFGHJNPQRSUVW])(\d{7})([0-9A-J])$/.exec(n);
+  if (!m) return false;
+  const d = m[2].split("").map(Number);
+  let suma = 0;
+  d.forEach((x, i) => (suma += i % 2 ? x : Math.floor((x * 2) / 10) + ((x * 2) % 10)));
+  const digito = (10 - (suma % 10)) % 10;
+  const letra = "JABCDEFGHI"[digito];
+  if ("PQRSNW".includes(m[1])) return m[3] === letra;
+  if ("ABEH".includes(m[1])) return m[3] === String(digito);
+  return m[3] === letra || m[3] === String(digito);
+}
+
 export const ESPECIALIDADES = [
   { valor: "reforma_integral", texto: "Reforma integral" },
   { valor: "demolicion", texto: "Demolición y desescombro" },
@@ -102,7 +124,7 @@ export function documentosExigidos(p: Pick<Proveedor, "rea">): TipoDocProveedor[
 export function requisitos(p: ProveedorBase, h = hoy()): Requisito[] {
   const docs = (...t: TipoDocProveedor[]) => ({ documentos: t, ok: t.every((x) => vigente(p, x, h)) });
   return [
-    { clave: "datos", texto: "Datos de la empresa completos", ok: !!(p.razonSocial && p.nif && p.contacto && (p.telefono || p.email)), documentos: [] },
+    { clave: "datos", texto: "Datos de la empresa completos", ok: !!(p.razonSocial && nifValido(p.nif) && p.contacto && (p.telefono || p.email)), documentos: [] },
     p.rea.inscrito
       ? { clave: "prevencion", texto: "Inscripción en el REA en vigor", ...docs("rea") }
       : { clave: "prevencion", texto: "Prevención de riesgos laborales (sin REA)", ...docs("prl_modalidad", "prl_evaluacion", "prl_formacion") },
@@ -132,6 +154,34 @@ export function avisosCaducidad(proveedores: Proveedor[], h = hoy()) {
       }),
     )
     .sort((a, b) => a.dias - b.dias);
+}
+
+export const CAPITAL_RC_MINIMO = 150_000;
+
+/** Lo que no cuadra y conviene que mire una persona. No bloquea la aprobación automática. */
+export function avisos(p: ProveedorBase, h = hoy()): string[] {
+  const r: string[] = [];
+  if (p.rc.capital && p.rc.capital < CAPITAL_RC_MINIMO) r.push(`Capital del seguro de RC bajo (${p.rc.capital.toLocaleString("es-ES")} €)`);
+  for (const d of p.documentos) {
+    const info = DOCUMENTOS[d.tipo];
+    if (d.caduca && info.mesesPorDefecto && d.caduca > sumarMeses(d.subido, Math.ceil(info.mesesPorDefecto * 1.5)))
+      r.push(`${info.texto}: validez hasta ${d.caduca}, más larga de lo normal`);
+  }
+  const porHuella = new Map<string, Set<TipoDocProveedor>>();
+  for (const d of p.documentos) if (d.huella) porHuella.set(d.huella, (porHuella.get(d.huella) ?? new Set()).add(d.tipo));
+  for (const tipos of porHuella.values())
+    if (tipos.size > 1) r.push(`El mismo archivo se ha subido como: ${[...tipos].map((t) => DOCUMENTOS[t].texto).join(" y ")}`);
+  void h;
+  return r;
+}
+
+/** Se aprueba solo en cuanto cumple todos los requisitos (y no lo ha rechazado o suspendido el equipo). */
+export function aprobarSiCumple(p: Proveedor, h = hoy()) {
+  if (p.estado === "pendiente" && cumpleRequisitos(p, h)) {
+    p.estado = "aprobado";
+    p.revisado = h;
+    p.aprobadoAutomatico = true;
+  }
 }
 
 // ---- Lo que envía y ve el propio proveedor -------------------------------------------------
@@ -181,11 +231,12 @@ export function registrarProveedor(d: Datos, a: AltaProveedor): string {
     notasInternas: "",
     creado: hoy(),
     consentimiento: { fecha: new Date().toISOString(), texto: TEXTO_CONSENTIMIENTO_PROVEEDOR },
+    declaracion: { fecha: new Date().toISOString(), texto: TEXTO_DECLARACION_RESPONSABLE },
   });
   return token;
 }
 
-export type VistaProveedor = ProveedorBase;
+export type VistaProveedor = Omit<ProveedorBase, "documentos"> & { documentos: Omit<DocumentoProveedor, "ruta" | "huella">[] };
 
 export function vistaProveedor(d: Datos, token: string): VistaProveedor | null {
   const p = d.proveedores.find((x) => x.token && x.token === token);
@@ -193,13 +244,26 @@ export function vistaProveedor(d: Datos, token: string): VistaProveedor | null {
   const { notasInternas, token: _t, documentos, ...resto } = p;
   void notasInternas;
   void _t;
-  return { ...resto, documentos: documentos.map(({ ruta, ...doc }) => (void ruta, doc)) };
+  return { ...resto, documentos: documentos.map(({ ruta, huella, ...doc }) => (void ruta, void huella, doc)) };
 }
 
-/** Añade un documento subido por el proveedor; queda pendiente de revisión. */
-export function anadirDocumento(d: Datos, token: string, doc: Pick<DocumentoProveedor, "id" | "tipo" | "ruta" | "nombre" | "caduca">): boolean {
+/** Por qué no se acepta un documento al subirlo (o null si vale). */
+export function errorDocumento(tipo: TipoDocProveedor, caduca: string | undefined, h = hoy()): string | null {
+  if (!DOCUMENTOS[tipo].caduca) return null;
+  if (!caduca) return "Indica hasta qué fecha es válido el documento";
+  if (caduca < h) return "El documento ya está caducado: sube uno en vigor";
+  if (caduca > sumarMeses(h, 120)) return "La fecha de validez no es correcta";
+  return null;
+}
+
+/**
+ * Añade un documento subido por el proveedor. Bajo su declaración responsable queda
+ * válido al momento; si con él completa los requisitos, queda aprobado.
+ */
+export function anadirDocumento(d: Datos, token: string, doc: Pick<DocumentoProveedor, "id" | "tipo" | "ruta" | "nombre" | "caduca" | "huella">): boolean {
   const p = d.proveedores.find((x) => x.token === token);
-  if (!p || p.estado === "rechazado") return false;
-  p.documentos.push({ ...doc, subido: hoy(), estado: "pendiente" });
+  if (!p || p.estado === "rechazado" || errorDocumento(doc.tipo, doc.caduca)) return false;
+  p.documentos.push({ ...doc, subido: hoy(), estado: "valido" });
+  aprobarSiCumple(p);
   return true;
 }

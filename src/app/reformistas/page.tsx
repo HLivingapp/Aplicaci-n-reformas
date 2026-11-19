@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
-import { altaVacia, ESPECIALIDADES, OBRAS_MINIMAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, ZONAS, type AltaProveedor } from "@/lib/proveedores";
+import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
@@ -15,6 +15,7 @@ export default function AltaReformista() {
   const router = useRouter();
   const [a, setA] = useState<AltaProveedor>(altaVacia);
   const [acepto, setAcepto] = useState(false);
+  const [declaro, setDeclaro] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof AltaProveedor>(k: K, v: AltaProveedor[K]) => setA((x) => ({ ...x, [k]: v }));
@@ -24,7 +25,7 @@ export default function AltaReformista() {
   const obrasOk = a.obras.filter((o) => o.descripcion.trim() && o.contacto.trim()).length >= OBRAS_MINIMAS;
   const faltan = [
     !a.razonSocial.trim() && "nombre o razón social",
-    !/^[A-Z0-9]{8,10}$/i.test(a.nif.replace(/[\s-]/g, "")) && "NIF/CIF",
+    !nifValido(a.nif) && (a.nif.trim() ? "un NIF/CIF válido" : "NIF/CIF"),
     !a.contacto.trim() && "persona de contacto",
     !a.telefono.trim() && !a.email.trim() && "teléfono o email",
     a.rea.inscrito && !a.rea.numero.trim() && "número de REA",
@@ -39,7 +40,7 @@ export default function AltaReformista() {
     setEnviando(true);
     setError(null);
     try {
-      const token = await enviarAlta(a, acepto);
+      const token = await enviarAlta(a, declaro, acepto);
       router.push(`/reformista/${token}?nuevo`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo enviar");
@@ -60,8 +61,19 @@ export default function AltaReformista() {
       <p className="text-sm text-stone-600">
         Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: inscripción en el REA (o tu documentación de prevención de
         riesgos laborales), seguro de responsabilidad civil, estar al corriente de pagos, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
-        después te daremos un enlace privado para subir los documentos.
+        después te daremos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
       </p>
+
+      <Tarjeta className="space-y-3 border-teal-200">
+        <h2 className="font-semibold">Declaración responsable</h2>
+        <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
+        <label className="flex items-start gap-2 text-sm font-medium">
+          <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />
+          <span>Lo declaro y acepto estas condiciones</span>
+        </label>
+      </Tarjeta>
+
+      {declaro && (<>
 
       <Tarjeta className="space-y-3">
         <h2 className="font-semibold">1. Tu empresa</h2>
@@ -159,6 +171,7 @@ export default function AltaReformista() {
         {error && <p className="rounded bg-red-50 p-2 text-sm text-red-800">{error}</p>}
         <Boton onClick={enviar} disabled={faltan.length > 0 || enviando} className="w-full">{enviando ? "Enviando…" : "Enviar y pasar a los documentos"}</Boton>
       </Tarjeta>
+      </>)}
     </main>
   );
 }

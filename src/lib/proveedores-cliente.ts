@@ -2,7 +2,7 @@
 
 import { nuevoId } from "./id";
 import { conBaseDeDatos } from "./modo";
-import { anadirDocumento, registrarProveedor, vistaProveedor, type AltaProveedor, type VistaProveedor } from "./proveedores";
+import { anadirDocumento, errorDocumento, registrarProveedor, vistaProveedor, type AltaProveedor, type VistaProveedor } from "./proveedores";
 import { escribirLocal, leerLocal } from "./store";
 import type { TipoDocProveedor } from "./types";
 
@@ -11,14 +11,14 @@ async function respuesta<T>(r: Response): Promise<T> {
   return r.json();
 }
 
-export async function enviarAlta(alta: AltaProveedor, acepto: boolean): Promise<string> {
+export async function enviarAlta(alta: AltaProveedor, declaro: boolean, acepto: boolean): Promise<string> {
   if (!conBaseDeDatos) {
     const d = leerLocal();
     const token = registrarProveedor(d, alta);
     escribirLocal(d);
     return token;
   }
-  const r = await fetch("/api/proveedores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ alta, acepto }) });
+  const r = await fetch("/api/proveedores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ alta, declaro, acepto }) });
   return (await respuesta<{ token: string }>(r)).token;
 }
 
@@ -30,6 +30,8 @@ export async function cargarProveedor(token: string): Promise<VistaProveedor | n
 
 export async function subirDocumento(token: string, tipo: TipoDocProveedor, archivo: File, caduca: string): Promise<void> {
   if (archivo.size > 10 * 1024 * 1024) throw new Error("El archivo supera 10 MB");
+  const mal = errorDocumento(tipo, caduca || undefined);
+  if (mal) throw new Error(mal);
   if (!conBaseDeDatos) {
     // Demostración: no se guarda el archivo, solo que se ha aportado
     const d = leerLocal();

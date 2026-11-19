@@ -245,8 +245,11 @@ export interface DocumentoProveedor {
   subido: string;
   /** Fecha de caducidad que indica el proveedor o corrige el equipo */
   caduca?: string;
+  /** Al subirlo queda válido bajo la declaración responsable; el equipo solo interviene si hay avisos */
   estado: "pendiente" | "valido" | "rechazado";
   motivo?: string;
+  /** Huella SHA-256 del archivo, para detectar el mismo archivo subido como documentos distintos */
+  huella?: string;
 }
 
 export interface ObraReferencia {
@@ -281,6 +284,10 @@ export interface Proveedor {
   creado: string;
   revisado?: string;
   consentimiento: { fecha: string; texto: string };
+  /** Declaración responsable de veracidad, firmada antes del cuestionario */
+  declaracion: { fecha: string; texto: string };
+  /** true si se aprobó solo al completar los requisitos */
+  aprobadoAutomatico?: boolean;
 }
 
 export interface Datos {

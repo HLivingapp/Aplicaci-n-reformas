@@ -7,13 +7,13 @@ import { ESTADO_PROVEEDOR } from "@/components/Proveedor";
 import { Boton, Campo, inputCls, Tarjeta, Titulo, Vacio } from "@/components/ui";
 import { hoy, euros } from "@/lib/calc";
 import { conBaseDeDatos } from "@/lib/modo";
-import { cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc, sumarMeses } from "@/lib/proveedores";
+import { avisos, cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc } from "@/lib/proveedores";
 import { useDatos } from "@/lib/store";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import type { DocumentoProveedor, Proveedor } from "@/lib/types";
 
 const especialidad = (v: string) => ESPECIALIDADES.find((e) => e.valor === v)?.texto ?? v;
-const SITUACION = { pendiente: "Por revisar", rechazado: "Rechazado", caducado: "Caducado", caduca_pronto: "Caduca pronto", valido: "Válido" } as const;
+const SITUACION = { pendiente: "Pendiente", rechazado: "No válido", caducado: "Caducado", caduca_pronto: "Caduca pronto", valido: "Válido" } as const;
 const COLOR = { pendiente: "text-amber-700", rechazado: "text-red-700", caducado: "text-red-700", caduca_pronto: "text-amber-700", valido: "text-emerald-700" } as const;
 
 async function verDocumento(d: DocumentoProveedor) {
@@ -95,39 +95,22 @@ export default function FichaProveedor() {
                               </label>
                             )}
                           </div>
-                          {d.estado === "pendiente" && (
+                          {d.estado === "valido" && (
                             <div className="flex flex-wrap gap-2">
-                              <Boton
-                                className="px-2 py-1 text-xs"
-                                disabled={DOCUMENTOS[t].caduca && !d.caduca}
-                                onClick={() => cambiarDoc(d.id, (x) => void (x.estado = "valido"))}
-                              >
-                                Válido
-                              </Boton>
                               <input
                                 className="min-w-0 flex-1 rounded border border-stone-300 px-2 py-1 text-xs"
-                                placeholder="Motivo si lo rechazas (lo verá el proveedor)"
+                                placeholder="Si no es correcto, motivo (lo verá el proveedor)"
                                 value={motivos[d.id] ?? ""}
                                 onChange={(e) => setMotivos({ ...motivos, [d.id]: e.target.value })}
                               />
                               <Boton variante="peligro" className="px-2 py-1 text-xs" onClick={() => cambiarDoc(d.id, (x) => { x.estado = "rechazado"; x.motivo = (motivos[d.id] ?? "").slice(0, 300); })}>
-                                Rechazar
+                                No es válido
                               </Boton>
                             </div>
                           )}
-                          {d.estado === "pendiente" && DOCUMENTOS[t].caduca && !d.caduca && (
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500">
-                              Pon la fecha de validez que figura en el documento para poder darlo por válido.
-                              {DOCUMENTOS[t].mesesPorDefecto && (
-                                <button className="text-teal-700 hover:underline" onClick={() => cambiarDoc(d.id, (x) => void (x.caduca = sumarMeses(d.subido, DOCUMENTOS[t].mesesPorDefecto!)))}>
-                                  Usar {sumarMeses(d.subido, DOCUMENTOS[t].mesesPorDefecto)}
-                                </button>
-                              )}
-                            </div>
-                          )}
-                          {d.estado !== "pendiente" && (
-                            <button className="text-xs text-stone-500 hover:underline" onClick={() => cambiarDoc(d.id, (x) => { x.estado = "pendiente"; delete x.motivo; })}>
-                              Volver a revisar
+                          {d.estado !== "valido" && (
+                            <button className="text-xs text-stone-500 hover:underline" onClick={() => cambiarDoc(d.id, (x) => { x.estado = "valido"; delete x.motivo; })}>
+                              Dar por válido
                             </button>
                           )}
                         </div>
@@ -161,6 +144,15 @@ export default function FichaProveedor() {
         </div>
 
         <div className="space-y-4">
+          {avisos(p).length > 0 && (
+            <Tarjeta className="border-amber-200 bg-amber-50">
+              <h2 className="mb-1 text-sm font-semibold text-amber-950">Avisos</h2>
+              <ul className="list-disc space-y-1 pl-5 text-sm text-amber-950">
+                {avisos(p).map((a) => <li key={a}>{a}</li>)}
+              </ul>
+              <p className="mt-2 text-xs text-amber-900">No bloquean la homologación. Revisa el documento y, si no es correcto, márcalo como no válido o suspende al proveedor.</p>
+            </Tarjeta>
+          )}
           <Tarjeta>
             <h2 className="mb-2 font-semibold">Requisitos</h2>
             <ul className="space-y-1 text-sm">
@@ -180,7 +172,8 @@ export default function FichaProveedor() {
               )}
               {p.estado === "rechazado" && <Boton variante="secundario" onClick={() => cambiar((x) => void (x.estado = "pendiente"))}>Reabrir</Boton>}
             </div>
-            {!cumple && p.estado !== "aprobado" && <p className="mt-2 text-xs text-stone-500">Para aprobar, todos los requisitos deben estar en verde.</p>}
+            {p.estado === "pendiente" && <p className="mt-2 text-xs text-stone-500">Se aprobará solo cuando complete los requisitos.</p>}
+            {p.estado === "aprobado" && p.aprobadoAutomatico && <p className="mt-2 text-xs text-stone-500">Aprobado automáticamente el {p.revisado}.</p>}
             {p.estado === "aprobado" && !cumple && <p className="mt-2 text-xs text-red-700">Tiene requisitos caducados: no se muestra a los clientes hasta que los renueve.</p>}
           </Tarjeta>
 
@@ -194,6 +187,7 @@ export default function FichaProveedor() {
             <div className="text-stone-500">{p.trabajadores} trabajadores</div>
             <div className="text-stone-500">REA: {p.rea.inscrito ? p.rea.numero || "sí" : "no inscrito"}</div>
             <div className="text-stone-500">RC: {p.rc.aseguradora || "—"}{p.rc.capital ? ` · ${euros(p.rc.capital)}` : ""}</div>
+            <div className="text-stone-500">Declaración responsable firmada el {p.declaracion?.fecha.slice(0, 10) ?? "—"}</div>
             <div className="text-stone-500">Solicitud del {p.creado}{p.revisado ? ` · revisado ${p.revisado}` : ""}</div>
           </Tarjeta>
 

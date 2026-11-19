@@ -9,15 +9,15 @@ import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import type { TipoDocProveedor } from "@/lib/types";
 
 const ESTADOS: Record<VistaProveedor["estado"], { texto: string; cls: string }> = {
-  pendiente: { texto: "En revisión", cls: "bg-amber-100 text-amber-900" },
+  pendiente: { texto: "Incompleto", cls: "bg-amber-100 text-amber-900" },
   aprobado: { texto: "Homologado", cls: "bg-emerald-100 text-emerald-800" },
   rechazado: { texto: "No homologado", cls: "bg-red-100 text-red-700" },
   suspendido: { texto: "Suspendido", cls: "bg-stone-200 text-stone-700" },
 };
 const SITUACION: Record<SituacionDoc | "falta", { texto: string; cls: string }> = {
   falta: { texto: "Falta", cls: "text-stone-500" },
-  pendiente: { texto: "Pendiente de revisar", cls: "text-amber-700" },
-  rechazado: { texto: "Rechazado", cls: "text-red-700" },
+  pendiente: { texto: "Pendiente", cls: "text-amber-700" },
+  rechazado: { texto: "No válido", cls: "text-red-700" },
   caducado: { texto: "Caducado", cls: "text-red-700" },
   caduca_pronto: { texto: "Caduca pronto", cls: "text-amber-700" },
   valido: { texto: "Válido", cls: "text-emerald-700" },
@@ -48,13 +48,13 @@ function SubirDoc({ token, tipo, alSubir }: { token: string; tipo: TipoDocProvee
         <div className="flex flex-wrap items-end gap-2">
           {info.caduca && (
             <label className="text-xs text-stone-600">
-              Válido hasta
+              Válido hasta *
               <input type="date" className={`${inputCls} mt-1`} value={caduca} min={hoy()} onChange={(e) => setCaduca(e.target.value)} />
             </label>
           )}
-          <Boton onClick={subir} disabled={estado === "Subiendo…"}>Subir</Boton>
+          <Boton onClick={subir} disabled={estado === "Subiendo…" || (info.caduca && !caduca)}>Subir</Boton>
           {info.caduca && !caduca && info.mesesPorDefecto && (
-            <span className="text-xs text-stone-500">Si no indicas fecha, revisaremos la del documento (suele ser hasta {sumarMeses(hoy(), info.mesesPorDefecto)}).</span>
+            <span className="text-xs text-stone-500">Pon la fecha que figura en el documento (este tipo suele valer hasta {sumarMeses(hoy(), info.mesesPorDefecto)}).</span>
           )}
         </div>
       )}
@@ -96,7 +96,7 @@ export default function PortalReformista() {
       )}
 
       <Tarjeta>
-        <h2 className="mb-2 font-semibold">{pendientes ? `Te faltan ${pendientes} requisitos` : p.estado === "aprobado" ? "Todo en regla" : "Todo enviado: lo estamos revisando"}</h2>
+        <h2 className="mb-2 font-semibold">{pendientes ? `Te faltan ${pendientes} requisitos` : p.estado === "aprobado" ? "Homologado: todo en regla" : "Todo enviado"}</h2>
         <ul className="space-y-1 text-sm">
           {reqs.map((r) => (
             <li key={r.clave} className="flex gap-2">
@@ -105,7 +105,7 @@ export default function PortalReformista() {
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-xs text-stone-500">Un documento cuenta cuando nuestro equipo lo ha revisado. Te avisaremos antes de que caduque alguno.</p>
+        <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
 
       <Tarjeta className="space-y-4">
@@ -124,11 +124,11 @@ export default function PortalReformista() {
                 <p className="mt-1 text-xs text-stone-500">
                   {d.nombre} · subido {d.subido}
                   {d.caduca ? ` · válido hasta ${d.caduca}` : ""}
-                  {d.estado === "rechazado" && d.motivo ? ` · Motivo: ${d.motivo}` : ""}
+                  {d.estado === "rechazado" ? ` · No válido${d.motivo ? `: ${d.motivo}` : ""}. Sube uno correcto.` : ""}
                 </p>
               )}
-              {p.estado !== "rechazado" && s !== "valido" && s !== "pendiente" && <SubirDoc token={token} tipo={t} alSubir={cargar} />}
-              {p.estado !== "rechazado" && (s === "valido" || s === "pendiente") && (
+              {p.estado !== "rechazado" && s !== "valido" && <SubirDoc token={token} tipo={t} alSubir={cargar} />}
+              {p.estado !== "rechazado" && s === "valido" && (
                 <details className="mt-1 text-xs">
                   <summary className="cursor-pointer text-teal-700">Subir una versión nueva</summary>
                   <SubirDoc token={token} tipo={t} alSubir={cargar} />
