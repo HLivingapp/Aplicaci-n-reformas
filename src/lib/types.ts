@@ -248,6 +248,10 @@ export interface DocumentoProveedor {
   /** Al subirlo queda válido bajo la declaración responsable; el equipo solo interviene si hay avisos */
   estado: "pendiente" | "valido" | "rechazado";
   motivo?: string;
+  /** Código seguro de verificación (certificados de la AEAT) */
+  csv?: string;
+  /** Comprobación automática en el organismo que lo emite */
+  verificacion?: { resultado: "autentico" | "no_encontrado" | "error"; fecha: string; copiaOficial?: string };
   /** Huella SHA-256 del archivo, para detectar el mismo archivo subido como documentos distintos */
   huella?: string;
 }
@@ -286,6 +290,8 @@ export interface Proveedor {
   consentimiento: { fecha: string; texto: string };
   /** Declaración responsable de veracidad, firmada antes del cuestionario */
   declaracion: { fecha: string; texto: string };
+  /** Última consulta automática al Registro de Empresas Acreditadas */
+  reaVerificado?: import("./rea").ResultadoREA;
   /** true si se aprobó solo al completar los requisitos */
   aprobadoAutomatico?: boolean;
 }

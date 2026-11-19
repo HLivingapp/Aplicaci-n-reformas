@@ -7,7 +7,7 @@ import { ESTADO_PROVEEDOR } from "@/components/Proveedor";
 import { Boton, Campo, inputCls, Tarjeta, Titulo, Vacio } from "@/components/ui";
 import { hoy, euros } from "@/lib/calc";
 import { conBaseDeDatos } from "@/lib/modo";
-import { avisos, cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc } from "@/lib/proveedores";
+import { aplicarREA, avisos, cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc } from "@/lib/proveedores";
 import { useDatos } from "@/lib/store";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import type { DocumentoProveedor, Proveedor } from "@/lib/types";
@@ -16,9 +16,9 @@ const especialidad = (v: string) => ESPECIALIDADES.find((e) => e.valor === v)?.t
 const SITUACION = { pendiente: "Pendiente", rechazado: "No válido", caducado: "Caducado", caduca_pronto: "Caduca pronto", valido: "Válido" } as const;
 const COLOR = { pendiente: "text-amber-700", rechazado: "text-red-700", caducado: "text-red-700", caduca_pronto: "text-amber-700", valido: "text-emerald-700" } as const;
 
-async function verDocumento(d: DocumentoProveedor) {
+async function verDocumento(ruta: string) {
   if (!conBaseDeDatos) return alert("Modo demostración: el archivo no se guarda.");
-  const { data, error } = await supabaseNavegador().storage.from("proveedores").createSignedUrl(d.ruta, 300);
+  const { data, error } = await supabaseNavegador().storage.from("proveedores").createSignedUrl(ruta, 300);
   if (error || !data) return alert("No se pudo abrir el documento");
   window.open(data.signedUrl, "_blank", "noopener");
 }
@@ -28,6 +28,7 @@ export default function FichaProveedor() {
   const router = useRouter();
   const { datos, actualizar } = useDatos();
   const [motivos, setMotivos] = useState<Record<string, string>>({});
+  const [consultando, setConsultando] = useState(false);
   const p = datos.proveedores.find((x) => x.id === id);
   if (!p) return <Vacio>No se encuentra este proveedor.</Vacio>;
 
@@ -45,10 +46,30 @@ export default function FichaProveedor() {
   const cumple = cumpleRequisitos(p);
   const enlace = typeof window !== "undefined" ? `${window.location.origin}/reformista/${p.token}` : "";
 
+  async function consultarREA() {
+    if (!p) return;
+    setConsultando(true);
+    try {
+      const { data } = await supabaseNavegador().auth.getSession();
+      const r = await fetch("/api/equipo/rea", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token ?? ""}` },
+        body: JSON.stringify({ nif: p.nif }),
+      });
+      if (!r.ok) throw new Error((await r.json().catch(() => null))?.mensaje ?? "Error");
+      const res = await r.json();
+      cambiar((x) => aplicarREA(x, res));
+    } catch (e) {
+      alert("No se pudo consultar el REA: " + (e instanceof Error ? e.message : ""));
+    } finally {
+      setConsultando(false);
+    }
+  }
+
   async function borrar() {
     if (!p || !confirm(`¿Borrar a ${p.razonSocial} y todos sus documentos? No se puede deshacer.`)) return;
     if (conBaseDeDatos && p.documentos.length) {
-      const { error } = await supabaseNavegador().storage.from("proveedores").remove(p.documentos.map((d) => d.ruta));
+      const { error } = await supabaseNavegador().storage.from("proveedores").remove(p.documentos.flatMap((d) => [d.ruta, ...(d.verificacion?.copiaOficial ? [d.verificacion.copiaOficial] : [])]));
       if (error) return alert("No se pudieron borrar los documentos: " + error.message);
     }
     actualizar((d) => void (d.proveedores = d.proveedores.filter((x) => x.id !== id)));
@@ -78,11 +99,17 @@ export default function FichaProveedor() {
                       return (
                         <div key={d.id} className="mt-2 space-y-2 rounded-lg bg-stone-50 p-2 text-sm">
                           <div className="flex flex-wrap items-center justify-between gap-2">
-                            <button onClick={() => verDocumento(d)} className="truncate text-left text-teal-700 hover:underline">📄 {d.nombre}</button>
+                            <button onClick={() => verDocumento(d.ruta)} className="truncate text-left text-teal-700 hover:underline">📄 {d.nombre}</button>
                             <span className={`text-xs font-medium ${COLOR[s]}`}>{SITUACION[s]}</span>
                           </div>
                           <div className="flex flex-wrap items-end gap-2 text-xs text-stone-600">
                             <span>Subido {d.subido}</span>
+                            {d.csv && <span className="font-mono">CSV {d.csv}</span>}
+                            {d.verificacion?.resultado === "autentico" && <span className="font-medium text-emerald-700">✅ Comprobado en la AEAT</span>}
+                            {d.verificacion?.resultado === "error" && <span className="font-medium text-amber-700">No se pudo comprobar en la AEAT</span>}
+                            {d.verificacion?.copiaOficial && (
+                              <button className="text-teal-700 hover:underline" onClick={() => verDocumento(d.verificacion!.copiaOficial!)}>Ver copia oficial</button>
+                            )}
                             {DOCUMENTOS[t].caduca && (
                               <label className="flex items-center gap-1">
                                 Válido hasta
@@ -175,6 +202,23 @@ export default function FichaProveedor() {
             {p.estado === "pendiente" && <p className="mt-2 text-xs text-stone-500">Se aprobará solo cuando complete los requisitos.</p>}
             {p.estado === "aprobado" && p.aprobadoAutomatico && <p className="mt-2 text-xs text-stone-500">Aprobado automáticamente el {p.revisado}.</p>}
             {p.estado === "aprobado" && !cumple && <p className="mt-2 text-xs text-red-700">Tiene requisitos caducados: no se muestra a los clientes hasta que los renueve.</p>}
+          </Tarjeta>
+
+          <Tarjeta className="space-y-1 text-sm">
+            <h2 className="mb-1 font-semibold">Registro de Empresas Acreditadas</h2>
+            {!p.reaVerificado && <p className="text-stone-500">Sin consultar.</p>}
+            {p.reaVerificado?.resultado === "alta" && <p className="font-medium text-emerald-700">✅ Inscrita, en alta</p>}
+            {p.reaVerificado?.resultado === "baja" && <p className="font-medium text-red-700">Consta con estado {p.reaVerificado.estado}</p>}
+            {p.reaVerificado?.resultado === "no_consta" && <p className="font-medium text-red-700">No consta en el REA</p>}
+            {p.reaVerificado?.resultado === "error" && <p className="font-medium text-amber-700">No se pudo consultar</p>}
+            {p.reaVerificado?.razonSocial && <div>{p.reaVerificado.razonSocial}</div>}
+            {p.reaVerificado?.numero && <div className="text-stone-500">Nº {p.reaVerificado.numero} · {p.reaVerificado.autonomia}</div>}
+            {p.reaVerificado && <div className="text-xs text-stone-500">Consultado el {p.reaVerificado.fecha.slice(0, 10)}. Se vuelve a consultar cada mes.</div>}
+            {conBaseDeDatos && (
+              <Boton variante="secundario" className="mt-1 px-2 py-1 text-xs" disabled={consultando} onClick={consultarREA}>
+                {consultando ? "Consultando…" : "Consultar ahora"}
+              </Boton>
+            )}
           </Tarjeta>
 
           <Tarjeta className="space-y-1 text-sm">

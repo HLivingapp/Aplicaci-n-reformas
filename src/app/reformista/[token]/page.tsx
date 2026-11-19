@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Boton, inputCls, Tarjeta, Vacio } from "@/components/ui";
 import { hoy } from "@/lib/calc";
-import { docActual, DOCUMENTOS, documentosExigidos, requisitos, situacionDoc, sumarMeses, type SituacionDoc, type VistaProveedor } from "@/lib/proveedores";
+import { CON_CSV, csvValido, docActual, DOCUMENTOS, documentosExigidos, requisitos, situacionDoc, sumarMeses, type SituacionDoc, type VistaProveedor } from "@/lib/proveedores";
 import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import type { TipoDocProveedor } from "@/lib/types";
 
@@ -27,14 +27,18 @@ function SubirDoc({ token, tipo, alSubir }: { token: string; tipo: TipoDocProvee
   const info = DOCUMENTOS[tipo];
   const [archivo, setArchivo] = useState<File | null>(null);
   const [caduca, setCaduca] = useState("");
+  const [csv, setCsv] = useState("");
+  const pideCsv = CON_CSV.includes(tipo);
+  const csvLimpio = csv.toUpperCase().replace(/[\s-]/g, "");
   const [estado, setEstado] = useState<string | null>(null);
   async function subir() {
     if (!archivo) return;
-    setEstado("Subiendo…");
+    setEstado(pideCsv ? "Subiendo y comprobando en la Agencia Tributaria…" : "Subiendo…");
     try {
-      await subirDocumento(token, tipo, archivo, caduca);
+      await subirDocumento(token, tipo, archivo, caduca, csv);
       setArchivo(null);
       setCaduca("");
+      setCsv("");
       setEstado(null);
       alSubir();
     } catch (e) {
@@ -52,7 +56,13 @@ function SubirDoc({ token, tipo, alSubir }: { token: string; tipo: TipoDocProvee
               <input type="date" className={`${inputCls} mt-1`} value={caduca} min={hoy()} onChange={(e) => setCaduca(e.target.value)} />
             </label>
           )}
-          <Boton onClick={subir} disabled={estado === "Subiendo…" || (info.caduca && !caduca)}>Subir</Boton>
+          {pideCsv && (
+            <label className="text-xs text-stone-600">
+              Código seguro de verificación (CSV) *
+              <input className={`${inputCls} mt-1 font-mono uppercase`} maxLength={20} placeholder="16 letras y números" value={csv} onChange={(e) => setCsv(e.target.value)} />
+            </label>
+          )}
+          <Boton onClick={subir} disabled={!!estado?.endsWith("…") || (info.caduca && !caduca) || (pideCsv && !csvValido(csvLimpio))}>Subir</Boton>
           {info.caduca && !caduca && info.mesesPorDefecto && (
             <span className="text-xs text-stone-500">Pon la fecha que figura en el documento (este tipo suele valer hasta {sumarMeses(hoy(), info.mesesPorDefecto)}).</span>
           )}
@@ -124,6 +134,7 @@ export default function PortalReformista() {
                 <p className="mt-1 text-xs text-stone-500">
                   {d.nombre} · subido {d.subido}
                   {d.caduca ? ` · válido hasta ${d.caduca}` : ""}
+                  {d.verificacion?.resultado === "autentico" ? " · ✅ comprobado en la Agencia Tributaria" : ""}
                   {d.estado === "rechazado" ? ` · No válido${d.motivo ? `: ${d.motivo}` : ""}. Sube uno correcto.` : ""}
                 </p>
               )}

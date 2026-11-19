@@ -5,6 +5,7 @@
  */
 import { hoy } from "./calc";
 import { nuevoId, nuevoToken } from "./id";
+import { mismoNombre, type ResultadoREA } from "./rea";
 import type { Datos, DocumentoProveedor, ObraReferencia, Proveedor, TipoDocProveedor } from "./types";
 
 export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
@@ -69,12 +70,20 @@ export const DOCUMENTOS: Record<TipoDocProveedor, { texto: string; ayuda: string
   prl_formacion: { texto: "Formación en PRL de los trabajadores", ayuda: "Certificados de formación (20 h construcción o según puesto).", caduca: false },
   rc_poliza: { texto: "Póliza de responsabilidad civil", ayuda: "Condiciones particulares con el capital asegurado.", caduca: true, mesesPorDefecto: 12 },
   rc_recibo: { texto: "Recibo pagado del seguro", ayuda: "Último recibo de la póliza de RC.", caduca: true, mesesPorDefecto: 12 },
-  hacienda: { texto: "Certificado de estar al corriente con Hacienda", ayuda: "Se descarga en la sede electrónica de la AEAT.", caduca: true, mesesPorDefecto: 6 },
+  hacienda: {
+    texto: "Certificado de estar al corriente con Hacienda",
+    ayuda: "Certificado de contratistas y subcontratistas o de estar al corriente, descargado de la sede electrónica de la AEAT. Lo comprobamos automáticamente con su código seguro de verificación (CSV).",
+    caduca: true,
+    mesesPorDefecto: 12,
+  },
   seguridad_social: { texto: "Certificado de estar al corriente con la Seguridad Social", ayuda: "Se descarga en Import@ss o la sede de la Seguridad Social.", caduca: true, mesesPorDefecto: 6 },
   cuentas: { texto: "Cuentas anuales depositadas", ayuda: "Último depósito en el Registro Mercantil. Autónomos: última declaración de la renta o modelo 130.", caduca: true, mesesPorDefecto: 18 },
 };
 
 export const OBRAS_MINIMAS = 3;
+/** Documentos que se comprueban con su código seguro de verificación */
+export const CON_CSV: TipoDocProveedor[] = ["hacienda"];
+export const csvValido = (c: string) => /^[A-Z0-9]{16}$/.test(c);
 export const DIAS_AVISO = 30;
 
 export function sumarMeses(fecha: string, meses: number) {
@@ -115,19 +124,37 @@ export interface Requisito {
   documentos: TipoDocProveedor[];
 }
 
+/** Cómo acredita la prevención: comprobado en el REA, con el certificado del REA (si no se pudo consultar) o con la documentación de PRL. */
+export function viaPrevencion(p: Pick<Proveedor, "rea" | "reaVerificado">): "rea_comprobado" | "rea_certificado" | "prl" {
+  const r = p.reaVerificado?.resultado;
+  if (r === "alta") return "rea_comprobado";
+  if (p.rea.inscrito && r !== "no_consta" && r !== "baja") return "rea_certificado";
+  return "prl";
+}
+
 /** Qué documentos tiene que aportar este proveedor (el REA sustituye a los tres de PRL). */
-export function documentosExigidos(p: Pick<Proveedor, "rea">): TipoDocProveedor[] {
-  const prevencion: TipoDocProveedor[] = p.rea.inscrito ? ["rea"] : ["prl_modalidad", "prl_evaluacion", "prl_formacion"];
+export function documentosExigidos(p: Pick<Proveedor, "rea" | "reaVerificado">): TipoDocProveedor[] {
+  const via = viaPrevencion(p);
+  const prevencion: TipoDocProveedor[] = via === "rea_comprobado" ? [] : via === "rea_certificado" ? ["rea"] : ["prl_modalidad", "prl_evaluacion", "prl_formacion"];
   return [...prevencion, "rc_poliza", "rc_recibo", "hacienda", "seguridad_social", "cuentas"];
+}
+
+function prevencion(p: ProveedorBase, h: string): Requisito {
+  const via = viaPrevencion(p);
+  if (via === "rea_comprobado")
+    return { clave: "prevencion", texto: `Inscrito en el REA (comprobado en el registro oficial el ${p.reaVerificado!.fecha.slice(0, 10)})`, ok: true, documentos: [] };
+  const docs = documentosExigidos(p).filter((t) => t === "rea" || t.startsWith("prl_"));
+  const ok = docs.every((t) => vigente(p, t, h));
+  if (via === "rea_certificado") return { clave: "prevencion", texto: "Inscripción en el REA en vigor", ok, documentos: docs };
+  const noConsta = p.rea.inscrito ? " (no consta en el REA)" : "";
+  return { clave: "prevencion", texto: `Prevención de riesgos laborales${noConsta || " (sin REA)"}`, ok, documentos: docs };
 }
 
 export function requisitos(p: ProveedorBase, h = hoy()): Requisito[] {
   const docs = (...t: TipoDocProveedor[]) => ({ documentos: t, ok: t.every((x) => vigente(p, x, h)) });
   return [
     { clave: "datos", texto: "Datos de la empresa completos", ok: !!(p.razonSocial && nifValido(p.nif) && p.contacto && (p.telefono || p.email)), documentos: [] },
-    p.rea.inscrito
-      ? { clave: "prevencion", texto: "Inscripción en el REA en vigor", ...docs("rea") }
-      : { clave: "prevencion", texto: "Prevención de riesgos laborales (sin REA)", ...docs("prl_modalidad", "prl_evaluacion", "prl_formacion") },
+    prevencion(p, h),
     { clave: "rc", texto: "Seguro de responsabilidad civil en vigor", ...docs("rc_poliza", "rc_recibo") },
     { clave: "corriente", texto: "Al corriente con Hacienda y Seguridad Social", ...docs("hacienda", "seguridad_social") },
     { clave: "cuentas", texto: "Cuentas anuales depositadas", ...docs("cuentas") },
@@ -171,8 +198,26 @@ export function avisos(p: ProveedorBase, h = hoy()): string[] {
   for (const d of p.documentos) if (d.huella) porHuella.set(d.huella, (porHuella.get(d.huella) ?? new Set()).add(d.tipo));
   for (const tipos of porHuella.values())
     if (tipos.size > 1) r.push(`El mismo archivo se ha subido como: ${[...tipos].map((t) => DOCUMENTOS[t].texto).join(" y ")}`);
+  for (const t of CON_CSV) {
+    const d = docActual(p, t, h);
+    if (d && d.estado === "valido" && d.verificacion?.resultado === "error") r.push(`${DOCUMENTOS[t].texto}: no se pudo comprobar el CSV en la AEAT`);
+  }
+  const rea = p.reaVerificado;
+  if (rea?.resultado === "no_consta" && p.rea.inscrito) r.push("Dice estar inscrito en el REA, pero no consta en el registro oficial: se le piden los documentos de PRL");
+  if (rea?.resultado === "baja") r.push(`Consta en el REA con estado "${rea.estado ?? "no en alta"}"`);
+  if (rea?.resultado === "error") r.push("No se pudo consultar el REA: se usa el certificado que suba");
+  if (rea?.resultado === "alta" && rea.razonSocial && !mismoNombre(rea.razonSocial, p.razonSocial)) r.push(`En el REA figura como "${rea.razonSocial}"`);
+  if (rea?.resultado === "alta" && rea.numero && p.rea.numero && rea.numero.replace(/\s/g, "") !== p.rea.numero.replace(/\s/g, "")) r.push(`Número de REA declarado (${p.rea.numero}) distinto del oficial (${rea.numero})`);
   void h;
   return r;
+}
+
+/** Guarda una consulta nueva del REA y recalcula la aprobación. */
+export function aplicarREA(p: Proveedor, r: ResultadoREA) {
+  // Si la consulta falla, se conserva el último resultado conocido
+  if (r.resultado === "error" && p.reaVerificado && p.reaVerificado.resultado !== "error") return;
+  p.reaVerificado = r;
+  aprobarSiCumple(p);
 }
 
 /** Se aprueba solo en cuanto cumple todos los requisitos (y no lo ha rechazado o suspendido el equipo). */
@@ -220,9 +265,10 @@ export const altaVacia = (): AltaProveedor => ({
   presentacion: "",
 });
 
-export function registrarProveedor(d: Datos, a: AltaProveedor): string {
+export function registrarProveedor(d: Datos, a: AltaProveedor, reaVerificado?: ResultadoREA): string {
   const token = nuevoToken();
   d.proveedores.unshift({
+    reaVerificado,
     ...a,
     id: nuevoId(),
     token,
@@ -236,7 +282,7 @@ export function registrarProveedor(d: Datos, a: AltaProveedor): string {
   return token;
 }
 
-export type VistaProveedor = Omit<ProveedorBase, "documentos"> & { documentos: Omit<DocumentoProveedor, "ruta" | "huella">[] };
+export type VistaProveedor = Omit<ProveedorBase, "documentos"> & { documentos: Omit<DocumentoProveedor, "ruta" | "huella" | "csv">[] };
 
 export function vistaProveedor(d: Datos, token: string): VistaProveedor | null {
   const p = d.proveedores.find((x) => x.token && x.token === token);
@@ -244,11 +290,12 @@ export function vistaProveedor(d: Datos, token: string): VistaProveedor | null {
   const { notasInternas, token: _t, documentos, ...resto } = p;
   void notasInternas;
   void _t;
-  return { ...resto, documentos: documentos.map(({ ruta, huella, ...doc }) => (void ruta, void huella, doc)) };
+  return { ...resto, documentos: documentos.map(({ ruta, huella, csv, ...doc }) => (void ruta, void huella, void csv, { ...doc, verificacion: doc.verificacion && { ...doc.verificacion, copiaOficial: undefined } })) };
 }
 
 /** Por qué no se acepta un documento al subirlo (o null si vale). */
-export function errorDocumento(tipo: TipoDocProveedor, caduca: string | undefined, h = hoy()): string | null {
+export function errorDocumento(tipo: TipoDocProveedor, caduca: string | undefined, h = hoy(), csv?: string): string | null {
+  if (CON_CSV.includes(tipo) && !csvValido(csv ?? "")) return "Indica el código seguro de verificación (CSV) que aparece en el certificado: 16 letras y números";
   if (!DOCUMENTOS[tipo].caduca) return null;
   if (!caduca) return "Indica hasta qué fecha es válido el documento";
   if (caduca < h) return "El documento ya está caducado: sube uno en vigor";
@@ -260,9 +307,13 @@ export function errorDocumento(tipo: TipoDocProveedor, caduca: string | undefine
  * Añade un documento subido por el proveedor. Bajo su declaración responsable queda
  * válido al momento; si con él completa los requisitos, queda aprobado.
  */
-export function anadirDocumento(d: Datos, token: string, doc: Pick<DocumentoProveedor, "id" | "tipo" | "ruta" | "nombre" | "caduca" | "huella">): boolean {
+export function anadirDocumento(
+  d: Datos,
+  token: string,
+  doc: Pick<DocumentoProveedor, "id" | "tipo" | "ruta" | "nombre" | "caduca" | "huella" | "csv" | "verificacion">,
+): boolean {
   const p = d.proveedores.find((x) => x.token === token);
-  if (!p || p.estado === "rechazado" || errorDocumento(doc.tipo, doc.caduca)) return false;
+  if (!p || p.estado === "rechazado" || errorDocumento(doc.tipo, doc.caduca, hoy(), doc.csv)) return false;
   p.documentos.push({ ...doc, subido: hoy(), estado: "valido" });
   aprobarSiCumple(p);
   return true;

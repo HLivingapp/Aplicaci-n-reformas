@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { registrarProveedor } from "@/lib/proveedores";
+import { consultarREA } from "@/lib/servidor/rea";
 import { cargarTodo, guardarCambios } from "@/lib/servidor/repo";
 import { validarAlta } from "@/lib/servidor/validar";
 
@@ -12,7 +13,8 @@ export async function POST(req: Request) {
   const antes = await cargarTodo();
   if (antes.proveedores.some((p) => p.nif === alta.nif)) return NextResponse.json({ mensaje: "Ya hay una solicitud con este NIF. Usa tu enlace privado o escríbenos." }, { status: 409 });
   const despues = structuredClone(antes);
-  const token = registrarProveedor(despues, alta);
+  // Comprobación automática en el Registro de Empresas Acreditadas
+  const token = registrarProveedor(despues, alta, await consultarREA(alta.nif));
   await guardarCambios(antes, despues);
   return NextResponse.json({ token });
 }
