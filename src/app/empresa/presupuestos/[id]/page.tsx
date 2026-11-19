@@ -1,5 +1,6 @@
 "use client";
 
+import { recargoDe } from "@/lib/tarifas";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -191,7 +192,7 @@ export default function EditorPresupuesto() {
             {catalogoPara === c.id && (
               <div className="no-print mt-3 max-h-72 overflow-y-auto rounded-lg border border-stone-200">
                 {datos.tarifas.precios.map((item) => {
-                  const precio = Math.round(item.coste * (1 + datos.tarifas.recargoPct / 100) * 100) / 100;
+                  const precio = Math.round(item.coste * recargoDe(datos.tarifas, item.grupo) * 100) / 100;
                   return (
                     <button
                       key={item.id}

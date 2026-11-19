@@ -6,9 +6,14 @@ import type { GrupoTarifa, PrecioTarifa, Tarifas } from "./types";
  * Cada empresa importa o edita el suyo en Ajustes → Tarifario. Los costes reales
  * NO se guardan en este repositorio, que es público.
  */
+/** Recargo que se aplica a una partida: los materiales («Compras») llevan el suyo. */
+export const recargoDe = (t: Pick<Tarifas, "recargoPct" | "recargoMaterialesPct">, grupo: GrupoTarifa) =>
+  1 + (grupo === "Compras" ? (t.recargoMaterialesPct ?? t.recargoPct) : t.recargoPct) / 100;
+
 export const tarifasPorDefecto = (): Tarifas => ({
   nombre: "Genérico de ejemplo",
   recargoPct: 40,
+  recargoMaterialesPct: 25,
   coefUtil: 0.8,
   paramentosPorM2: 2.4,
   m2AlicatadoBano: 30,

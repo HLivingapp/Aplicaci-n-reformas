@@ -145,7 +145,7 @@ export default function DetalleSolicitud() {
         <div className="space-y-4">
           <Tarjeta>
             <h2 className="mb-1 font-semibold">Cotización automática</h2>
-            <p className="mb-3 text-xs text-stone-500">Con el tarifario «{datos.tarifas.nombre}» (+{datos.tarifas.recargoPct}% sobre coste). Al crear el presupuesto se copian estas partidas para afinarlas.</p>
+            <p className="mb-3 text-xs text-stone-500">Con el tarifario «{datos.tarifas.nombre}» (+{datos.tarifas.recargoPct}% sobre coste, +{datos.tarifas.recargoMaterialesPct}% en materiales). Al crear el presupuesto se copian estas partidas para afinarlas.</p>
             <VistaEstimacion e={estimar(v, p.reforma, datos.tarifas)} detalle />
           </Tarjeta>
           {estimar(v, p.reforma, datos.tarifas).materiales.length > 0 && (

@@ -1,4 +1,5 @@
 import { grupoDePartida, opcionElegida } from "./materiales";
+import { recargoDe } from "./tarifas";
 import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
 
 export interface LineaEstimacion {
@@ -98,7 +99,6 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const avisos: string[] = [];
   const lineas: LineaEstimacion[] = [];
   const factor = t.factorCalidad[r.calidad] ?? 1;
-  const recargo = 1 + t.recargoPct / 100;
 
   const add = (id: string, cantidad: number) => {
     const p = t.precios.find((x) => x.id === id);
@@ -113,7 +113,7 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
       return;
     }
     const descripcion = op ? `${p.descripcion} · ${op.nombre}` : p.descripcion;
-    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargo), ...(g ? { grupoMaterial: g.id } : {}) });
+    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargoDe(t, p.grupo)), ...(g ? { grupoMaterial: g.id } : {}) });
   };
 
   const banos = estancias.filter((e) => e.nombre.startsWith("Baño"));
@@ -230,7 +230,12 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
     if (!ls.length) continue;
     const elegida = opcionElegida(g, r)!;
     const precioCon = (f: number) =>
-      Math.round(ls.reduce((s, l) => s + l.cantidad * (t.precios.find((x) => x.id === l.tarifaId)?.coste ?? 0) * f * recargo, 0));
+      Math.round(
+        ls.reduce((s, l) => {
+          const p = t.precios.find((x) => x.id === l.tarifaId);
+          return s + (p ? l.cantidad * p.coste * f * recargoDe(t, p.grupo) : 0);
+        }, 0),
+      );
     materiales.push({
       grupo: g.id,
       nombre: g.nombre,

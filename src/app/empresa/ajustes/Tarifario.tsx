@@ -3,8 +3,8 @@
 import { useRef, useState } from "react";
 import { euros } from "@/lib/calc";
 import { useDatos } from "@/lib/store";
-import { completarTarifas, esTarifas, tarifasPorDefecto } from "@/lib/tarifas";
-import type { Tarifas, TramoMedidas } from "@/lib/types";
+import { completarTarifas, esTarifas, recargoDe, tarifasPorDefecto } from "@/lib/tarifas";
+import type { GrupoTarifa, Tarifas, TramoMedidas } from "@/lib/types";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 
 const num = (v: string) => {
@@ -13,7 +13,8 @@ const num = (v: string) => {
 };
 
 const PARAMS: { k: keyof Tarifas; t: string; ayuda: string }[] = [
-  { k: "recargoPct", t: "Recargo sobre coste (%)", ayuda: "Precio de venta = coste × (1 + recargo)" },
+  { k: "recargoPct", t: "Recargo sobre coste (%)", ayuda: "Mano de obra y resto: venta = coste × (1 + recargo)" },
+  { k: "recargoMaterialesPct", t: "Recargo sobre materiales (%)", ayuda: "Partidas de «Compras»" },
   { k: "coefUtil", t: "m² útiles por m² construido", ayuda: "Normalmente 0,75 – 0,85" },
   { k: "paramentosPorM2", t: "m² de pintura por m² construido", ayuda: "Paredes + techos" },
   { k: "m2AlicatadoBano", t: "m² de alicatado por baño", ayuda: "" },
@@ -41,7 +42,7 @@ export function Tarifario() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [filtro, setFiltro] = useState("");
   const mod = (fn: (x: Tarifas) => void) => actualizar((d) => fn(d.tarifas));
-  const venta = (coste: number) => Math.round(coste * (1 + t.recargoPct / 100) * 100) / 100;
+  const venta = (coste: number, grupo: GrupoTarifa) => Math.round(coste * recargoDe(t, grupo) * 100) / 100;
 
   const exportar = () => {
     const blob = new Blob([JSON.stringify(t, null, 2)], { type: "application/json" });
@@ -148,7 +149,7 @@ export function Tarifario() {
                       <input className={`${inputCls} px-2 py-1 text-right`} inputMode="decimal" defaultValue={p.coste} key={`${t.nombre}-${p.id}`} onChange={(e) => mod((x) => { x.precios[i].coste = num(e.target.value); })} aria-label={`Coste ${p.descripcion}`} />
                       <span className="text-xs text-stone-400">/{p.unidad}</span>
                     </label>
-                    <span className="text-right text-xs text-stone-500">venta {euros(venta(p.coste))}</span>
+                    <span className="text-right text-xs text-stone-500">venta {euros(venta(p.coste, p.grupo))}</span>
                   </div>
                 ))}
             </div>

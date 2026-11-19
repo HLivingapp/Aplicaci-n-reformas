@@ -197,6 +197,8 @@ export interface Tarifas {
   nombre: string;
   /** % que se suma al coste para obtener el precio de venta */
   recargoPct: number;
+  /** % que se suma al coste de los materiales (partidas de «Compras») */
+  recargoMaterialesPct: number;
   /** m² útiles / m² construidos */
   coefUtil: number;
   /** m² de paredes + techos a pintar por cada m² útil */
