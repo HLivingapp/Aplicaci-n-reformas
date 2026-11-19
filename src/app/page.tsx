@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
@@ -8,7 +9,7 @@ export default function Inicio() {
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col justify-center px-4 py-10">
       <div className="mb-8 flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icon.svg" alt="" className="h-12 w-12" />
+        <img src={publico("/icon.svg")} alt="" className="h-12 w-12" />
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{NOMBRE}</h1>
           <p className="text-sm text-stone-500">Presupuestos, planificación de obra y portal del cliente</p>

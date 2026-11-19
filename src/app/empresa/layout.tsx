@@ -1,5 +1,6 @@
 "use client";
 
+import { publico } from "@/lib/base";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DatosProvider, useDatos } from "@/lib/store";
@@ -35,7 +36,7 @@ function Marco({ children }: { children: React.ReactNode }) {
       <aside className="no-print hidden w-56 shrink-0 border-r border-stone-200 bg-white md:block">
         <Link href="/" className="flex items-center gap-2 px-5 py-5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icon.svg" alt="" className="h-8 w-8" />
+          <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
           <span className="text-sm font-semibold leading-tight">{datos.empresa.nombre}</span>
         </Link>
         <nav className="space-y-0.5 px-3">
