@@ -12,6 +12,8 @@ import { useDatos } from "@/lib/store";
 import type { EstadoProyecto, Proyecto } from "@/lib/types";
 import { EnlaceCliente } from "@/components/EnlaceCliente";
 import { VistaEstimacion } from "@/components/Estimacion";
+import { VistaFases } from "@/components/Fases";
+import { planificarFases } from "@/lib/fases";
 import { PlanoBase } from "@/components/PlanoBase";
 import { estimar } from "@/lib/estimacion";
 import { Resumen } from "@/components/ResumenProyecto";
@@ -144,6 +146,11 @@ export default function DetalleSolicitud() {
             <h2 className="mb-1 font-semibold">Cotización automática</h2>
             <p className="mb-3 text-xs text-stone-500">Con el tarifario «{datos.tarifas.nombre}» (+{datos.tarifas.recargoPct}% sobre coste). Al crear el presupuesto se copian estas partidas para afinarlas.</p>
             <VistaEstimacion e={estimar(v, p.reforma, datos.tarifas)} detalle />
+          </Tarjeta>
+          <Tarjeta>
+            <h2 className="mb-1 font-semibold">Fases previstas</h2>
+            <p className="mb-3 text-xs text-stone-500">Calculadas a partir de las respuestas. Al crear la obra se usan como planificación inicial y se pueden editar.</p>
+            <VistaFases plan={planificarFases(estimar(v, p.reforma, datos.tarifas), v, p.reforma)} />
           </Tarjeta>
           <Tarjeta>
             <h2 className="mb-2 font-semibold">Plano base orientativo</h2>

@@ -16,6 +16,8 @@ import {
 import { cambiosDistribucion } from "@/lib/estimacion";
 import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from "@/lib/types";
 import { VistaEstimacion } from "@/components/Estimacion";
+import { VistaFases } from "@/components/Fases";
+import { planificarFases } from "@/lib/fases";
 import { Contador, Opciones } from "@/components/Opciones";
 import { PreguntaInstalacion } from "@/components/PreguntaInstalacion";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -453,6 +455,13 @@ export default function NuevoProyecto() {
             <Tarjeta>
               <h3 className="mb-3 font-semibold">Primera estimación de tu reforma</h3>
               <VistaEstimacion e={estimacion} />
+            </Tarjeta>
+          )}
+          {estimacion && (
+            <Tarjeta>
+              <h3 className="mb-1 font-semibold">Cómo sería tu obra</h3>
+              <p className="mb-3 text-sm text-stone-500">Estas son las fases según lo que nos has contado. Los plazos son aproximados y los cerramos contigo tras la visita.</p>
+              <VistaFases plan={planificarFases(estimacion, v, r)} />
             </Tarjeta>
           )}
           <Tarjeta>
