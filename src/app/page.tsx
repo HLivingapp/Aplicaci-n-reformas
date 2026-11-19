@@ -28,6 +28,10 @@ export default function Inicio() {
         </Link>
       </div>
 
+      <Link href="/reformistas" className="mt-4 block rounded-2xl border border-dashed border-stone-300 p-4 text-sm text-stone-600 hover:border-teal-600">
+        <span className="font-medium text-stone-800">¿Eres reformista?</span> Homologa tu empresa y recibe clientes de tu zona →
+      </Link>
+
       {!conBaseDeDatos && (
         <p className="mt-8 rounded-lg bg-amber-50 p-3 text-xs text-amber-900">
           Versión de demostración: los datos se guardan solo en este navegador.

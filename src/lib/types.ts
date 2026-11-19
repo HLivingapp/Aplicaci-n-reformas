@@ -234,9 +234,59 @@ export interface FotoGaleria {
   subida: string;
 }
 
+export type TipoDocProveedor = "rea" | "prl_modalidad" | "prl_evaluacion" | "prl_formacion" | "rc_poliza" | "rc_recibo" | "hacienda" | "seguridad_social" | "cuentas";
+
+export interface DocumentoProveedor {
+  id: string;
+  tipo: TipoDocProveedor;
+  /** Ruta en el almacén privado "proveedores" (en demostración, solo el nombre) */
+  ruta: string;
+  nombre: string;
+  subido: string;
+  /** Fecha de caducidad que indica el proveedor o corrige el equipo */
+  caduca?: string;
+  estado: "pendiente" | "valido" | "rechazado";
+  motivo?: string;
+}
+
+export interface ObraReferencia {
+  descripcion: string;
+  ano: number;
+  importe: number;
+  /** Persona que puede confirmar la obra (nombre y teléfono o email) */
+  contacto: string;
+}
+
+export interface Proveedor {
+  id: string;
+  /** Enlace privado del proveedor para completar y actualizar su documentación */
+  token: string;
+  estado: "pendiente" | "aprobado" | "rechazado" | "suspendido";
+  tipo: "empresa" | "autonomo";
+  razonSocial: string;
+  nif: string;
+  contacto: string;
+  telefono: string;
+  email: string;
+  web: string;
+  trabajadores: number;
+  rea: { inscrito: boolean; numero: string };
+  rc: { aseguradora: string; capital: number };
+  zonas: string[];
+  especialidades: string[];
+  obras: ObraReferencia[];
+  presentacion: string;
+  documentos: DocumentoProveedor[];
+  notasInternas: string;
+  creado: string;
+  revisado?: string;
+  consentimiento: { fecha: string; texto: string };
+}
+
 export interface Datos {
   version: 3;
   fotos: FotoGaleria[];
+  proveedores: Proveedor[];
   proyectos: Proyecto[];
   tarifas: Tarifas;
   empresa: { nombre: string; cif: string; telefono: string; email: string; direccion: string };

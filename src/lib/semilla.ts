@@ -28,6 +28,7 @@ export function datosIniciales(): Datos {
     contador: 2,
     proyectos: [],
     fotos: [],
+    proveedores: [],
     tarifas: tarifasPorDefecto(),
     empresa: {
       nombre: "Human Living Reformas",

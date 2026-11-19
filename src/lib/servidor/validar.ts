@@ -1,5 +1,6 @@
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
+import { ESPECIALIDADES, ZONAS, type AltaProveedor } from "../proveedores";
 import type { DatosReforma, Vivienda } from "../types";
 
 const texto = (x: unknown, max: number) => (typeof x === "string" ? x.slice(0, max) : "");
@@ -26,4 +27,38 @@ export function validarContacto(b: unknown): ContactoCliente | null {
   if (!nombre || (!telefono && !email)) return null;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
   return { nombre, telefono, email };
+}
+
+const lista = (x: unknown, max: number, permitidos?: readonly string[]) =>
+  Array.isArray(x) ? [...new Set(x.filter((v): v is string => typeof v === "string" && (!permitidos || permitidos.includes(v))).map((v) => v.slice(0, 80)))].slice(0, max) : [];
+const numero = (x: unknown, min: number, max: number) => (typeof x === "number" && Number.isFinite(x) ? Math.min(Math.max(x, min), max) : min);
+
+/** Cuestionario de homologación que llega del formulario público. */
+export function validarAlta(b: unknown): AltaProveedor | null {
+  const a = b as Partial<AltaProveedor> | null;
+  if (!a || typeof a !== "object") return null;
+  const r: AltaProveedor = {
+    tipo: a.tipo === "autonomo" ? "autonomo" : "empresa",
+    razonSocial: texto(a.razonSocial, 160).trim(),
+    nif: texto(a.nif, 20).trim().toUpperCase().replace(/[\s-]/g, ""),
+    contacto: texto(a.contacto, 120).trim(),
+    telefono: texto(a.telefono, 40).trim(),
+    email: texto(a.email, 120).trim(),
+    web: texto(a.web, 200).trim(),
+    trabajadores: Math.round(numero(a.trabajadores, 1, 1000)),
+    rea: { inscrito: a.rea?.inscrito === true, numero: texto(a.rea?.numero, 40).trim() },
+    rc: { aseguradora: texto(a.rc?.aseguradora, 120).trim(), capital: Math.round(numero(a.rc?.capital, 0, 100_000_000)) },
+    zonas: lista(a.zonas, 60, ZONAS),
+    especialidades: lista(a.especialidades, 30, ESPECIALIDADES.map((e) => e.valor)),
+    obras: (Array.isArray(a.obras) ? a.obras : []).slice(0, 10).map((o) => ({
+      descripcion: texto(o?.descripcion, 500).trim(),
+      ano: Math.round(numero(o?.ano, 1990, 2100)),
+      importe: Math.round(numero(o?.importe, 0, 100_000_000)),
+      contacto: texto(o?.contacto, 200).trim(),
+    })),
+    presentacion: texto(a.presentacion, 2000).trim(),
+  };
+  if (!r.razonSocial || !/^[A-Z0-9]{8,10}$/.test(r.nif) || !r.contacto || (!r.telefono && !r.email)) return null;
+  if (r.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) return null;
+  return r;
 }

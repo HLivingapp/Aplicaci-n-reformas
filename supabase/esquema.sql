@@ -10,7 +10,7 @@ create table if not exists equipo (
 
 -- Clientes, proyectos, presupuestos y obras. Cada registro guarda su contenido en JSON.
 create table if not exists registros (
-  coleccion text not null check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos')),
+  coleccion text not null check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos', 'proveedores')),
   id text not null,
   cliente_id text,
   datos jsonb not null,
@@ -50,7 +50,7 @@ create policy "equipo gestiona ajustes" on ajustes for all to authenticated usin
 
 -- Si la tabla ya existía de una versión anterior, permite también la colección 'fotos':
 alter table registros drop constraint if exists registros_coleccion_check;
-alter table registros add constraint registros_coleccion_check check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos'));
+alter table registros add constraint registros_coleccion_check check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos', 'proveedores'));
 
 -- Galería de fotos: almacén PRIVADO. Solo el equipo sube y ve; los clientes reciben
 -- enlaces temporales (1 hora) que genera el servidor, y solo de fotos aprobadas.
@@ -61,3 +61,14 @@ create policy "equipo gestiona galeria" on storage.objects for all to authentica
 
 -- Añade aquí los emails del equipo:
 -- insert into equipo (email, nombre) values ('persona@empresa.es', 'Nombre');
+
+-- Documentos de homologación de proveedores (privados; los suben por el servidor y solo los ve el equipo)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('proveedores', 'proveedores', false, 10485760, array['application/pdf', 'image/jpeg', 'image/png'])
+  on conflict (id) do nothing;
+drop policy if exists "equipo ve documentos de proveedores" on storage.objects;
+create policy "equipo ve documentos de proveedores" on storage.objects for select to authenticated
+  using (bucket_id = 'proveedores' and es_del_equipo());
+drop policy if exists "equipo borra documentos de proveedores" on storage.objects;
+create policy "equipo borra documentos de proveedores" on storage.objects for delete to authenticated
+  using (bucket_id = 'proveedores' and es_del_equipo());

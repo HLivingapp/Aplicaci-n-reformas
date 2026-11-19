@@ -12,6 +12,7 @@ const NAV = [
   { href: "/empresa/presupuestos", texto: "Presupuestos", icono: "🧾" },
   { href: "/empresa/obras", texto: "Obras", icono: "🏗️" },
   { href: "/empresa/galeria", texto: "Fotos", icono: "🖼️" },
+  { href: "/empresa/proveedores", texto: "Proveedores", icono: "🤝" },
   { href: "/empresa/ajustes", texto: "Ajustes", icono: "⚙️" },
 ];
 
@@ -69,12 +70,12 @@ function Marco({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <nav className="no-print fixed inset-x-0 bottom-0 z-10 grid grid-cols-7 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav className="no-print fixed inset-x-0 bottom-0 z-10 flex overflow-x-auto border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
           <Link
             key={n.href}
             href={n.href}
-            className={`flex flex-col items-center gap-0.5 py-2 text-[11px] ${activo(n.href) ? "font-semibold text-teal-700" : "text-stone-500"}`}
+            className={`flex min-w-[4.75rem] flex-1 shrink-0 flex-col items-center gap-0.5 py-2 text-[11px] ${activo(n.href) ? "font-semibold text-teal-700" : "text-stone-500"}`}
           >
             <span className="relative text-lg leading-none">
               {n.icono}

@@ -54,20 +54,26 @@ export default function Privacidad() {
         <p>Los datos se guardan en servidores ubicados en la Unión Europea.</p>
       </Seccion>
 
-      <Seccion titulo="6. Tu enlace privado">
+      <Seccion titulo="6. Si eres reformista o proveedor">
+        <p>Si pides homologarte como proveedor tratamos los datos de tu empresa y de la persona de contacto, tu número de REA, tus zonas y especialidades, las obras de referencia que nos indicas y los documentos que subes (prevención de riesgos laborales, seguro de responsabilidad civil, certificados de Hacienda y Seguridad Social y cuentas anuales).</p>
+        <p>Los usamos para comprobar que cumples los requisitos, vigilar que tus documentos sigan en vigor y ponerte en contacto con clientes, con tu consentimiento y como medidas precontractuales (art. 6.1.a y 6.1.b RGPD). Podemos llamar a los contactos de tus obras de referencia solo para confirmarlas: avísales antes de darnos sus datos.</p>
+        <p>Tus documentos se guardan en un almacén privado en la Unión Europea y solo los ve nuestro equipo; los clientes nunca los ven. Si no llegas a homologarte, los borramos a los 12 meses; si te homologas, los conservamos mientras colabores con nosotros y después durante los plazos legales.</p>
+      </Seccion>
+
+      <Seccion titulo="7. Tu enlace privado">
         <p>Para seguir tu proyecto no necesitas contraseña: te damos un <b>enlace privado</b> único y muy difícil de adivinar. Cualquiera que tenga ese enlace podrá ver tu proyecto, así que no lo compartas. Si crees que alguien más lo tiene, pídenos uno nuevo y el anterior dejará de funcionar.</p>
       </Seccion>
 
-      <Seccion titulo="7. Tus derechos">
+      <Seccion titulo="8. Tus derechos">
         <p>Puedes pedirnos en cualquier momento <b>acceder</b> a tus datos, <b>rectificarlos</b>, <b>suprimirlos</b>, <b>oponerte</b> o <b>limitar</b> su tratamiento, pedir su <b>portabilidad</b> y <b>retirar tu consentimiento</b>, escribiendo a <a className="text-teal-700 underline" href={`mailto:${R.email}`}>{R.email}</a> o a la dirección postal indicada. Te responderemos en el plazo máximo de un mes.</p>
         <p>Si consideras que no hemos tratado bien tus datos, puedes reclamar ante la <b>Agencia Española de Protección de Datos</b> (<a className="text-teal-700 underline" href="https://www.aepd.es" target="_blank" rel="noopener noreferrer">www.aepd.es</a>).</p>
       </Seccion>
 
-      <Seccion titulo="8. Seguridad">
+      <Seccion titulo="9. Seguridad">
         <p>Aplicamos medidas técnicas y organizativas adecuadas: conexión cifrada (HTTPS), acceso del equipo solo con enlace de verificación enviado a su email corporativo, control de acceso a la base de datos y copias de seguridad del proveedor.</p>
       </Seccion>
 
-      <Seccion titulo="9. Cookies y almacenamiento local">
+      <Seccion titulo="10. Cookies y almacenamiento local">
         <p>La aplicación no usa cookies de publicidad ni de analítica. Solo guarda en tu navegador lo imprescindible para funcionar, como el borrador del formulario mientras lo rellenas o la sesión del equipo.</p>
       </Seccion>
     </main>
