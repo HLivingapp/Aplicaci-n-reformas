@@ -7,6 +7,7 @@ import { crearObraDesdePresupuestoEn } from "./obra";
 import { hoy } from "./calc";
 import { estimar, type Estimacion } from "./estimacion";
 import { nuevoId, nuevoToken } from "./id";
+import { limpiarMateriales } from "./materiales";
 import { textoDireccion } from "./proyecto";
 import type { Cliente, Datos, DatosReforma, Obra, Presupuesto, Proyecto, Tarifas, Vivienda } from "./types";
 
@@ -81,5 +82,14 @@ export function responderPresupuesto(d: Datos, token: string, presupuestoId: str
   if (acepta) crearObraDesdePresupuestoEn(d, p.id);
   const proyecto = d.proyectos.find((x) => x.presupuestoId === p.id);
   if (proyecto) proyecto.estado = "presupuestado";
+  return true;
+}
+
+/** El cliente concreta los acabados de su proyecto desde su enlace (solo antes de tener presupuesto). */
+export function elegirMateriales(d: Datos, token: string, proyectoId: string, materiales: unknown): boolean {
+  const c = d.clientes.find((x) => x.token && x.token === token);
+  const p = d.proyectos.find((x) => x.id === proyectoId && x.clienteId === c?.id);
+  if (!c || !p || p.presupuestoId || p.estado === "descartado") return false;
+  p.reforma = { ...p.reforma, materiales: limpiarMateriales(materiales, d.tarifas.materiales) };
   return true;
 }

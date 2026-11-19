@@ -1,4 +1,5 @@
-import type { DatosReforma, Instalacion, Tarifas, TramoMedidas, Vivienda } from "./types";
+import { grupoDePartida, opcionElegida } from "./materiales";
+import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
 
 export interface LineaEstimacion {
   tarifaId: string;
@@ -8,6 +9,27 @@ export interface LineaEstimacion {
   cantidad: number;
   precio: number;
   coste: number;
+  /** Grupo de acabados que el cliente puede elegir para esta partida */
+  grupoMaterial?: string;
+}
+
+export interface OpcionMaterialPublica {
+  id: string;
+  nivel: NivelMaterial;
+  nombre: string;
+  detalle: string;
+  /** Precio de venta (sin IVA) de las partidas del grupo con esta opción */
+  precio: number;
+}
+
+/** Acabados que el cliente puede elegir en su reforma, con el precio de cada opción. */
+export interface EleccionMaterial {
+  grupo: string;
+  nombre: string;
+  elegida: string;
+  /** true si la eligió el cliente; false si sale de la calidad general */
+  elegidaPorCliente: boolean;
+  opciones: OpcionMaterialPublica[];
 }
 
 export interface Estancia {
@@ -27,6 +49,7 @@ export interface Estimacion {
   minimo: number;
   maximo: number;
   avisos: string[];
+  materiales: EleccionMaterial[];
 }
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -80,13 +103,17 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const add = (id: string, cantidad: number) => {
     const p = t.precios.find((x) => x.id === id);
     if (!p || !(cantidad > 0)) return;
-    const coste = r2(p.coste * (p.dependeCalidad ? factor : 1));
+    // Si el cliente puede elegir el acabado de esta partida, manda la opción elegida
+    const g = grupoDePartida(t, id);
+    const op = g && opcionElegida(g, r);
+    const coste = r2(p.coste * (op ? op.factor : p.dependeCalidad ? factor : 1));
     const existente = lineas.find((l) => l.tarifaId === id);
     if (existente) {
       existente.cantidad = r1(existente.cantidad + cantidad);
       return;
     }
-    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion: p.descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargo) });
+    const descripcion = op ? `${p.descripcion} · ${op.nombre}` : p.descripcion;
+    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargo), ...(g ? { grupoMaterial: g.id } : {}) });
   };
 
   const banos = estancias.filter((e) => e.nombre.startsWith("Baño"));
@@ -196,6 +223,22 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const coste = r2(lineas.reduce((s, l) => s + l.cantidad * l.coste, 0));
   const base = r2(lineas.reduce((s, l) => s + l.cantidad * l.precio, 0));
   const m = t.margenRangoPct / 100;
+  // Precio de cada opción de acabado con las cantidades de esta reforma
+  const materiales: EleccionMaterial[] = [];
+  for (const g of t.materiales) {
+    const ls = lineas.filter((l) => l.grupoMaterial === g.id);
+    if (!ls.length) continue;
+    const elegida = opcionElegida(g, r)!;
+    const precioCon = (f: number) =>
+      Math.round(ls.reduce((s, l) => s + l.cantidad * (t.precios.find((x) => x.id === l.tarifaId)?.coste ?? 0) * f * recargo, 0));
+    materiales.push({
+      grupo: g.id,
+      nombre: g.nombre,
+      elegida: elegida.id,
+      elegidaPorCliente: r.materiales?.[g.id] === elegida.id,
+      opciones: g.opciones.map((op) => ({ id: op.id, nivel: op.nivel, nombre: op.nombre, detalle: op.detalle, precio: precioCon(op.factor) })),
+    });
+  }
   return {
     m2Utiles: util,
     estancias,
@@ -205,5 +248,6 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
     minimo: Math.round((base * (1 - m)) / 500) * 500,
     maximo: Math.round((base * (1 + m)) / 500) * 500,
     avisos,
+    materiales,
   };
 }

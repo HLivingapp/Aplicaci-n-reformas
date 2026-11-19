@@ -1,12 +1,13 @@
+import { limpiarMateriales } from "../materiales";
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
 import { ESPECIALIDADES, nifValido, ZONAS, type AltaProveedor } from "../proveedores";
-import type { DatosReforma, Vivienda } from "../types";
+import type { DatosReforma, GrupoMaterial, Vivienda } from "../types";
 
 const texto = (x: unknown, max: number) => (typeof x === "string" ? x.slice(0, max) : "");
 
 /** Comprueba y limpia lo que llega del formulario público (no se confía en el navegador). */
-export function validarProyecto(b: unknown): { vivienda: Vivienda; reforma: DatosReforma } | null {
+export function validarProyecto(b: unknown, grupos: GrupoMaterial[] = []): { vivienda: Vivienda; reforma: DatosReforma } | null {
   const body = b as { vivienda?: Partial<Vivienda>; reforma?: Partial<DatosReforma> } | null;
   if (!body?.vivienda || !body.reforma || typeof body.vivienda !== "object" || typeof body.reforma !== "object") return null;
   const v = { ...viviendaVacia(), ...body.vivienda } as Vivienda;
@@ -16,6 +17,7 @@ export function validarProyecto(b: unknown): { vivienda: Vivienda; reforma: Dato
   if (!n(v.dormitorios, 0, 20) || !n(v.banos, 0, 10) || !n(r.dormitoriosDeseados, 0, 20) || !n(r.banosDeseados, 0, 10)) return null;
   if (!Array.isArray(v.terrazas) || v.terrazas.length > 10 || !Array.isArray(r.estancias) || r.estancias.length > 30) return null;
   r.comentarios = texto(r.comentarios, 4000);
+  r.materiales = limpiarMateriales(r.materiales, grupos);
   return { vivienda: v, reforma: r };
 }
 

@@ -13,6 +13,7 @@ import type { EstadoProyecto, Proyecto } from "@/lib/types";
 import { EnlaceCliente } from "@/components/EnlaceCliente";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { VistaFases } from "@/components/Fases";
+import { ResumenMateriales } from "@/components/Materiales";
 import { planificarFases } from "@/lib/fases";
 import { PlanoBase } from "@/components/PlanoBase";
 import { estimar } from "@/lib/estimacion";
@@ -147,6 +148,13 @@ export default function DetalleSolicitud() {
             <p className="mb-3 text-xs text-stone-500">Con el tarifario «{datos.tarifas.nombre}» (+{datos.tarifas.recargoPct}% sobre coste). Al crear el presupuesto se copian estas partidas para afinarlas.</p>
             <VistaEstimacion e={estimar(v, p.reforma, datos.tarifas)} detalle />
           </Tarjeta>
+          {estimar(v, p.reforma, datos.tarifas).materiales.length > 0 && (
+            <Tarjeta>
+              <h2 className="mb-1 font-semibold">Acabados elegidos por el cliente</h2>
+              <p className="mb-3 text-xs text-stone-500">Pasan al presupuesto en la descripción de cada partida y, de ahí, al anexo del contrato. Se pueden completar con modelo, color y referencia.</p>
+              <ResumenMateriales materiales={estimar(v, p.reforma, datos.tarifas).materiales} />
+            </Tarjeta>
+          )}
           <Tarjeta>
             <h2 className="mb-1 font-semibold">Fases previstas</h2>
             <p className="mb-3 text-xs text-stone-500">Calculadas a partir de las respuestas. Al crear la obra se usan como planificación inicial y se pueden editar.</p>

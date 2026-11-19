@@ -17,6 +17,7 @@ import { cambiosDistribucion } from "@/lib/estimacion";
 import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from "@/lib/types";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { FasesYParecidas } from "@/components/Galeria";
+import { ElegirMateriales } from "@/components/Materiales";
 import { Contador, Opciones } from "@/components/Opciones";
 import { PreguntaInstalacion } from "@/components/PreguntaInstalacion";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -39,6 +40,13 @@ export default function NuevoProyecto() {
   const [buscando, setBuscando] = useState(false);
   const [cargado, setCargado] = useState(false);
   const [estimacion, setEstimacion] = useState<Estimacion | null>(null);
+  const [recalculando, setRecalculando] = useState(false);
+  const elegirMaterial = (grupo: string, opcion: string) => {
+    const nr = { ...r, materiales: { ...r.materiales, [grupo]: opcion } };
+    setR(nr);
+    setRecalculando(true);
+    pedirEstimacion(v, nr).then(setEstimacion).catch(() => undefined).finally(() => setRecalculando(false));
+  };
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
 
@@ -454,6 +462,12 @@ export default function NuevoProyecto() {
             <Tarjeta>
               <h3 className="mb-3 font-semibold">Primera estimación de tu reforma</h3>
               <VistaEstimacion e={estimacion} />
+            </Tarjeta>
+          )}
+          {estimacion && estimacion.materiales?.length > 0 && (
+            <Tarjeta>
+              <h3 className="mb-2 font-semibold">Elige tus acabados</h3>
+              <ElegirMateriales materiales={estimacion.materiales} onElegir={elegirMaterial} ocupado={recalculando} />
             </Tarjeta>
           )}
           {estimacion && <FasesYParecidas e={estimacion} v={v} r={r} />}

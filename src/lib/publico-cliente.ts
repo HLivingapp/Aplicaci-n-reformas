@@ -4,7 +4,7 @@ import { estimar, type Estimacion } from "./estimacion";
 import { planificarFases } from "./fases";
 import { galeriaLocal, type GaleriaCliente } from "./galeria";
 import { conBaseDeDatos } from "./modo";
-import { estimacionPublica, registrarProyecto, responderPresupuesto, vistaPortal, type ContactoCliente, type DatosPortal } from "./publico";
+import { elegirMateriales, estimacionPublica, registrarProyecto, responderPresupuesto, vistaPortal, type ContactoCliente, type DatosPortal } from "./publico";
 import { escribirLocal, leerLocal } from "./store";
 import type { DatosReforma, Vivienda } from "./types";
 
@@ -47,6 +47,18 @@ export async function enviarRespuesta(token: string, presupuestoId: string, acep
     return ok;
   }
   const res = await api<{ ok: boolean }>(`/api/portal/${encodeURIComponent(token)}/respuesta`, { presupuestoId, acepta, comentario });
+  return res.ok;
+}
+
+/** Guarda los acabados que el cliente elige en su enlace. */
+export async function guardarMateriales(token: string, proyectoId: string, materiales: Record<string, string>): Promise<boolean> {
+  if (!conBaseDeDatos) {
+    const d = leerLocal();
+    const ok = elegirMateriales(d, token, proyectoId, materiales);
+    if (ok) escribirLocal(d);
+    return ok;
+  }
+  const res = await api<{ ok: boolean }>(`/api/portal/${encodeURIComponent(token)}/materiales`, { proyectoId, materiales });
   return res.ok;
 }
 

@@ -1,3 +1,4 @@
+import { completarMateriales, materialesPorDefecto } from "./materiales";
 import type { GrupoTarifa, PrecioTarifa, Tarifas } from "./types";
 
 /**
@@ -72,6 +73,7 @@ export const tarifasPorDefecto = (): Tarifas => ({
     // DIRECCIÓN DE OBRA
     l("direccion", "Dirección de obra", "Dirección de obra", "Jefatura de obra y diseño", "pa", 3500),
   ],
+  materiales: materialesPorDefecto(),
 });
 
 function l(id: string, grupo: GrupoTarifa, capitulo: string, descripcion: string, unidad: string, coste: number, dependeCalidad = false): PrecioTarifa {
@@ -89,5 +91,5 @@ export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   const base = tarifasPorDefecto();
   const precios = [...(t.precios ?? [])];
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
-  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios };
+  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }

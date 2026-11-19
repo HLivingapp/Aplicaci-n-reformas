@@ -144,6 +144,8 @@ export interface DatosReforma {
   fontaneria: Instalacion;
   electricidad: Instalacion;
   calidad: "basica" | "media" | "alta";
+  /** Acabado elegido por el cliente en cada grupo de materiales: { grupo: opción } */
+  materiales?: Record<string, string>;
   presupuestoCliente: string;
   cuando: string;
   viviraEnObra: boolean | null;
@@ -211,6 +213,30 @@ export interface Tarifas {
   factorCalidad: { basica: number; media: number; alta: number };
   tramos: TramoMedidas[];
   precios: PrecioTarifa[];
+  /** Catálogo de acabados que elige el cliente (básico, medio, premium) */
+  materiales: GrupoMaterial[];
+}
+
+export type NivelMaterial = "basico" | "medio" | "premium";
+
+export interface OpcionMaterial {
+  id: string;
+  nivel: NivelMaterial;
+  /** Nombre corto: «Laminado AC5 hidrófugo» */
+  nombre: string;
+  /** Qué incluye, en lenguaje sencillo */
+  detalle: string;
+  /** Multiplica el coste de las partidas del grupo (1 = el coste del tarifario) */
+  factor: number;
+}
+
+/** Grupo de acabados que afecta a una o varias partidas del tarifario. */
+export interface GrupoMaterial {
+  id: string;
+  nombre: string;
+  /** Partidas del tarifario a las que se aplica el factor de la opción elegida */
+  tarifaIds: string[];
+  opciones: OpcionMaterial[];
 }
 
 /** Foto de la galería de la empresa (se guarda en un almacén privado; nunca en el repositorio). */

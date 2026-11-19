@@ -5,11 +5,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { avanceFase, avanceObra, euros, fecha, finObra, totales } from "@/lib/calc";
 import { textoDireccion } from "@/lib/proyecto";
-import { cargarPortal } from "@/lib/publico-cliente";
+import { cargarPortal, guardarMateriales } from "@/lib/publico-cliente";
 import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { FasesYParecidas } from "@/components/Galeria";
+import { ElegirMateriales } from "@/components/Materiales";
 import { PlanoBase } from "@/components/PlanoBase";
 import { Barra, EstadoFaseTag, EstadoPresupuestoTag, Tarjeta, Vacio } from "@/components/ui";
 
@@ -23,6 +24,15 @@ export default function PortalCliente() {
   const { token } = useParams<{ token: string }>();
   const [datos, setDatos] = useState<DatosPortal | null | undefined>(undefined);
   const [recienEnviado, setRecienEnviado] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const elegir = async (proyectoId: string, actuales: Record<string, string> | undefined, grupo: string, opcion: string) => {
+    setGuardando(true);
+    try {
+      if (await guardarMateriales(token, proyectoId, { ...actuales, [grupo]: opcion })) setDatos(await cargarPortal(token));
+    } finally {
+      setGuardando(false);
+    }
+  };
   useEffect(() => {
     cargarPortal(token).then(setDatos);
   }, [token]);
@@ -143,6 +153,14 @@ export default function PortalCliente() {
                 ))}
               </ol>
               {p.estimacion && <VistaEstimacion e={p.estimacion} />}
+              {p.estimacion && p.estimacion.materiales?.length > 0 && (
+                <details className="rounded-xl border border-stone-200 p-3" open={!p.estimacion.materiales.some((m) => m.elegidaPorCliente)}>
+                  <summary className="cursor-pointer font-semibold">Elige tus acabados</summary>
+                  <div className="mt-3">
+                    <ElegirMateriales materiales={p.estimacion.materiales} ocupado={guardando} onElegir={(g, o) => elegir(p.id, p.reforma.materiales, g, o)} />
+                  </div>
+                </details>
+              )}
               {p.estimacion && <FasesYParecidas e={p.estimacion} v={p.vivienda} r={p.reforma} plegado />}
               <PlanoBase m2={p.vivienda.m2} dormitorios={p.reforma.dormitoriosDeseados} banos={p.reforma.banosDeseados} cocinaAbierta={p.vivienda.cocinaAbierta} terrazas={p.vivienda.terrazas} />
             </Tarjeta>
