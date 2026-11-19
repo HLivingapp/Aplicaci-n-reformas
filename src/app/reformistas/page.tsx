@@ -1,5 +1,6 @@
 "use client";
 
+import { publico } from "@/lib/base";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,7 +53,7 @@ export default function AltaReformista() {
     <main className="mx-auto max-w-2xl space-y-4 px-4 pb-16 pt-6">
       <div className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icon.svg" alt="" className="h-10 w-10" />
+        <img src={publico("/icon.svg")} alt="" className="h-10 w-10" />
         <div>
           <div className="text-xs text-stone-500">{NOMBRE}</div>
           <h1 className="text-xl font-semibold">Homologación de reformistas</h1>

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { publico } from "@/lib/base";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   title: "Reformas · Gestión de obras",
   description: "Presupuestos, planificación de obra y portal del cliente.",
   appleWebApp: { capable: true, title: "Reformas", statusBarStyle: "default" },
-  icons: { icon: "/icon.svg", apple: "/icon-192.png" },
+  icons: { icon: publico("/icon.svg"), apple: publico("/icon-192.png") },
 };
 
 export const viewport: Viewport = {
