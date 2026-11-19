@@ -34,7 +34,9 @@ export default function Inicio() {
 
       {!conBaseDeDatos && (
         <p className="mt-8 rounded-lg bg-amber-50 p-3 text-xs text-amber-900">
-          Versión de demostración: los datos se guardan solo en este navegador.
+          Versión de demostración: los datos se guardan solo en este navegador. Ejemplos:{" "}
+          <Link href="/p/demo-marta-0000000000000000000003" className="underline">cliente eligiendo acabados</Link>,{" "}
+          <Link href="/reformista/demo-reformista-0000000000000001" className="underline">reformista con documentos pendientes</Link>.
         </p>
       )}
       <p className="mt-6 text-center text-xs text-stone-400">
