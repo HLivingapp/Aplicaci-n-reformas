@@ -4,7 +4,7 @@ import { datosDesdeFilas, diferencias, type Fila, type FilaAjuste } from "../sin
 import type { Datos } from "../types";
 
 /** Acceso del servidor a la base de datos (clave de servicio, nunca llega al navegador). */
-function db() {
+export function db() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const clave = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !clave) throw new Error("Falta configurar Supabase (SUPABASE_SERVICE_ROLE_KEY)");

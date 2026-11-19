@@ -9,8 +9,7 @@ import { cargarPortal } from "@/lib/publico-cliente";
 import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
-import { VistaFases } from "@/components/Fases";
-import { planificarFases } from "@/lib/fases";
+import { FasesYParecidas } from "@/components/Galeria";
 import { PlanoBase } from "@/components/PlanoBase";
 import { Barra, EstadoFaseTag, EstadoPresupuestoTag, Tarjeta, Vacio } from "@/components/ui";
 
@@ -144,12 +143,7 @@ export default function PortalCliente() {
                 ))}
               </ol>
               {p.estimacion && <VistaEstimacion e={p.estimacion} />}
-              {p.estimacion && (
-                <details className="rounded-lg border border-stone-200 p-3">
-                  <summary className="cursor-pointer font-medium">Fases y plazos de tu obra</summary>
-                  <div className="mt-3"><VistaFases plan={planificarFases(p.estimacion, p.vivienda, p.reforma)} /></div>
-                </details>
-              )}
+              {p.estimacion && <FasesYParecidas e={p.estimacion} v={p.vivienda} r={p.reforma} plegado />}
               <PlanoBase m2={p.vivienda.m2} dormitorios={p.reforma.dormitoriosDeseados} banos={p.reforma.banosDeseados} cocinaAbierta={p.vivienda.cocinaAbierta} terrazas={p.vivienda.terrazas} />
             </Tarjeta>
           </section>

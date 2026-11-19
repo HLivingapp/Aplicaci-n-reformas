@@ -7,7 +7,7 @@ export function textoDuracion(dias: number) {
   return s === 1 ? "1 semana" : `${String(s).replace(".", ",")} semanas`;
 }
 
-function Bloque({ titulo, fases, total }: { titulo: string; fases: FasePlan[]; total: number }) {
+function Bloque({ titulo, fases, total, fotos }: { titulo: string; fases: FasePlan[]; total: number; fotos: Record<string, string> }) {
   if (!fases.length) return null;
   return (
     <div>
@@ -29,6 +29,10 @@ function Bloque({ titulo, fases, total }: { titulo: string; fases: FasePlan[]; t
               />
             </div>
             <p className="mt-2 text-sm text-stone-600">{f.explicacion}</p>
+            {fotos[f.clave] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={fotos[f.clave]} alt={`Foto de obra: ${f.nombre}`} loading="lazy" className="mt-2 aspect-[16/9] w-full rounded-md object-cover sm:w-2/3" />
+            )}
           </li>
         ))}
       </ol>
@@ -36,8 +40,8 @@ function Bloque({ titulo, fases, total }: { titulo: string; fases: FasePlan[]; t
   );
 }
 
-/** Fases de la reforma con su duración aproximada. */
-export function VistaFases({ plan }: { plan: PlanFases }) {
+/** Fases de la reforma con su duración aproximada (y una foto de obra real si la hay). */
+export function VistaFases({ plan, fotos = {} }: { plan: PlanFases; fotos?: Record<string, string> }) {
   const antes = plan.fases.filter((f) => f.momento === "antes");
   const obra = plan.fases.filter((f) => f.momento === "obra");
   return (
@@ -49,8 +53,8 @@ export function VistaFases({ plan }: { plan: PlanFases }) {
         </div>
         <div className="text-xs text-stone-500">Antes de empezar, unas {textoDuracion(plan.diasAntes)} para diseño, permisos y pedidos.</div>
       </div>
-      <Bloque titulo="Antes de empezar la obra" fases={antes} total={plan.diasAntes || 1} />
-      <Bloque titulo="La obra, paso a paso" fases={obra} total={plan.diasObra || 1} />
+      <Bloque titulo="Antes de empezar la obra" fases={antes} total={plan.diasAntes || 1} fotos={fotos} />
+      <Bloque titulo="La obra, paso a paso" fases={obra} total={plan.diasObra || 1} fotos={fotos} />
     </div>
   );
 }

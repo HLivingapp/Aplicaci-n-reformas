@@ -1,6 +1,8 @@
 "use client";
 
-import type { Estimacion } from "./estimacion";
+import { estimar, type Estimacion } from "./estimacion";
+import { planificarFases } from "./fases";
+import { galeriaLocal, type GaleriaCliente } from "./galeria";
 import { conBaseDeDatos } from "./modo";
 import { estimacionPublica, registrarProyecto, responderPresupuesto, vistaPortal, type ContactoCliente, type DatosPortal } from "./publico";
 import { escribirLocal, leerLocal } from "./store";
@@ -46,4 +48,14 @@ export async function enviarRespuesta(token: string, presupuestoId: string, acep
   }
   const res = await api<{ ok: boolean }>(`/api/portal/${encodeURIComponent(token)}/respuesta`, { presupuestoId, acepta, comentario });
   return res.ok;
+}
+
+/** Fotos de reformas parecidas y de las fases de su obra (solo fotos aprobadas y revisadas). */
+export async function pedirGaleria(v: Vivienda, r: DatosReforma): Promise<GaleriaCliente> {
+  if (!conBaseDeDatos) {
+    const d = leerLocal();
+    const claves = planificarFases(estimar(v, r, d.tarifas), v, r).fases.map((f) => f.clave);
+    return galeriaLocal(d.fotos, v, r, claves);
+  }
+  return api("/api/galeria", { vivienda: v, reforma: r });
 }

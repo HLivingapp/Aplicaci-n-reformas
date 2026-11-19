@@ -2,7 +2,7 @@ import { completarTarifas } from "./tarifas";
 import { datosIniciales } from "./semilla";
 import type { Datos } from "./types";
 
-export const COLECCIONES = ["clientes", "proyectos", "presupuestos", "obras"] as const;
+export const COLECCIONES = ["clientes", "proyectos", "presupuestos", "obras", "fotos"] as const;
 export type Coleccion = (typeof COLECCIONES)[number];
 const AJUSTES = ["empresa", "tarifas", "contador"] as const;
 
@@ -33,6 +33,7 @@ export function datosDesdeFilas(filas: Fila[], ajustes: FilaAjuste[]): Datos {
     proyectos: de(COLECCIONES[1]),
     presupuestos: de(COLECCIONES[2]),
     obras: de(COLECCIONES[3]),
+    fotos: de(COLECCIONES[4]),
   };
 }
 

@@ -27,6 +27,7 @@ export function datosIniciales(): Datos {
     version: 3,
     contador: 2,
     proyectos: [],
+    fotos: [],
     tarifas: tarifasPorDefecto(),
     empresa: {
       nombre: "Human Living Reformas",

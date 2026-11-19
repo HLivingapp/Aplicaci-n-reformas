@@ -11,6 +11,7 @@ const NAV = [
   { href: "/empresa/clientes", texto: "Clientes", icono: "👥" },
   { href: "/empresa/presupuestos", texto: "Presupuestos", icono: "🧾" },
   { href: "/empresa/obras", texto: "Obras", icono: "🏗️" },
+  { href: "/empresa/galeria", texto: "Fotos", icono: "🖼️" },
   { href: "/empresa/ajustes", texto: "Ajustes", icono: "⚙️" },
 ];
 
@@ -68,7 +69,7 @@ function Marco({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <nav className="no-print fixed inset-x-0 bottom-0 z-10 grid grid-cols-6 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav className="no-print fixed inset-x-0 bottom-0 z-10 grid grid-cols-7 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
           <Link
             key={n.href}

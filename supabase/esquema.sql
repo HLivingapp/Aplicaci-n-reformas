@@ -10,7 +10,7 @@ create table if not exists equipo (
 
 -- Clientes, proyectos, presupuestos y obras. Cada registro guarda su contenido en JSON.
 create table if not exists registros (
-  coleccion text not null check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras')),
+  coleccion text not null check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos')),
   id text not null,
   cliente_id text,
   datos jsonb not null,
@@ -47,6 +47,17 @@ create policy "equipo gestiona registros" on registros for all to authenticated 
 
 drop policy if exists "equipo gestiona ajustes" on ajustes;
 create policy "equipo gestiona ajustes" on ajustes for all to authenticated using (es_del_equipo()) with check (es_del_equipo());
+
+-- Si la tabla ya existía de una versión anterior, permite también la colección 'fotos':
+alter table registros drop constraint if exists registros_coleccion_check;
+alter table registros add constraint registros_coleccion_check check (coleccion in ('clientes', 'proyectos', 'presupuestos', 'obras', 'fotos'));
+
+-- Galería de fotos: almacén PRIVADO. Solo el equipo sube y ve; los clientes reciben
+-- enlaces temporales (1 hora) que genera el servidor, y solo de fotos aprobadas.
+insert into storage.buckets (id, name, public) values ('galeria', 'galeria', false) on conflict (id) do nothing;
+drop policy if exists "equipo gestiona galeria" on storage.objects;
+create policy "equipo gestiona galeria" on storage.objects for all to authenticated
+  using (bucket_id = 'galeria' and es_del_equipo()) with check (bucket_id = 'galeria' and es_del_equipo());
 
 -- Añade aquí los emails del equipo:
 -- insert into equipo (email, nombre) values ('persona@empresa.es', 'Nombre');

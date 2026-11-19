@@ -213,8 +213,30 @@ export interface Tarifas {
   precios: PrecioTarifa[];
 }
 
+/** Foto de la galería de la empresa (se guarda en un almacén privado; nunca en el repositorio). */
+export interface FotoGaleria {
+  id: string;
+  /** Ruta dentro del almacén privado "galeria" */
+  ruta: string;
+  /** "resultado": reforma terminada. "obra": foto de una fase en curso. */
+  tipo: "resultado" | "obra";
+  /** Estancias que se ven: cocina, bano, salon, dormitorio, pasillo, terraza */
+  estancias: string[];
+  /** Clave de la fase que ilustra (demolicion, instalaciones…), para fotos de obra */
+  fase?: string;
+  /** Rasgos de la reforma: laminado, porcelanico, falso_techo, vigas, cocina_abierta, armarios… */
+  etiquetas: string[];
+  /** Solo las aprobadas se enseñan a clientes */
+  aprobada: boolean;
+  /** Comprobado que no se reconoce la dirección (fachada, vistas, portal, personas, documentos) */
+  sinDatosUbicacion: boolean;
+  nota: string;
+  subida: string;
+}
+
 export interface Datos {
   version: 3;
+  fotos: FotoGaleria[];
   proyectos: Proyecto[];
   tarifas: Tarifas;
   empresa: { nombre: string; cif: string; telefono: string; email: string; direccion: string };

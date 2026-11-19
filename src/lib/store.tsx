@@ -21,7 +21,7 @@ export function migrar(d: any): Datos {
     reforma: { ...reformaVacia(p.vivienda?.dormitorios, p.vivienda?.banos), ...p.reforma },
   }));
   const clientes = d.clientes.map((c: { token?: string }) => ({ ...c, token: c.token || nuevoToken() }));
-  return { ...d, version: 3, clientes, proyectos, tarifas: completarTarifas(d.tarifas ?? {}) };
+  return { ...d, version: 3, fotos: d.fotos ?? [], clientes, proyectos, tarifas: completarTarifas(d.tarifas ?? {}) };
 }
 
 /** Modo demostración: los datos viven en el navegador. */
