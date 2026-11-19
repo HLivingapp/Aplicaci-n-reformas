@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useDatos } from "@/lib/store";
+import { DatosProvider, useDatos } from "@/lib/store";
+import { conBaseDeDatos } from "@/lib/modo";
 
 const NAV = [
   { href: "/empresa", texto: "Inicio", icono: "📊" },
@@ -14,8 +15,16 @@ const NAV = [
 ];
 
 export default function EmpresaLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <DatosProvider>
+      <Marco>{children}</Marco>
+    </DatosProvider>
+  );
+}
+
+function Marco({ children }: { children: React.ReactNode }) {
   const ruta = usePathname();
-  const { datos } = useDatos();
+  const { datos, guardando, errorGuardado, email, salir } = useDatos();
   const nuevas = datos.proyectos.filter((p) => p.estado === "nuevo").length;
   const activo = (href: string) => (href === "/empresa" ? ruta === href : ruta.startsWith(href));
 
@@ -42,9 +51,22 @@ export default function EmpresaLayout({ children }: { children: React.ReactNode 
             </Link>
           ))}
         </nav>
+        {conBaseDeDatos && (
+          <div className="mt-6 border-t border-stone-100 px-5 pt-4 text-xs text-stone-500">
+            <div className="truncate">{email}</div>
+            <div>{guardando ? "Guardando…" : "Todo guardado"}</div>
+            <button onClick={salir} className="mt-1 text-teal-700 hover:underline">Salir</button>
+          </div>
+        )}
       </aside>
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-24 pt-6 md:px-8 md:pb-10">{children}</main>
+      <main className="mx-auto w-full max-w-5xl px-4 pb-24 pt-6 md:px-8 md:pb-10">
+        {errorGuardado && <div className="no-print mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-800">{errorGuardado}</div>}
+        {!conBaseDeDatos && (
+          <div className="no-print mb-4 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">Modo demostración: los datos se guardan solo en este navegador.</div>
+        )}
+        {children}
+      </main>
 
       <nav className="no-print fixed inset-x-0 bottom-0 z-10 grid grid-cols-6 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (

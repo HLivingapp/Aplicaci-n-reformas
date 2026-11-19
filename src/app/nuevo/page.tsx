@@ -4,14 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { hoy } from "@/lib/calc";
+import type { Estimacion } from "@/lib/estimacion";
+import { enviarProyecto, pedirEstimacion } from "@/lib/publico-cliente";
+import { TEXTO_CONSENTIMIENTO } from "@/lib/publico";
+import { tarifasPorDefecto } from "@/lib/tarifas";
 import { PROVINCIAS, PROVINCIAS_FORALES, TIPOS_VIA } from "@/lib/catastro/provincias";
 import type { ResultadoBusqueda } from "@/lib/catastro/tipos";
-import { nuevoId } from "@/lib/id";
 import {
   ACS, CALIDADES, CLIMAS, ESTANCIAS, PLAZOS, plantaANumero, RANGOS_PRESUPUESTO, reformaVacia, SUELOS, TECHOS, textoDireccion, textoPlanta, viviendaVacia,
 } from "@/lib/proyecto";
-import { cambiosDistribucion, estimar } from "@/lib/estimacion";
-import { useDatos } from "@/lib/store";
+import { cambiosDistribucion } from "@/lib/estimacion";
 import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from "@/lib/types";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { Contador, Opciones } from "@/components/Opciones";
@@ -28,7 +30,6 @@ interface Contacto { nombre: string; telefono: string; email: string; acepto: bo
 
 export default function NuevoProyecto() {
   const router = useRouter();
-  const { datos, actualizar } = useDatos();
   const [paso, setPaso] = useState(0);
   const [v, setV] = useState<Vivienda>(viviendaVacia);
   const [r, setR] = useState<DatosReforma>(() => reformaVacia());
@@ -36,6 +37,9 @@ export default function NuevoProyecto() {
   const [busqueda, setBusqueda] = useState<ResultadoBusqueda | null>(null);
   const [buscando, setBuscando] = useState(false);
   const [cargado, setCargado] = useState(false);
+  const [estimacion, setEstimacion] = useState<Estimacion | null>(null);
+  const [enviando, setEnviando] = useState(false);
+  const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
 
   // Recupera el borrador si el cliente cerró la página a medias
   useEffect(() => {
@@ -52,6 +56,14 @@ export default function NuevoProyecto() {
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
+  }, [paso]);
+
+  // Estimación orientativa al llegar al último paso
+  useEffect(() => {
+    if (paso !== PASOS.length - 1) return;
+    setEstimacion(null);
+    pedirEstimacion(v, r).then(setEstimacion).catch(() => setEstimacion(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paso]);
 
   const dir = v.direccion;
@@ -91,7 +103,7 @@ export default function NuevoProyecto() {
     setPaso((p) => Math.min(p + 1, PASOS.length - 1));
   };
 
-  const t = datos.tarifas;
+  const aniosMax = tarifasPorDefecto().aniosMaxInstalacion;
   const cambiaTabiques = cambiosDistribucion(v, r) > 0;
   const instOk = (i: Instalacion) => i.accion === "cambiar" || !cambiaTabiques || i.ano != null;
   const puedeSeguir = [
@@ -103,17 +115,19 @@ export default function NuevoProyecto() {
     r.estancias.length > 0 || r.alcance === "integral",
     c.nombre.trim() && (c.telefono.trim() || c.email.trim()) && c.acepto,
   ][paso];
-  const estimacion = paso === PASOS.length - 1 ? estimar(v, r, t) : null;
 
-  const enviar = () => {
-    const clienteId = nuevoId();
-    const proyectoId = nuevoId();
-    actualizar((d) => {
-      d.clientes.unshift({ id: clienteId, nombre: c.nombre.trim(), telefono: c.telefono.trim(), email: c.email.trim(), direccion: textoDireccion(dir), creado: hoy() });
-      d.proyectos.unshift({ id: proyectoId, clienteId, creado: hoy(), estado: "nuevo", vivienda: v, reforma: r, notasInternas: "" });
-    });
-    try { localStorage.removeItem(BORRADOR); } catch { /* ignorar */ }
-    router.push(`/cliente/${clienteId}?enviado=1`);
+
+  const enviar = async () => {
+    setEnviando(true);
+    setErrorEnvio(null);
+    try {
+      const token = await enviarProyecto(v, r, { nombre: c.nombre, telefono: c.telefono, email: c.email }, c.acepto);
+      try { localStorage.removeItem(BORRADOR); } catch { /* ignorar */ }
+      router.push(`/p/${token}?enviado=1`);
+    } catch (e) {
+      setErrorEnvio(e instanceof Error ? e.message : "No se ha podido enviar. Inténtalo de nuevo.");
+      setEnviando(false);
+    }
   };
 
   return (
@@ -344,8 +358,8 @@ export default function NuevoProyecto() {
               </select>
             </Campo>
           </div>
-          <PreguntaInstalacion titulo="Fontanería" valor={r.fontaneria} onChange={(fontaneria) => setR({ ...r, fontaneria })} aniosMax={t.aniosMaxInstalacion} cambiaTabiques={cambiaTabiques || r.moverCocina} />
-          <PreguntaInstalacion titulo="Electricidad" valor={r.electricidad} onChange={(electricidad) => setR({ ...r, electricidad })} aniosMax={t.aniosMaxInstalacion} cambiaTabiques={cambiaTabiques} />
+          <PreguntaInstalacion titulo="Fontanería" valor={r.fontaneria} onChange={(fontaneria) => setR({ ...r, fontaneria })} aniosMax={aniosMax} cambiaTabiques={cambiaTabiques || r.moverCocina} />
+          <PreguntaInstalacion titulo="Electricidad" valor={r.electricidad} onChange={(electricidad) => setR({ ...r, electricidad })} aniosMax={aniosMax} cambiaTabiques={cambiaTabiques} />
         </Tarjeta>
       )}
 
@@ -424,9 +438,17 @@ export default function NuevoProyecto() {
             <p className="mt-2 text-xs text-stone-500">Indica al menos un teléfono o un email.</p>
             <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
               <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={c.acepto} onChange={(e) => setC({ ...c, acepto: e.target.checked })} />
-              Acepto que se usen estos datos para estudiar mi reforma y contactarme. *
+              <span>
+                {TEXTO_CONSENTIMIENTO} *{" "}
+                <Link href="/privacidad" target="_blank" className="text-teal-700 underline">Ver política de privacidad</Link>
+              </span>
             </label>
+            <p className="mt-3 text-xs text-stone-500">
+              Tus datos se guardan en servidores de la Unión Europea, solo los ve el equipo de la empresa y puedes pedir que los borremos en cualquier momento.
+            </p>
+            {errorEnvio && <p className="mt-3 rounded bg-red-50 p-2 text-sm text-red-800">{errorEnvio}</p>}
           </Tarjeta>
+          {!estimacion && <Tarjeta><p className="text-sm text-stone-500">Calculando tu estimación…</p></Tarjeta>}
           {estimacion && (
             <Tarjeta>
               <h3 className="mb-3 font-semibold">Primera estimación de tu reforma</h3>
@@ -446,7 +468,7 @@ export default function NuevoProyecto() {
           {paso < PASOS.length - 1 ? (
             <Boton onClick={siguiente} disabled={!puedeSeguir} className="min-w-32">Siguiente</Boton>
           ) : (
-            <Boton onClick={enviar} disabled={!puedeSeguir} className="min-w-32">Enviar mi proyecto</Boton>
+            <Boton onClick={enviar} disabled={!puedeSeguir || enviando} className="min-w-32">{enviando ? "Enviando…" : "Enviar mi proyecto"}</Boton>
           )}
         </div>
       </div>

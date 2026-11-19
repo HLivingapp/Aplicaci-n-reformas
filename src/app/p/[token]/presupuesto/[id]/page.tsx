@@ -2,36 +2,41 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { euros, fecha, hoy, sumarDias, totalCapitulo, totales, totalPartida } from "@/lib/calc";
-import { crearObraDesdePresupuesto } from "@/lib/acciones";
-import { useDatos } from "@/lib/store";
+import { useEffect, useState } from "react";
+import { euros, fecha, sumarDias, totalCapitulo, totales, totalPartida } from "@/lib/calc";
+import type { DatosPortal } from "@/lib/publico";
+import { cargarPortal, enviarRespuesta } from "@/lib/publico-cliente";
 import { Boton, EstadoPresupuestoTag, inputCls, Tarjeta, Vacio } from "@/components/ui";
 
 export default function PresupuestoCliente() {
-  const { clienteId, id } = useParams<{ clienteId: string; id: string }>();
-  const { datos, actualizar } = useDatos();
+  const { token, id } = useParams<{ token: string; id: string }>();
+  const [datos, setDatos] = useState<DatosPortal | null | undefined>(undefined);
   const [comentario, setComentario] = useState("");
-  const p = datos.presupuestos.find((x) => x.id === id && x.clienteId === clienteId && x.estado !== "borrador");
-  if (!p) return <main className="p-6"><Vacio>Presupuesto no disponible.</Vacio></main>;
+  const [enviando, setEnviando] = useState(false);
+  useEffect(() => {
+    cargarPortal(token).then(setDatos);
+  }, [token]);
+  if (datos === undefined) return <main className="flex min-h-dvh items-center justify-center text-stone-500">Cargando…</main>;
+  const p = datos?.presupuestos.find((x) => x.id === id);
+  if (!datos || !p) return <main className="p-6"><Vacio>Presupuesto no disponible.</Vacio></main>;
   const t = totales(p);
 
-  const responder = (acepta: boolean) => {
+  const responder = async (acepta: boolean) => {
     if (!confirm(acepta ? "¿Aceptas este presupuesto?" : "¿Rechazas este presupuesto?")) return;
-    actualizar((d) => {
-      const x = d.presupuestos.find((y) => y.id === id);
-      if (!x) return;
-      x.estado = acepta ? "aceptado" : "rechazado";
-      x.respuestaCliente = { fecha: hoy(), comentario: comentario.trim() };
-      if (acepta) crearObraDesdePresupuesto(d, id);
-      const proyecto = d.proyectos.find((pr) => pr.presupuestoId === id);
-      if (proyecto) proyecto.estado = "presupuestado";
-    });
+    setEnviando(true);
+    try {
+      await enviarRespuesta(token, id, acepta, comentario);
+      setDatos(await cargarPortal(token));
+    } catch {
+      alert("No se ha podido enviar la respuesta. Inténtalo de nuevo.");
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
     <main className="mx-auto min-h-dvh max-w-3xl px-4 pb-12 pt-6">
-      <Link href={`/cliente/${clienteId}`} className="no-print text-sm text-stone-500 hover:underline">← Mi reforma</Link>
+      <Link href={`/p/${token}`} className="no-print text-sm text-stone-500 hover:underline">← Mi reforma</Link>
       <div className="mb-4 mt-2 flex flex-wrap items-start justify-between gap-2">
         <div>
           <div className="text-sm text-stone-500">{datos.empresa.nombre} · Presupuesto Nº {p.numero}</div>
@@ -73,8 +78,8 @@ export default function PresupuestoCliente() {
           <h2 className="mb-2 font-semibold">¿Qué te parece?</h2>
           <textarea rows={2} className={inputCls} placeholder="Comentario (opcional)" value={comentario} onChange={(e) => setComentario(e.target.value)} />
           <div className="mt-3 flex flex-wrap gap-2">
-            <Boton onClick={() => responder(true)}>Aceptar presupuesto</Boton>
-            <Boton variante="peligro" onClick={() => responder(false)}>Rechazar</Boton>
+            <Boton onClick={() => responder(true)} disabled={enviando}>Aceptar presupuesto</Boton>
+            <Boton variante="peligro" onClick={() => responder(false)} disabled={enviando}>Rechazar</Boton>
             <Boton variante="fantasma" onClick={() => window.print()}>Descargar PDF</Boton>
           </div>
         </Tarjeta>

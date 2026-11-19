@@ -36,8 +36,8 @@ export function datosIniciales(): Datos {
       direccion: "Calle Ejemplo 1, Madrid",
     },
     clientes: [
-      { id: "c1", nombre: "Laura Martín", telefono: "611 111 111", email: "laura@ejemplo.es", direccion: "C/ Alcalá 120, 3ºB, Madrid", creado: sumarDias(h, -40) },
-      { id: "c2", nombre: "Javier Ruiz", telefono: "622 222 222", email: "javier@ejemplo.es", direccion: "Av. Valencia 8, Getafe", creado: sumarDias(h, -5) },
+      { id: "c1", token: "demo-laura-0000000000000000000001", nombre: "Laura Martín", telefono: "611 111 111", email: "laura@ejemplo.es", direccion: "C/ Alcalá 120, 3ºB, Madrid", creado: sumarDias(h, -40) },
+      { id: "c2", token: "demo-javier-000000000000000000002", nombre: "Javier Ruiz", telefono: "622 222 222", email: "javier@ejemplo.es", direccion: "Av. Valencia 8, Getafe", creado: sumarDias(h, -5) },
     ],
     presupuestos: [
       {

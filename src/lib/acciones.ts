@@ -1,12 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { hoy, sumarDias } from "./calc";
-import { FASES_TIPO } from "./catalogo";
+import { hoy } from "./calc";
 import { nuevoId } from "./id";
 import { useDatos } from "./store";
 import { estimar, type Estimacion } from "./estimacion";
-import type { Capitulo, Datos, Obra, Presupuesto } from "./types";
+import type { Capitulo, Presupuesto } from "./types";
 
 export function useCrearPresupuesto() {
   const { actualizar } = useDatos();
@@ -56,35 +55,4 @@ function capitulosDesdeEstimacion(e: Estimacion): Capitulo[] {
   return caps.length ? caps : capitulosIniciales();
 }
 
-/** Crea una obra con las fases tipo a partir de un presupuesto aceptado. */
-export function crearObraDesdePresupuesto(d: Datos, presupuestoId: string, inicio = hoy()): string | undefined {
-  const p = d.presupuestos.find((x) => x.id === presupuestoId);
-  if (!p) return;
-  if (p.obraId) return p.obraId;
-  let cursor = inicio;
-  const obra: Obra = {
-    id: nuevoId(),
-    clienteId: p.clienteId,
-    presupuestoId: p.id,
-    titulo: p.titulo,
-    direccion: p.direccionObra,
-    inicio,
-    novedades: [],
-    fases: FASES_TIPO.map((f) => {
-      const ini = cursor;
-      const fin = sumarDias(ini, f.dias - 1);
-      cursor = sumarDias(fin, 1);
-      return {
-        id: nuevoId(),
-        nombre: f.nombre,
-        inicio: ini,
-        fin,
-        estado: "pendiente" as const,
-        tareas: f.tareas.map((t) => ({ id: nuevoId(), texto: t, hecha: false })),
-      };
-    }),
-  };
-  d.obras.unshift(obra);
-  p.obraId = obra.id;
-  return obra.id;
-}
+export { crearObraDesdePresupuestoEn as crearObraDesdePresupuesto } from "./obra";

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { avanceFase, avanceObra, euros, fecha, finObra, totales } from "@/lib/calc";
-import { estimar } from "@/lib/estimacion";
 import { textoDireccion } from "@/lib/proyecto";
-import { useDatos } from "@/lib/store";
+import { cargarPortal } from "@/lib/publico-cliente";
+import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -19,19 +19,25 @@ const PASOS_PROYECTO = [
 ];
 
 export default function PortalCliente() {
-  const { clienteId } = useParams<{ clienteId: string }>();
-  const { datos } = useDatos();
+  const { token } = useParams<{ token: string }>();
+  const [datos, setDatos] = useState<DatosPortal | null | undefined>(undefined);
   const [recienEnviado, setRecienEnviado] = useState(false);
+  useEffect(() => {
+    cargarPortal(token).then(setDatos);
+  }, [token]);
   useEffect(() => {
     setRecienEnviado(new URLSearchParams(window.location.search).has("enviado"));
   }, []);
 
-  const c = datos.clientes.find((x) => x.id === clienteId);
-  if (!c) return <main className="p-6"><Vacio>No encontramos tu acceso. <Link href="/cliente" className="text-teal-700 underline">Volver</Link></Vacio></main>;
-
-  const proyectos = datos.proyectos.filter((p) => p.clienteId === c.id && p.estado !== "descartado");
-  const presupuestos = datos.presupuestos.filter((p) => p.clienteId === c.id && p.estado !== "borrador");
-  const obras = datos.obras.filter((o) => o.clienteId === c.id);
+  if (datos === undefined) return <main className="flex min-h-dvh items-center justify-center text-stone-500">Cargando…</main>;
+  if (datos === null)
+    return (
+      <main className="p-6">
+        <Vacio>Este enlace no es válido o ha caducado. Pide a la empresa que te envíe uno nuevo.</Vacio>
+      </main>
+    );
+  const c = datos.cliente;
+  const { proyectos, presupuestos, obras } = datos;
 
   return (
     <main className="mx-auto min-h-dvh max-w-3xl px-4 pb-12 pt-6">
@@ -50,14 +56,14 @@ export default function PortalCliente() {
       {recienEnviado && (
         <div className="mb-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
           <div className="font-semibold">¡Gracias! Hemos recibido tu proyecto.</div>
-          Te llamaremos para concertar una visita. Desde esta página podrás seguir todo el proceso.
+          Te llamaremos para concertar una visita. <b>Guarda esta página en favoritos</b>: es tu enlace privado para seguir todo el proceso.
         </div>
       )}
 
       {obras.map((o) => {
         const pct = avanceObra(o);
         const actual = o.fases.find((f) => f.estado === "en_curso");
-        const novedades = o.novedades.filter((n) => n.visibleCliente);
+        const novedades = o.novedades;
         return (
           <section key={o.id} className="mb-6">
             <h2 className="mb-2 text-lg font-semibold">Tu obra: {o.titulo}</h2>
@@ -100,7 +106,7 @@ export default function PortalCliente() {
           <h2 className="mb-2 text-lg font-semibold">Tus presupuestos</h2>
           <div className="space-y-2">
             {presupuestos.map((p) => (
-              <Link key={p.id} href={`/cliente/${c.id}/presupuesto/${p.id}`} className="block">
+              <Link key={p.id} href={`/p/${token}/presupuesto/${p.id}`} className="block">
                 <Tarjeta className="hover:border-teal-600">
                   <div className="flex items-center justify-between gap-2">
                     <div>
@@ -135,7 +141,7 @@ export default function PortalCliente() {
                   </li>
                 ))}
               </ol>
-              {!p.presupuestoId && <VistaEstimacion e={estimar(p.vivienda, p.reforma, datos.tarifas)} />}
+              {p.estimacion && <VistaEstimacion e={p.estimacion} />}
               <PlanoBase m2={p.vivienda.m2} dormitorios={p.reforma.dormitoriosDeseados} banos={p.reforma.banosDeseados} cocinaAbierta={p.vivienda.cocinaAbierta} terrazas={p.vivienda.terrazas} />
             </Tarjeta>
           </section>
@@ -143,6 +149,10 @@ export default function PortalCliente() {
       })}
 
       {!obras.length && !presupuestos.length && !proyectos.length && <Vacio>Todavía no hay nada que mostrar.</Vacio>}
+      <p className="mt-8 text-center text-xs text-stone-400">
+        Este enlace es personal: no lo compartas. ·{" "}
+        <Link href="/privacidad" className="hover:underline">Privacidad</Link>
+      </p>
     </main>
   );
 }

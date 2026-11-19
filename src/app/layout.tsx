@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { DatosProvider } from "@/lib/store";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -22,7 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="es">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <DatosProvider>{children}</DatosProvider>
+        {children}
       </body>
     </html>
   );

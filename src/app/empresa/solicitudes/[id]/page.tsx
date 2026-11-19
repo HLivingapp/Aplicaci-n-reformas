@@ -10,6 +10,7 @@ import { useCrearPresupuesto } from "@/lib/acciones";
 import { textoDireccion } from "@/lib/proyecto";
 import { useDatos } from "@/lib/store";
 import type { EstadoProyecto, Proyecto } from "@/lib/types";
+import { EnlaceCliente } from "@/components/EnlaceCliente";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { PlanoBase } from "@/components/PlanoBase";
 import { estimar } from "@/lib/estimacion";
@@ -73,6 +74,8 @@ export default function DetalleSolicitud() {
             {cliente?.telefono && <a href={`tel:${cliente.telefono}`} className="text-teal-700">📞 {cliente.telefono}</a>}
             {cliente?.email && <a href={`mailto:${cliente.email}`} className="text-teal-700">✉️ {cliente.email}</a>}
           </div>
+          {cliente && <div className="-ml-2 mt-1"><EnlaceCliente cliente={cliente} /></div>}
+          {p.consentimiento && <div className="mt-1 text-xs text-stone-400">Consentimiento aceptado el {fecha(p.consentimiento.fecha.slice(0, 10))}</div>}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <select className={`${inputCls} w-auto`} value={p.estado} onChange={(e) => mod((x) => { x.estado = e.target.value as EstadoProyecto; })} aria-label="Estado">

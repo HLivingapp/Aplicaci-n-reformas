@@ -29,7 +29,7 @@ export function Boton({
   className = "",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variante?: Variante }) {
-  return <button type="button" className={`${base} ${estilos[variante]} ${className}`} {...props} />;
+  return <button type={props.type ?? "button"} className={`${base} ${estilos[variante]} ${className}`} {...props} />;
 }
 
 export function BotonLink({

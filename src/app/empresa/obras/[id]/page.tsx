@@ -62,7 +62,7 @@ export default function DetalleObra() {
         </div>
         <div className="flex gap-2">
           <Link href={`/empresa/presupuestos/${o.presupuestoId}`} className="rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-sm">Presupuesto</Link>
-          <Link href={`/cliente/${o.clienteId}`} className="rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-sm">Vista del cliente</Link>
+          {cliente && <a href={`/p/${cliente.token}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-sm">Vista del cliente ↗</a>}
         </div>
       </div>
 

@@ -3,6 +3,8 @@ export type EstadoFase = "pendiente" | "en_curso" | "terminada";
 
 export interface Cliente {
   id: string;
+  /** Secreto del enlace privado del cliente: /p/<token> */
+  token: string;
   nombre: string;
   telefono: string;
   email: string;
@@ -154,6 +156,8 @@ export interface Proyecto {
   id: string;
   clienteId: string;
   creado: string;
+  /** Texto de consentimiento que aceptó el cliente y cuándo */
+  consentimiento?: { fecha: string; texto: string };
   estado: EstadoProyecto;
   vivienda: Vivienda;
   reforma: DatosReforma;
