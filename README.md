@@ -26,6 +26,8 @@ El repositorio es público, así que solo incluye un **tarifario genérico de ej
 
 Una sola aplicación web, adaptada al móvil e instalable como app (PWA: "Añadir a pantalla de inicio").
 
+Para pasar a la base de datos real: [docs/puesta-en-marcha.md](docs/puesta-en-marcha.md).
+
 ## Desarrollo
 
 ```bash
@@ -39,6 +41,6 @@ Stack: Next.js (App Router) + TypeScript + Tailwind CSS.
 
 ## Limitaciones de esta versión
 
-- **Los datos se guardan en el navegador** (modo demostración). Para usarla con clientes reales falta conectar una base de datos y accesos con contraseña (siguiente paso propuesto: Supabase).
+- Sin las variables de Supabase la app funciona en **modo demostración** (datos en el navegador). Con ellas, los datos van a la base de datos: el equipo entra con un enlace por email y cada cliente con su enlace privado `/p/<token>`, sin contraseñas.
 - La consulta al Catastro usa los servicios públicos de la Sede Electrónica del Catastro desde el servidor (`/api/catastro`). País Vasco y Navarra tienen catastro foral y aún no están conectados.
 - El plano es esquemático, no a escala.
