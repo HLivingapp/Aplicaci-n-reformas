@@ -100,9 +100,10 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const e = estimarSinAjuste(v, r, t);
   const ref = t.precioM2Referencia?.[r.calidad];
   if (r.alcance !== "integral" || !ref || !e.lineas.length) return e;
-  // La referencia se compara con la reforma estándar de su calidad (sin las elecciones de acabados del
-  // cliente), para que elegir un acabado mejor o peor siga moviendo el precio.
-  const estandar = r.materiales && Object.keys(r.materiales).length ? estimarSinAjuste(v, { ...r, materiales: {} }, t) : e;
+  // La referencia por m² se compara con una reforma integral ESTÁNDAR de esa vivienda y calidad
+  // (sin extras ni elecciones del cliente). Así lo que el cliente elige (falsos techos, aerotermia,
+  // suelo radiante, mover la cocina, acabados…) se suma partida a partida y mueve el precio.
+  const estandar = estimarSinAjuste(v, reformaEstandar(r), t);
   const m2c = e.m2Construidos ?? 0;
   const k = r2(Math.max(1, (ref * m2c) / estandar.base));
   if (k <= 1) return e;
@@ -117,6 +118,26 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
     maximo: Math.round((base * (1 + m)) / 500) * 500,
     materiales: e.materiales.map((g) => ({ ...g, opciones: g.opciones.map((o) => ({ ...o, precio: Math.round(o.precio * k) })) })),
     ajusteReferencia: k,
+  };
+}
+
+/** Reforma integral tipo con la que se calibra el precio de referencia por m². */
+export function reformaEstandar(r: DatosReforma): DatosReforma {
+  return {
+    ...r,
+    estancias: [],
+    moverCocina: false,
+    cambiarVentanas: true,
+    sueloDeseado: "laminado",
+    techoActual: "yeso",
+    sueloActual: "otro",
+    climaActual: "ninguna",
+    climaDeseado: "ninguna",
+    acsActual: "caldera_gas",
+    acsDeseado: "caldera_gas",
+    fontaneria: { accion: "cambiar", ano: null },
+    electricidad: { accion: "cambiar", ano: null },
+    materiales: {},
   };
 }
 
