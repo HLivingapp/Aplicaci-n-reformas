@@ -19,7 +19,9 @@ export function VistaEstimacion({ e, detalle = false }: { e: Estimacion; detalle
         <div className="text-2xl font-semibold">
           {euros(e.minimo)} – {euros(e.maximo)}
         </div>
-        <div className="text-xs opacity-80">+ IVA · se ajusta tras la visita y la elección de materiales</div>
+        <div className="text-xs opacity-80">
+          + IVA{e.m2Construidos ? ` · unos ${euros(Math.round(e.base / e.m2Construidos))}/m² construido` : ""} · se ajusta tras la visita y la elección de materiales
+        </div>
       </div>
       {e.estancias?.length > 0 && (
         <details className="mt-3 rounded-xl bg-stone-50 p-3 text-sm">
@@ -76,6 +78,11 @@ export function VistaEstimacion({ e, detalle = false }: { e: Estimacion; detalle
           <span>Coste {euros(e.coste)}</span>
           <span className="font-semibold">Venta {euros(e.base)} sin IVA</span>
         </div>
+      )}
+      {detalle && (e.ajusteReferencia ?? 1) > 1 && (
+        <p className="mt-1 text-xs text-stone-500">
+          Precios subidos ×{e.ajusteReferencia?.toLocaleString("es-ES")} para llegar al precio de referencia por m² de esta calidad (Ajustes → Tarifario).
+        </p>
       )}
       {e.avisos.length > 0 && (
         <ul className="mt-3 space-y-1 text-sm text-amber-900">

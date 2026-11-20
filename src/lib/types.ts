@@ -212,6 +212,11 @@ export interface Tarifas {
   puntosAguaCocina: number;
   aniosMaxInstalacion: number;
   margenRangoPct: number;
+  /**
+   * Precio de venta de referencia (€/m² construido, sin IVA) de una reforma integral según la calidad.
+   * Si la estimación sale por debajo, se sube hasta esta referencia; los extras se suman encima.
+   */
+  precioM2Referencia?: Record<"basica" | "media" | "alta", number>;
   factorCalidad: { basica: number; media: number; alta: number };
   tramos: TramoMedidas[];
   precios: PrecioTarifa[];

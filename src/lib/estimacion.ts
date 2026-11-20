@@ -53,6 +53,10 @@ export interface Estimacion {
   maximo: number;
   avisos: string[];
   materiales: EleccionMaterial[];
+  /** m² construidos usados en el cálculo */
+  m2Construidos?: number;
+  /** Factor aplicado para llegar al precio de referencia por m² (1 = sin ajuste) */
+  ajusteReferencia?: number;
 }
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -93,6 +97,30 @@ export function cambiosDistribucion(v: Vivienda, r: DatosReforma) {
 
 /** Primera cotización automática a partir de las respuestas del cliente. */
 export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
+  const e = estimarSinAjuste(v, r, t);
+  const ref = t.precioM2Referencia?.[r.calidad];
+  if (r.alcance !== "integral" || !ref || !e.lineas.length) return e;
+  // La referencia se compara con la reforma estándar de su calidad (sin las elecciones de acabados del
+  // cliente), para que elegir un acabado mejor o peor siga moviendo el precio.
+  const estandar = r.materiales && Object.keys(r.materiales).length ? estimarSinAjuste(v, { ...r, materiales: {} }, t) : e;
+  const m2c = e.m2Construidos ?? 0;
+  const k = r2(Math.max(1, (ref * m2c) / estandar.base));
+  if (k <= 1) return e;
+  const lineas = e.lineas.map((l) => ({ ...l, precio: r2(l.precio * k) }));
+  const base = r2(lineas.reduce((s, l) => s + l.cantidad * l.precio, 0));
+  const m = t.margenRangoPct / 100;
+  return {
+    ...e,
+    lineas,
+    base,
+    minimo: Math.round((base * (1 - m)) / 500) * 500,
+    maximo: Math.round((base * (1 + m)) / 500) * 500,
+    materiales: e.materiales.map((g) => ({ ...g, opciones: g.opciones.map((o) => ({ ...o, precio: Math.round(o.precio * k) })) })),
+    ajusteReferencia: k,
+  };
+}
+
+function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const m2c = v.catastro?.superficie ?? v.m2 ?? 70;
   const util = r1(m2c * t.coefUtil);
   const estancias = repartirEstancias(t, util, r.dormitoriosDeseados, r.banosDeseados);
@@ -260,5 +288,6 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
     maximo: Math.round((base * (1 + m)) / 500) * 500,
     avisos,
     materiales,
+    m2Construidos: m2c,
   };
 }

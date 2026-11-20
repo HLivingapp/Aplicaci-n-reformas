@@ -22,6 +22,7 @@ export const tarifasPorDefecto = (): Tarifas => ({
   puntosAguaCocina: 4,
   aniosMaxInstalacion: 20,
   margenRangoPct: 10,
+  precioM2Referencia: { basica: 950, media: 1100, alta: 1450 },
   factorCalidad: { basica: 0.85, media: 1, alta: 1.35 },
   tramos: [
     { hastaM2: 50, cocina: 7, salon: 16, dormitorioPrincipal: 11, dormitorio: 8, bano: 3.5, pasilloPct: 8 },
@@ -96,5 +97,5 @@ export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   const base = tarifasPorDefecto();
   const precios = [...(t.precios ?? [])];
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
-  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
+  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }
