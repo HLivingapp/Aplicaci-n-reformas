@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSuscripcion } from "@/lib/suscripcion";
 
 const ENLACES = [
+  { href: "/disena", texto: "Diseña", corto: "Diseña" },
   { href: "/comunidad", texto: "Comunidad", corto: "Foro" },
   { href: "/red", texto: "Profesionales", corto: "Pros" },
   { href: "/asistente", texto: "Asistente IA", corto: "IA" },

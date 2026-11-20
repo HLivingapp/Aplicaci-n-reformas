@@ -33,6 +33,10 @@ function conEjemplosNuevos(d: Datos): Datos {
   const i = p ? d.presupuestos.findIndex((x) => x.id === p.id) : -1;
   if (p && i < 0) d.presupuestos.unshift(p);
   else if (p && d.presupuestos[i].estado === "enviado") d.presupuestos[i] = p;
+  // Pagos por hitos y extras de ejemplo en la obra de demostración
+  const o1 = base.obras.find((x) => x.id === "o1");
+  const mia = d.obras.find((x) => x.id === "o1");
+  if (o1 && mia && !mia.hitos) Object.assign(mia, { hitos: o1.hitos, extras: o1.extras });
   return d;
 }
 

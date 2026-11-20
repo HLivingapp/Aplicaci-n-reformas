@@ -1,5 +1,6 @@
 "use client";
 
+import { accionObraCliente, type AccionObraCliente } from "./obra";
 import { estimar, type Estimacion } from "./estimacion";
 import { planificarFases } from "./fases";
 import { galeriaLocal, type GaleriaCliente } from "./galeria";
@@ -70,4 +71,16 @@ export async function pedirGaleria(v: Vivienda, r: DatosReforma): Promise<Galeri
     return galeriaLocal(d.fotos, v, r, claves);
   }
   return api("/api/galeria", { vivienda: v, reforma: r });
+}
+
+/** Acciones del cliente sobre su obra: confirmar un pago, responder a un extra o valorar una fase. */
+export async function enviarAccionObra(token: string, obraId: string, accion: AccionObraCliente): Promise<boolean> {
+  if (!conBaseDeDatos) {
+    const d = leerLocal();
+    const ok = accionObraCliente(d, token, obraId, accion);
+    if (ok) escribirLocal(d);
+    return ok;
+  }
+  const res = await api<{ ok: boolean }>(`/api/portal/${encodeURIComponent(token)}/obra`, { obraId, accion });
+  return res.ok;
 }

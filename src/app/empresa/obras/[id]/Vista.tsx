@@ -4,11 +4,15 @@ import { useParamsReales } from "@/lib/rutas";
 import Link from "next/link";
 
 import { useState } from "react";
-import { avanceFase, avanceObra, fecha, finObra, hoy, sumarDias } from "@/lib/calc";
+import { avanceFase, avanceObra, euros, fecha, finObra, hoy, sumarDias, totales } from "@/lib/calc";
 import { nuevoId } from "@/lib/id";
 import { useDatos } from "@/lib/store";
 import type { EstadoFase, Fase, Obra } from "@/lib/types";
 import { Cronograma } from "@/components/Cronograma";
+import { diferenciaReferencia, HitosPago, importeObra } from "@/components/ContratoObra";
+import { hitosDe } from "@/lib/obra";
+import { ventaUnidad } from "@/lib/tarifas";
+
 import { Barra, Boton, EstadoFaseTag, inputCls, Tarjeta, textosFase, Vacio } from "@/components/ui";
 
 export default function DetalleObra() {
@@ -155,7 +159,8 @@ export default function DetalleObra() {
         </section>
 
         <section>
-          <h2 className="mb-3 font-semibold">Diario de obra</h2>
+          <PagosYExtras o={o} />
+          <h2 className="mb-3 mt-6 font-semibold">Diario de obra</h2>
           <Tarjeta className="mb-3">
             <textarea rows={3} className={inputCls} placeholder="¿Qué ha pasado hoy en la obra?" value={nota} onChange={(e) => setNota(e.target.value)} />
             <label className="mt-2 flex items-center gap-2 text-sm text-stone-600">
@@ -183,6 +188,90 @@ export default function DetalleObra() {
           </div>
         </section>
       </div>
+    </div>
+  );
+}
+
+/** Hitos de pago (el reformista los pide, el cliente confirma) y cambios o extras que firma el cliente. */
+function PagosYExtras({ o }: { o: Obra }) {
+  const { datos, actualizar } = useDatos();
+  const [desc, setDesc] = useState("");
+  const [importe, setImporte] = useState("");
+  const [tarifaId, setTarifaId] = useState("");
+  const [cantidad, setCantidad] = useState("1");
+  const pres = datos.presupuestos.find((p) => p.id === o.presupuestoId);
+  const total = pres ? importeObra(o, totales(pres).total, pres.ivaPct) : 0;
+  const tarifa = datos.tarifas.precios.find((p) => p.id === tarifaId);
+  const referencia = tarifa ? Math.round(ventaUnidad(datos.tarifas, tarifa) * (Number(cantidad) || 0) * 100) / 100 : undefined;
+  const mod = (fn: (ob: Obra) => void) => actualizar((d) => { const ob = d.obras.find((x) => x.id === o.id); if (ob) fn(ob); });
+  const valoraciones = o.valoraciones ?? [];
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="mb-3 font-semibold">Pagos por hitos</h2>
+        <Tarjeta>
+          <HitosPago
+            o={o}
+            total={total}
+            accion={(id, estado) =>
+              estado === "pendiente" ? (
+                <button onClick={() => mod((ob) => { ob.hitos = hitosDe(ob).map((h) => (h.id === id ? { ...h, estado: "solicitado", solicitado: hoy() } : h)); })} className="rounded-full border border-teal-700 px-3 py-1 text-xs text-teal-800">Pedir el pago</button>
+              ) : null
+            }
+          />
+        </Tarjeta>
+      </div>
+      <div>
+        <h2 className="mb-3 font-semibold">Cambios y extras</h2>
+        <Tarjeta className="space-y-2 text-sm">
+          <input className={inputCls} placeholder="Qué cambia (p. ej. enchufe extra en el salón)" value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <select className={inputCls} value={tarifaId} onChange={(e) => setTarifaId(e.target.value)}>
+            <option value="">Comparar con una partida del tarifario (opcional)</option>
+            {datos.tarifas.precios.map((p) => <option key={p.id} value={p.id}>{p.capitulo} · {p.descripcion} ({p.unidad})</option>)}
+          </select>
+          <div className="flex gap-2">
+            {tarifa && <input className={inputCls} type="number" min="0" step="0.1" value={cantidad} onChange={(e) => setCantidad(e.target.value)} aria-label="Cantidad" />}
+            <input className={inputCls} type="number" min="0" step="1" placeholder="Importe sin IVA" value={importe} onChange={(e) => setImporte(e.target.value)} />
+          </div>
+          {referencia !== undefined && <p className="text-xs text-stone-500">Precio de referencia del tarifario: {euros(referencia)}</p>}
+          <Boton
+            className="w-full"
+            disabled={desc.trim().length < 4 || !(Number(importe) > 0)}
+            onClick={() => {
+              mod((ob) => { ob.extras = [{ id: nuevoId(), descripcion: desc.trim(), importe: Number(importe), referencia, fecha: hoy(), estado: "propuesto" }, ...(ob.extras ?? [])]; });
+              setDesc(""); setImporte(""); setTarifaId("");
+            }}
+          >
+            Enviar al cliente para que lo firme
+          </Boton>
+        </Tarjeta>
+        <ul className="mt-2 space-y-2">
+          {(o.extras ?? []).map((e) => {
+            const dif = diferenciaReferencia(e);
+            return (
+              <li key={e.id} className="rounded-lg border border-stone-200 bg-white p-3 text-sm">
+                <div className="flex justify-between gap-2"><span>{e.descripcion}</span><span className="font-medium">{euros(e.importe)}</span></div>
+                <div className="text-xs text-stone-500">{fecha(e.fecha)} · {e.estado === "propuesto" ? "Esperando al cliente" : e.estado === "aceptado" ? "✓ Firmado por el cliente" : "Rechazado"}{dif !== null ? ` · ${dif > 0 ? "+" : ""}${dif} % vs tarifario` : ""}</div>
+                {e.respuesta?.comentario && <div className="mt-1 text-xs italic text-stone-500">«{e.respuesta.comentario}»</div>}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      {valoraciones.length > 0 && (
+        <div>
+          <h2 className="mb-3 font-semibold">Valoraciones del cliente</h2>
+          <ul className="space-y-2">
+            {valoraciones.map((v) => (
+              <li key={v.faseId} className="rounded-lg border border-stone-200 bg-white p-3 text-sm">
+                <div className="font-medium">{o.fases.find((f) => f.id === v.faseId)?.nombre ?? "Fase"}</div>
+                <div className="text-xs text-stone-500">Puntualidad {v.puntualidad}★ · Limpieza {v.limpieza}★ · Cumplimiento {v.cumplimiento}★</div>
+                {v.comentario && <div className="mt-1 text-xs italic text-stone-600">«{v.comentario}»</div>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

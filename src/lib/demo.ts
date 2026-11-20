@@ -6,7 +6,7 @@ import { sumarDias } from "./calc";
 import { altaVacia, anadirDocumento, registrarProveedor } from "./proveedores";
 import { reformaVacia, viviendaVacia } from "./proyecto";
 import { estimar } from "./estimacion";
-import { capitulosDesdeEstimacion } from "./presupuesto-estimacion";
+import { capitulosDesdeEstimacion, referenciaCapitulos } from "./presupuesto-estimacion";
 import type { Datos, Presupuesto, Proyecto, TipoDocProveedor } from "./types";
 
 export function proyectoDemo(clienteId: string, creado: string): Proyecto {
@@ -67,6 +67,7 @@ export function presupuestoDemo(d: Datos, clienteId: string, fecha: string): Pre
     notas: "Presupuesto de ejemplo generado con el tarifario genérico de la app.",
     capitulos: capitulosDesdeEstimacion(e),
     referenciaBase: e.base,
+    referenciaCapitulos: referenciaCapitulos(e),
   };
 }
 
