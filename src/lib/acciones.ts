@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { hoy } from "./calc";
 import { nuevoId } from "./id";
 import { useDatos } from "./store";
-import { estimar, type Estimacion } from "./estimacion";
+import { estimar } from "./estimacion";
+import { capitulosDesdeEstimacion } from "./presupuesto-estimacion";
 import type { Capitulo, Presupuesto } from "./types";
 
 export function useCrearPresupuesto() {
@@ -28,7 +29,7 @@ export function useCrearPresupuesto() {
         ivaPct: 10,
         descuentoPct: 0,
         notas: "",
-        capitulos: proyecto ? capitulosDesdeEstimacion(estimar(proyecto.vivienda, proyecto.reforma, d.tarifas)) : capitulosIniciales(),
+        capitulos: proyecto ? conCapitulos(capitulosDesdeEstimacion(estimar(proyecto.vivienda, proyecto.reforma, d.tarifas))) : capitulosIniciales(),
       };
       d.presupuestos.unshift(p);
       if (proyecto) {
@@ -44,15 +45,6 @@ function capitulosIniciales(): Capitulo[] {
   return [{ id: nuevoId(), nombre: "Capítulo 1", partidas: [] }];
 }
 
-/** Convierte la cotización automática en capítulos y partidas editables. */
-function capitulosDesdeEstimacion(e: Estimacion): Capitulo[] {
-  const caps: Capitulo[] = [];
-  for (const l of e.lineas) {
-    let c = caps.find((x) => x.nombre === l.capitulo);
-    if (!c) caps.push((c = { id: nuevoId(), nombre: l.capitulo, partidas: [] }));
-    c.partidas.push({ id: nuevoId(), descripcion: l.descripcion, unidad: l.unidad, cantidad: l.cantidad, precio: l.precio, coste: l.coste });
-  }
-  return caps.length ? caps : capitulosIniciales();
-}
+const conCapitulos = (c: Capitulo[]) => (c.length ? c : capitulosIniciales());
 
 export { crearObraDesdePresupuestoEn as crearObraDesdePresupuesto } from "./obra";

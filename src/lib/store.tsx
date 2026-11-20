@@ -24,11 +24,20 @@ export function migrar(d: any): Datos {
   return { ...d, version: 3, fotos: d.fotos ?? [], proveedores: d.proveedores ?? [], clientes, proyectos, tarifas: completarTarifas(d.tarifas ?? {}) };
 }
 
+/** Añade a una demo ya guardada los ejemplos que se han creado después (sin tocar lo que hizo el usuario). */
+function conEjemplosNuevos(d: Datos): Datos {
+  const base = datosIniciales();
+  for (const c of base.clientes) if (!d.clientes.some((x) => x.id === c.id)) d.clientes.push(c);
+  const p = base.presupuestos.find((x) => x.id === "p-demo-detalle");
+  if (p && !d.presupuestos.some((x) => x.id === p.id)) d.presupuestos.unshift(p);
+  return d;
+}
+
 /** Modo demostración: los datos viven en el navegador. */
 export function leerLocal(): Datos {
   try {
     const raw = localStorage.getItem(CLAVE);
-    if (raw) return migrar(JSON.parse(raw));
+    if (raw) return conEjemplosNuevos(migrar(JSON.parse(raw)));
   } catch {
     /* sin almacenamiento */
   }
