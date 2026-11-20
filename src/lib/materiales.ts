@@ -102,9 +102,9 @@ export const materialesPorDefecto = (): GrupoMaterial[] => [
     nombre: "Ventanas",
     tarifaIds: ["ventana", "ventanal"],
     opciones: [
-      o("ve_basico", "basico", "PVC blanco con doble vidrio", "Aislamiento correcto, apertura oscilobatiente", 0.85),
-      o("ve_medio", "medio", "PVC o aluminio con rotura de puente térmico", "Vidrio bajo emisivo, mejor aislamiento térmico y acústico", 1),
-      o("ve_premium", "premium", "Aluminio de perfil fino", "Perfil minimalista y vidrio acústico o triple", 1.5),
+      o("ve_basico", "basico", "PVC blanco estándar", "Perfil de PVC blanco, oscilobatiente, con doble acristalamiento 4/16/4", 0.85),
+      o("ve_medio", "medio", "Perfilería Cortizo o similar, PVC o aluminio", "PVC o aluminio con rotura de puente térmico, vidrio tipo Climalit bajo emisivo y persiana", 1),
+      o("ve_premium", "premium", "Aluminio Cortizo de perfil fino o similar", "Perfil minimalista con rotura de puente térmico, vidrio tipo Climalit acústico o triple acristalamiento", 1.5),
     ],
   },
   {

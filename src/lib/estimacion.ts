@@ -1,4 +1,5 @@
-import { grupoDePartida, opcionElegida } from "./materiales";
+import { especificacion } from "./equipos";
+import { grupoDePartida, NIVEL_POR_CALIDAD, opcionElegida } from "./materiales";
 import { recargoDe } from "./tarifas";
 import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
 
@@ -14,6 +15,8 @@ export interface LineaEstimacion {
   grupoMaterial?: string;
   /** De dónde sale la cantidad, en lenguaje claro (p. ej. «2 baños × 30 m²») */
   medicion?: string;
+  /** Marca de referencia, modelo y potencia del equipo o material */
+  especificacion?: string;
 }
 
 export interface OpcionMaterialPublica {
@@ -165,7 +168,7 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
       return;
     }
     const descripcion = op ? `${p.descripcion} · ${op.nombre}` : p.descripcion;
-    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargoDe(t, p.grupo)), ...(g ? { grupoMaterial: g.id } : {}), ...(medicion ? { medicion } : {}) });
+    lineas.push({ tarifaId: id, capitulo: p.capitulo, descripcion, unidad: p.unidad, cantidad: r1(cantidad), coste, precio: r2(coste * recargoDe(t, p.grupo, p.capitulo)), ...(g ? { grupoMaterial: g.id } : {}), ...(medicion ? { medicion } : {}) });
   };
 
   const banos = estancias.filter((e) => e.nombre.startsWith("Baño"));
@@ -275,6 +278,15 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
     avisos.push(`Edificio de ${v.anoConstruccion}: revisar en la visita bajantes, posible amianto y estado del forjado.`);
   }
 
+  // Marca, modelo y potencia de referencia, según el tamaño de la vivienda y la gama de cada partida
+  const salon = estancias.find((x) => x.nombre.startsWith("Salón"));
+  for (const l of lineas) {
+    const g = grupoDePartida(t, l.tarifaId);
+    const nivel = (g && opcionElegida(g, r)?.nivel) || NIVEL_POR_CALIDAD[r.calidad];
+    const esp = especificacion(l.tarifaId, { m2c, util, banos: banos.length, dormitorios: r.dormitoriosDeseados, nivel, salonM2: salon?.m2 });
+    if (esp) l.especificacion = esp;
+  }
+
   const coste = r2(lineas.reduce((s, l) => s + l.cantidad * l.coste, 0));
   const base = r2(lineas.reduce((s, l) => s + l.cantidad * l.precio, 0));
   const m = t.margenRangoPct / 100;
@@ -288,7 +300,7 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
       Math.round(
         ls.reduce((s, l) => {
           const p = t.precios.find((x) => x.id === l.tarifaId);
-          return s + (p ? l.cantidad * p.coste * f * recargoDe(t, p.grupo) : 0);
+          return s + (p ? l.cantidad * p.coste * f * recargoDe(t, p.grupo, p.capitulo) : 0);
         }, 0),
       );
     materiales.push({

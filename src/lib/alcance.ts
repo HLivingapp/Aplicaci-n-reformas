@@ -60,10 +60,10 @@ export const ALCANCE: Record<string, Alcance> = {
   },
   material_obra: { incluye: "Cemento, yeso, mortero, adhesivos, placas, perfiles y el resto de material de albañilería que se gasta en la obra." },
   ventana: {
-    incluye: "Ventana nueva oscilobatiente con doble vidrio, persiana y su colocación, por cada ventana.",
+    incluye: "Ventana nueva oscilobatiente de perfilería Cortizo o similar, en PVC o aluminio con rotura de puente térmico, doble acristalamiento tipo Climalit, persiana, retirada de la antigua y colocación con sellado, por cada ventana.",
     noIncluye: "Cambio de la fachada o de los huecos, que necesita permiso de la comunidad.",
   },
-  ventanal: { incluye: "Balconera o ventanal de salida a la terraza, con vidrio de seguridad y colocación." },
+  ventanal: { incluye: "Balconera o ventanal de salida a la terraza de perfilería Cortizo o similar (PVC o aluminio con rotura de puente térmico), doble acristalamiento tipo Climalit de seguridad, persiana y colocación." },
   puerta_entrada: { incluye: "Panelado interior de la puerta de entrada a juego con las puertas de paso." },
   puerta_paso: { incluye: "Puerta de paso completa: hoja, marco, tapajuntas, manillas y colocación, por cada puerta." },
   cocina: {

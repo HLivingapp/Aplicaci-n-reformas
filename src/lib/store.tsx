@@ -29,7 +29,10 @@ function conEjemplosNuevos(d: Datos): Datos {
   const base = datosIniciales();
   for (const c of base.clientes) if (!d.clientes.some((x) => x.id === c.id)) d.clientes.push(c);
   const p = base.presupuestos.find((x) => x.id === "p-demo-detalle");
-  if (p && !d.presupuestos.some((x) => x.id === p.id)) d.presupuestos.unshift(p);
+  // El presupuesto de ejemplo se regenera con la última versión mientras nadie lo haya respondido
+  const i = p ? d.presupuestos.findIndex((x) => x.id === p.id) : -1;
+  if (p && i < 0) d.presupuestos.unshift(p);
+  else if (p && d.presupuestos[i].estado === "enviado") d.presupuestos[i] = p;
   return d;
 }
 

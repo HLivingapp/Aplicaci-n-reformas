@@ -5,10 +5,11 @@ import { NIVELES } from "./materiales";
 import type { Capitulo } from "./types";
 
 /** Texto largo de una partida: medición, acabado elegido, qué incluye y qué no. */
-export function detallePartida(tarifaId: string | undefined, extra: { medicion?: string; acabado?: string } = {}) {
+export function detallePartida(tarifaId: string | undefined, extra: { medicion?: string; acabado?: string; especificacion?: string } = {}) {
   const a = tarifaId ? ALCANCE[tarifaId] : undefined;
   return [
     a?.incluye,
+    extra.especificacion ? `Equipo o material de referencia: ${extra.especificacion}` : "",
     extra.acabado ? `Acabado: ${extra.acabado}.` : "",
     extra.medicion ? `Medición: ${extra.medicion}.` : "",
     a?.noIncluye ? `No incluye: ${a.noIncluye}` : "",
@@ -35,7 +36,7 @@ export function capitulosDesdeEstimacion(e: Estimacion): Capitulo[] {
       id: nuevoId(),
       tarifaId: l.tarifaId,
       descripcion: l.descripcion,
-      detalle: detallePartida(l.tarifaId, { medicion: l.medicion, acabado: acabadoDe(e, l) }),
+      detalle: detallePartida(l.tarifaId, { medicion: l.medicion, acabado: acabadoDe(e, l), especificacion: l.especificacion }),
       unidad: l.unidad,
       cantidad: l.cantidad,
       precio: l.precio,

@@ -7,13 +7,16 @@ import type { GrupoTarifa, PrecioTarifa, Tarifas } from "./types";
  * NO se guardan en este repositorio, que es público.
  */
 /** Recargo que se aplica a una partida: los materiales («Compras») llevan el suyo. */
-export const recargoDe = (t: Pick<Tarifas, "recargoPct" | "recargoMaterialesPct">, grupo: GrupoTarifa) =>
-  1 + (grupo === "Compras" ? (t.recargoMaterialesPct ?? t.recargoPct) : t.recargoPct) / 100;
+export const recargoDe = (t: Pick<Tarifas, "recargoPct" | "recargoMaterialesPct" | "recargoPorCapitulo">, grupo: GrupoTarifa, capitulo?: string) => {
+  const propio = capitulo ? t.recargoPorCapitulo?.[capitulo] : undefined;
+  return 1 + (propio ?? (grupo === "Compras" ? (t.recargoMaterialesPct ?? t.recargoPct) : t.recargoPct)) / 100;
+};
 
 export const tarifasPorDefecto = (): Tarifas => ({
   nombre: "Genérico de ejemplo",
   recargoPct: 40,
   recargoMaterialesPct: 25,
+  recargoPorCapitulo: { "Carpintería exterior": 60 },
   coefUtil: 0.8,
   paramentosPorM2: 2.4,
   m2AlicatadoBano: 30,
@@ -60,8 +63,8 @@ export const tarifasPorDefecto = (): Tarifas => ({
     l("pintura", "Mano de obra", "Pintura", "Pintura en blanco con alisado de paramentos", "m²", 20),
     l("material_obra", "Mano de obra", "Material de obra", "Material de obra para albañilería", "m²c", 30),
     // COMPRAS
-    l("ventana", "Compras", "Carpintería exterior", "Ventana de PVC o aluminio", "ud", 650, true),
-    l("ventanal", "Compras", "Carpintería exterior", "Ventanal o balconera a terraza", "ud", 1800, true),
+    l("ventana", "Compras", "Carpintería exterior", "Ventana de PVC o aluminio con doble acristalamiento tipo Climalit", "ud", 700, true),
+    l("ventanal", "Compras", "Carpintería exterior", "Balconera o ventanal a terraza con doble acristalamiento tipo Climalit", "ud", 1800, true),
     l("puerta_entrada", "Compras", "Carpintería interior", "Puerta de entrada (panelado interior)", "ud", 500, true),
     l("puerta_paso", "Compras", "Carpintería interior", "Puerta de paso semimaciza", "ud", 340, true),
     l("cocina", "Compras", "Cocina", "Cocina a medida completa con encimera", "ud", 5500, true),
@@ -97,5 +100,5 @@ export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   const base = tarifasPorDefecto();
   const precios = [...(t.precios ?? [])];
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
-  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
+  return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, recargoPorCapitulo: { ...base.recargoPorCapitulo, ...t.recargoPorCapitulo }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }
