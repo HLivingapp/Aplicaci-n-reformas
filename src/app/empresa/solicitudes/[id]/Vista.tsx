@@ -1,4 +1,5 @@
 "use client";
+import { buscarCatastro } from "@/lib/catastro/cliente";
 
 import { useParamsReales } from "@/lib/rutas";
 import Link from "next/link";
@@ -44,7 +45,7 @@ export default function DetalleSolicitud() {
     setBuscando(true);
     setAviso(null);
     try {
-      const res = (await (await fetch("/api/catastro", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json()) as ResultadoBusqueda;
+      const res = await buscarCatastro(body);
       if (res.estado === "ok" && res.detalle) {
         const det = res.detalle;
         mod((x) => {

@@ -1,4 +1,5 @@
 "use client";
+import { buscarCatastro } from "@/lib/catastro/cliente";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -93,8 +94,7 @@ export default function NuevoProyecto() {
   const llamar = async (body: object) => {
     setBuscando(true);
     try {
-      const res = await fetch("/api/catastro", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      const j = (await res.json()) as ResultadoBusqueda;
+      const j = await buscarCatastro(body);
       setBusqueda(j);
       aplicarDetalle(j);
     } catch {
