@@ -1,6 +1,6 @@
 import { hoy, sumarDias } from "./calc";
 import { FASES_TIPO } from "./catalogo";
-import { proveedoresDemo, proyectoDemo } from "./demo";
+import { presupuestoDemo, proveedoresDemo, proyectoDemo } from "./demo";
 import { tarifasPorDefecto } from "./tarifas";
 import type { Datos, Fase } from "./types";
 
@@ -41,6 +41,7 @@ export function datosIniciales(): Datos {
     clientes: [
       { id: "c1", token: "demo-laura-0000000000000000000001", nombre: "Laura Martín", telefono: "611 111 111", email: "laura@ejemplo.es", direccion: "C/ Alcalá 120, 3ºB, Madrid", creado: sumarDias(h, -40) },
       { id: "c2", token: "demo-javier-000000000000000000002", nombre: "Javier Ruiz", telefono: "622 222 222", email: "javier@ejemplo.es", direccion: "Av. Valencia 8, Getafe", creado: sumarDias(h, -5) },
+      { id: "c4", token: "demo-carlos-000000000000000000004", nombre: "Carlos Pérez", telefono: "644 444 444", email: "carlos@ejemplo.es", direccion: "Madrid (dirección de ejemplo)", creado: sumarDias(h, -3) },
       { id: "c3", token: "demo-marta-0000000000000000000003", nombre: "Marta López", telefono: "633 333 333", email: "marta@ejemplo.es", direccion: "Av. Valencia 8, 2ºA, Getafe", creado: sumarDias(h, -1) },
     ],
     presupuestos: [
@@ -128,6 +129,7 @@ export function datosIniciales(): Datos {
       },
     ],
   };
+  d.presupuestos.unshift(presupuestoDemo(d, "c4", sumarDias(h, -1)));
   proveedoresDemo(d, h);
   return d;
 }

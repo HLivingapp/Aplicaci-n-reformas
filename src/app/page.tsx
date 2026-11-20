@@ -218,6 +218,7 @@ export default function Inicio() {
           <p className="mx-auto mb-4 max-w-2xl rounded-lg bg-amber-50 p-3 text-amber-900">
             Versión de demostración: los datos se guardan solo en este navegador. Ejemplos:{" "}
             <Link href="/p/demo-marta-0000000000000000000003" className="underline">cliente eligiendo acabados</Link>,{" "}
+            <Link href="/p/demo-carlos-000000000000000000004/presupuesto/p-demo-detalle" className="underline">presupuesto detallado</Link>,{" "}
             <Link href="/reformista/demo-reformista-0000000000000001" className="underline">reformista con documentos pendientes</Link>,{" "}
             <Link href="/empresa" className="underline">panel de la empresa</Link>.
           </p>

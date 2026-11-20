@@ -15,6 +15,10 @@ export interface Cliente {
 export interface Partida {
   id: string;
   descripcion: string;
+  /** Descripción completa: qué incluye, medición, acabado y qué no incluye */
+  detalle?: string;
+  /** Partida del tarifario de la que sale, si la hay */
+  tarifaId?: string;
   unidad: string;
   cantidad: number;
   /** Precio de venta por unidad, sin IVA */

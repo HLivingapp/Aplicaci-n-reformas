@@ -1,5 +1,7 @@
 "use client";
 
+import { detallePartida } from "@/lib/presupuesto-estimacion";
+
 import { useParamsReales } from "@/lib/rutas";
 import { recargoDe } from "@/lib/tarifas";
 import Link from "next/link";
@@ -160,6 +162,13 @@ export default function EditorPresupuesto() {
                       <button className="no-print px-1 text-stone-400 hover:text-red-600" title="Eliminar partida" onClick={() => modCap(c.id, (x) => { x.partidas = x.partidas.filter((y) => y.id !== it.id); })}>✕</button>
                     )}
                   </div>
+                  <textarea
+                    rows={it.detalle ? 4 : 2}
+                    className={`${inputCls} mt-2 resize-y text-xs text-stone-600`}
+                    value={it.detalle ?? ""}
+                    placeholder="Detalle para el cliente: qué incluye, medición, acabado, qué no incluye…"
+                    onChange={(e) => modPartida(c.id, it.id, { detalle: e.target.value })}
+                  />
                   <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
                     <Campo etiqueta="Cantidad">
                       <input inputMode="decimal" className={inputCls} defaultValue={it.cantidad} onChange={(e) => modPartida(c.id, it.id, { cantidad: num(e.target.value) })} />
@@ -198,7 +207,7 @@ export default function EditorPresupuesto() {
                     <button
                       key={item.id}
                       className="flex w-full items-start justify-between gap-3 border-b border-stone-100 px-3 py-2 text-left text-sm last:border-0 hover:bg-teal-50"
-                      onClick={() => modCap(c.id, (x) => { x.partidas.push({ id: nuevoId(), descripcion: item.descripcion, unidad: item.unidad, cantidad: 1, precio, coste: item.coste }); })}
+                      onClick={() => modCap(c.id, (x) => { x.partidas.push({ id: nuevoId(), tarifaId: item.id, descripcion: item.descripcion, detalle: detallePartida(item.id), unidad: item.unidad, cantidad: 1, precio, coste: item.coste }); })}
                     >
                       <span><span className="text-xs text-stone-400">{item.capitulo} · </span>{item.descripcion}</span>
                       <span className="whitespace-nowrap text-stone-500">{euros(precio)}/{item.unidad}</span>

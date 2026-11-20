@@ -5,7 +5,9 @@
 import { sumarDias } from "./calc";
 import { altaVacia, anadirDocumento, registrarProveedor } from "./proveedores";
 import { reformaVacia, viviendaVacia } from "./proyecto";
-import type { Datos, Proyecto, TipoDocProveedor } from "./types";
+import { estimar } from "./estimacion";
+import { capitulosDesdeEstimacion } from "./presupuesto-estimacion";
+import type { Datos, Presupuesto, Proyecto, TipoDocProveedor } from "./types";
 
 export function proyectoDemo(clienteId: string, creado: string): Proyecto {
   const v = viviendaVacia();
@@ -28,6 +30,42 @@ export function proyectoDemo(clienteId: string, creado: string): Proyecto {
     comentarios: "Queremos la cocina abierta al salón y dos baños.",
   });
   return { id: "pr-demo", clienteId, creado, estado: "nuevo", vivienda: v, reforma: r, notasInternas: "", consentimiento: { fecha: `${creado}T10:00:00.000Z`, texto: "Ejemplo" } };
+}
+
+/** Presupuesto detallado de ejemplo: reforma integral de 80 m² con 2 baños en calidad media. */
+export function presupuestoDemo(d: Datos, clienteId: string, fecha: string): Presupuesto {
+  const v = viviendaVacia();
+  Object.assign(v, { m2: 80, anoConstruccion: 1968, planta: 3, ascensor: true, dormitorios: 3, banos: 1, terrazas: [] });
+  const r = reformaVacia(3, 1);
+  Object.assign(r, {
+    dormitoriosDeseados: 2,
+    banosDeseados: 2,
+    cambiarVentanas: true,
+    techoActual: "yeso",
+    sueloActual: "terrazo",
+    climaActual: "ninguna",
+    climaDeseado: "split",
+    acsActual: "caldera_gas",
+    acsDeseado: "caldera_gas",
+    fontaneria: { accion: "cambiar", ano: null },
+    electricidad: { accion: "cambiar", ano: null },
+    calidad: "media",
+  });
+  d.contador += 1;
+  return {
+    id: "p-demo-detalle",
+    numero: `${fecha.slice(0, 4)}-${String(d.contador).padStart(3, "0")}`,
+    clienteId,
+    titulo: "Reforma integral de piso · 80 m², 2 baños",
+    direccionObra: "Madrid (dirección de ejemplo)",
+    fecha,
+    validezDias: 30,
+    estado: "enviado",
+    ivaPct: 10,
+    descuentoPct: 0,
+    notas: "Presupuesto de ejemplo generado con el tarifario genérico de la app.",
+    capitulos: capitulosDesdeEstimacion(estimar(v, r, d.tarifas)),
+  };
 }
 
 export function proveedoresDemo(d: Datos, h: string) {
