@@ -98,6 +98,18 @@ export function Tarifario() {
               <input className={inputCls} inputMode="decimal" defaultValue={String(t.factorCalidad[k])} key={`${t.nombre}-f${k}`} onChange={(e) => mod((x) => { x.factorCalidad[k] = num(e.target.value); })} />
             </Campo>
           ))}
+          {(["basica", "media", "alta"] as const).map((k) => (
+            <Campo key={`ref-${k}`} etiqueta={`Precio de referencia ${k === "basica" ? "básico" : k === "media" ? "medio" : "alto"} (€/m²)`}>
+              <input
+                className={inputCls}
+                inputMode="decimal"
+                defaultValue={String(t.precioM2Referencia?.[k] ?? "")}
+                key={`${t.nombre}-ref${k}`}
+                onChange={(e) => mod((x) => { x.precioM2Referencia = { ...(x.precioM2Referencia ?? { basica: 0, media: 0, alta: 0 }), [k]: num(e.target.value) }; })}
+              />
+              <span className="mt-0.5 block text-xs text-stone-400">Venta sin IVA por m² construido en reforma integral. 0 = sin mínimo</span>
+            </Campo>
+          ))}
         </div>
       </Tarjeta>
 

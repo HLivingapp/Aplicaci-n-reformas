@@ -53,6 +53,10 @@ export interface Estimacion {
   maximo: number;
   avisos: string[];
   materiales: EleccionMaterial[];
+  /** m² construidos usados en el cálculo */
+  m2Construidos?: number;
+  /** Factor aplicado para llegar al precio de referencia por m² (1 = sin ajuste) */
+  ajusteReferencia?: number;
 }
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -93,6 +97,51 @@ export function cambiosDistribucion(v: Vivienda, r: DatosReforma) {
 
 /** Primera cotización automática a partir de las respuestas del cliente. */
 export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
+  const e = estimarSinAjuste(v, r, t);
+  const ref = t.precioM2Referencia?.[r.calidad];
+  if (r.alcance !== "integral" || !ref || !e.lineas.length) return e;
+  // La referencia por m² se compara con una reforma integral ESTÁNDAR de esa vivienda y calidad
+  // (sin extras ni elecciones del cliente). Así lo que el cliente elige (falsos techos, aerotermia,
+  // suelo radiante, mover la cocina, acabados…) se suma partida a partida y mueve el precio.
+  const estandar = estimarSinAjuste(v, reformaEstandar(r), t);
+  const m2c = e.m2Construidos ?? 0;
+  const k = r2(Math.max(1, (ref * m2c) / estandar.base));
+  if (k <= 1) return e;
+  const lineas = e.lineas.map((l) => ({ ...l, precio: r2(l.precio * k) }));
+  const base = r2(lineas.reduce((s, l) => s + l.cantidad * l.precio, 0));
+  const m = t.margenRangoPct / 100;
+  return {
+    ...e,
+    lineas,
+    base,
+    minimo: Math.round((base * (1 - m)) / 500) * 500,
+    maximo: Math.round((base * (1 + m)) / 500) * 500,
+    materiales: e.materiales.map((g) => ({ ...g, opciones: g.opciones.map((o) => ({ ...o, precio: Math.round(o.precio * k) })) })),
+    ajusteReferencia: k,
+  };
+}
+
+/** Reforma integral tipo con la que se calibra el precio de referencia por m². */
+export function reformaEstandar(r: DatosReforma): DatosReforma {
+  return {
+    ...r,
+    estancias: [],
+    moverCocina: false,
+    cambiarVentanas: true,
+    sueloDeseado: "laminado",
+    techoActual: "yeso",
+    sueloActual: "otro",
+    climaActual: "ninguna",
+    climaDeseado: "ninguna",
+    acsActual: "caldera_gas",
+    acsDeseado: "caldera_gas",
+    fontaneria: { accion: "cambiar", ano: null },
+    electricidad: { accion: "cambiar", ano: null },
+    materiales: {},
+  };
+}
+
+function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   const m2c = v.catastro?.superficie ?? v.m2 ?? 70;
   const util = r1(m2c * t.coefUtil);
   const estancias = repartirEstancias(t, util, r.dormitoriosDeseados, r.banosDeseados);
@@ -260,5 +309,6 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
     maximo: Math.round((base * (1 + m)) / 500) * 500,
     avisos,
     materiales,
+    m2Construidos: m2c,
   };
 }
