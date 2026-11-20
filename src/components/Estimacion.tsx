@@ -64,6 +64,7 @@ export function VistaEstimacion({ e, detalle = false }: { e: Estimacion; detalle
                       {cantidadLegible(l.cantidad, l.unidad)}
                       {l.medicion ? ` · ${l.medicion}` : ""}
                     </div>
+                    {l.especificacion && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Equipo de referencia:</span> {l.especificacion}</p>}
                     {a && <p className="mt-1 text-xs text-stone-600"><span className="font-medium">Incluye:</span> {a.incluye}</p>}
                     {a?.noIncluye && <p className="mt-0.5 text-xs text-stone-500"><span className="font-medium">No incluye:</span> {a.noIncluye}</p>}
                   </li>

@@ -42,7 +42,8 @@ export function Tarifario() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [filtro, setFiltro] = useState("");
   const mod = (fn: (x: Tarifas) => void) => actualizar((d) => fn(d.tarifas));
-  const venta = (coste: number, grupo: GrupoTarifa) => Math.round(coste * recargoDe(t, grupo) * 100) / 100;
+  const venta = (coste: number, grupo: GrupoTarifa, capitulo?: string) => Math.round(coste * recargoDe(t, grupo, capitulo) * 100) / 100;
+  const capitulos = [...new Set(t.precios.map((x) => x.capitulo))];
 
   const exportar = () => {
     const blob = new Blob([JSON.stringify(t, null, 2)], { type: "application/json" });
@@ -114,6 +115,32 @@ export function Tarifario() {
       </Tarjeta>
 
       <Tarjeta>
+        <h2 className="mb-1 font-semibold">Recargo propio por capítulo (%)</h2>
+        <p className="mb-3 text-xs text-stone-500">Déjalo vacío para usar el recargo general ({t.recargoPct} % mano de obra, {t.recargoMaterialesPct ?? t.recargoPct} % materiales).</p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {capitulos.map((cap) => (
+            <Campo key={cap} etiqueta={cap}>
+              <input
+                className={inputCls}
+                inputMode="decimal"
+                placeholder="General"
+                defaultValue={t.recargoPorCapitulo?.[cap] != null ? String(t.recargoPorCapitulo[cap]) : ""}
+                key={`${t.nombre}-rc-${cap}`}
+                onChange={(e) =>
+                  mod((x) => {
+                    const m = { ...(x.recargoPorCapitulo ?? {}) };
+                    if (e.target.value.trim() === "") delete m[cap];
+                    else m[cap] = num(e.target.value);
+                    x.recargoPorCapitulo = m;
+                  })
+                }
+              />
+            </Campo>
+          ))}
+        </div>
+      </Tarjeta>
+
+      <Tarjeta>
         <h2 className="mb-1 font-semibold">Medidas estándar de cada estancia (m²)</h2>
         <p className="mb-3 text-xs text-stone-500">Según los m² útiles del piso. El salón se queda con lo que sobra.</p>
         <div className="overflow-x-auto">
@@ -161,7 +188,7 @@ export function Tarifario() {
                       <input className={`${inputCls} px-2 py-1 text-right`} inputMode="decimal" defaultValue={p.coste} key={`${t.nombre}-${p.id}`} onChange={(e) => mod((x) => { x.precios[i].coste = num(e.target.value); })} aria-label={`Coste ${p.descripcion}`} />
                       <span className="text-xs text-stone-400">/{p.unidad}</span>
                     </label>
-                    <span className="text-right text-xs text-stone-500">venta {euros(venta(p.coste, p.grupo))}</span>
+                    <span className="text-right text-xs text-stone-500">venta {euros(venta(p.coste, p.grupo, p.capitulo))}</span>
                   </div>
                 ))}
             </div>
