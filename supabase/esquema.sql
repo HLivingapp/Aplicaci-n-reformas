@@ -72,3 +72,13 @@ create policy "equipo ve documentos de proveedores" on storage.objects for selec
 drop policy if exists "equipo borra documentos de proveedores" on storage.objects;
 create policy "equipo borra documentos de proveedores" on storage.objects for delete to authenticated
   using (bucket_id = 'proveedores' and es_del_equipo());
+
+-- Comunidad pública (foro). Se lee y se escribe solo a través del servidor de la app,
+-- que oculta datos de contacto, comprueba a los reformistas homologados y nunca publica las claves.
+create table if not exists foro_temas (
+  id text primary key,
+  datos jsonb not null,
+  creado timestamptz not null default now(),
+  actualizado timestamptz not null default now()
+);
+alter table foro_temas enable row level security;

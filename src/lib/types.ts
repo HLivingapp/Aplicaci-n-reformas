@@ -47,6 +47,8 @@ export interface Presupuesto {
   capitulos: Capitulo[];
   notas: string;
   obraId?: string;
+  /** Presupuesto de referencia de la vivienda (sin IVA) para comparar la oferta */
+  referenciaBase?: number;
   respuestaCliente?: { fecha: string; comentario: string };
 }
 

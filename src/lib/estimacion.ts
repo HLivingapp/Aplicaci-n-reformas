@@ -106,7 +106,8 @@ export function estimar(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion {
   // La referencia por m² se compara con una reforma integral ESTÁNDAR de esa vivienda y calidad
   // (sin extras ni elecciones del cliente). Así lo que el cliente elige (falsos techos, aerotermia,
   // suelo radiante, mover la cocina, acabados…) se suma partida a partida y mueve el precio.
-  const estandar = estimarSinAjuste(v, reformaEstandar(r), t);
+  // Los recargos propios de capítulo (p. ej. ventanas al 60 %) no entran en la calibración: suben el total.
+  const estandar = estimarSinAjuste(v, reformaEstandar(r), { ...t, recargoPorCapitulo: {} });
   const m2c = e.m2Construidos ?? 0;
   const k = r2(Math.max(1, (ref * m2c) / estandar.base));
   if (k <= 1) return e;
