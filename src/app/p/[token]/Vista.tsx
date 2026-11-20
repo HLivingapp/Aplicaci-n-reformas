@@ -51,6 +51,7 @@ export default function PortalCliente() {
     );
   const c = datos.cliente;
   const { proyectos, presupuestos, obras } = datos;
+  const referencia = proyectos.find((p) => p.estimacion)?.estimacion?.base;
 
   return (
     <main className="mx-auto min-h-dvh max-w-3xl px-4 pb-12 pt-6">
@@ -131,6 +132,7 @@ export default function PortalCliente() {
                       <EstadoPresupuestoTag estado={p.estado} />
                     </div>
                   </div>
+                  {(p.referenciaBase ?? referencia) ? <Comparador base={totales(p).base} referencia={(p.referenciaBase ?? referencia)!} /> : null}
                   {p.estado === "enviado" && <div className="mt-2 text-sm font-medium text-teal-700">Revisar y responder →</div>}
                 </Tarjeta>
               </Link>
@@ -170,11 +172,38 @@ export default function PortalCliente() {
         );
       })}
 
+      {!obras.length && (
+        <section className="mb-6 grid gap-3 sm:grid-cols-2">
+          <Link href="/red" className="rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm hover:border-teal-600">
+            <div className="font-semibold text-teal-900">👷 Compara con otros reformistas homologados</div>
+            <div className="mt-1 text-teal-900/80">Pide más presupuestos en tu zona y compáralos con tu precio de referencia. Plan Básico, 5 €/mes.</div>
+          </Link>
+          <Link href="/asistente" className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm hover:border-indigo-600">
+            <div className="font-semibold text-indigo-900">🤖 Pregunta al asistente IA de obra</div>
+            <div className="mt-1 text-indigo-900/80">Revisa tu presupuesto, trámites en Madrid y dudas técnicas. Plan Pro, 30 €/mes.</div>
+          </Link>
+        </section>
+      )}
+
       {!obras.length && !presupuestos.length && !proyectos.length && <Vacio>Todavía no hay nada que mostrar.</Vacio>}
       <p className="mt-8 text-center text-xs text-stone-400">
         Este enlace es personal: no lo compartas. ·{" "}
         <Link href="/privacidad" className="hover:underline">Privacidad</Link>
       </p>
     </main>
+  );
+}
+
+/** Compara la oferta con el presupuesto de referencia calculado para la vivienda (sin IVA). */
+function Comparador({ base, referencia }: { base: number; referencia: number }) {
+  const dif = Math.round(((base - referencia) / referencia) * 100);
+  const [cls, texto] =
+    dif > 15 ? ["bg-amber-50 text-amber-900", "por encima de tu referencia: pregunta qué incluye de más"]
+    : dif < -15 ? ["bg-amber-50 text-amber-900", "por debajo de tu referencia: comprueba que no falten partidas"]
+    : ["bg-emerald-50 text-emerald-900", "dentro del rango de tu referencia"];
+  return (
+    <div className={`mt-2 rounded-lg px-3 py-2 text-xs ${cls}`}>
+      ⚖️ <b>{dif > 0 ? "+" : ""}{dif} %</b> {texto} ({euros(referencia)} sin IVA).
+    </div>
   );
 }

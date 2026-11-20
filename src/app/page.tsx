@@ -32,7 +32,7 @@ const VENTAJAS = [
 ];
 
 const PREGUNTAS = [
-  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. El presupuesto orientativo es gratis y sin compromiso." },
+  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. El presupuesto orientativo es gratis y sin compromiso. Para pedir presupuestos a la red de reformistas homologados está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
   { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado de Hacienda al corriente y seguro de responsabilidad civil vigentes. El registro REA se vuelve a comprobar cada mes." },
   { q: "¿Y si cambio de opinión?", a: "Puedes cancelar el contrato desde la app. Se hace un acta con lo ejecutado hasta ese momento." },
@@ -52,6 +52,8 @@ export default function Inicio() {
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             <a href="#como-funciona" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Cómo funciona</a>
+            <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Comunidad</Link>
+            <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Planes</Link>
             <Link href="/reformistas" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Soy reformista</Link>
             <Link href="/cliente" className="rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100">Mi reforma</Link>
             <Link href={empezar} className="rounded-full bg-teal-700 px-4 py-1.5 font-medium text-white hover:bg-teal-800">Calcular precio</Link>
@@ -162,6 +164,53 @@ export default function Inicio() {
         </div>
       </section>
 
+      {/* Comunidad */}
+      <section className="mx-auto max-w-6xl px-4 pt-16">
+        <div className="grid gap-8 md:grid-cols-2 md:items-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Comunidad de reformas</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
+            <p className="mt-3 text-stone-600">
+              Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y nuestro asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
+            </p>
+            <Link href="/comunidad" className="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en la comunidad</Link>
+          </div>
+          <ul className="space-y-2 text-sm">
+            {[
+              ["❓", "Moho en la junta del plato de ducha a los dos meses", "✓ Resuelto por un profesional"],
+              ["🏛️", "¿Licencia o declaración responsable para una reforma integral?", "🤖 Opinión IA con normativa"],
+              ["👎", "La obra se alargó 5 semanas por las ventanas", "💬 Consejos de reformistas"],
+            ].map(([i, t, e]) => (
+              <li key={t}>
+                <Link href="/comunidad" className="flex items-start gap-3 rounded-2xl border border-stone-200 bg-white p-4 hover:border-teal-600">
+                  <span className="text-xl">{i}</span>
+                  <span><span className="block font-medium text-stone-900">{t}</span><span className="text-xs text-stone-500">{e}</span></span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Planes */}
+      <section className="mx-auto max-w-6xl px-4 pt-16">
+        <h2 className="text-center text-3xl font-semibold tracking-tight">Empieza gratis. Suscríbete cuando lo necesites</h2>
+        <p className="mx-auto mt-2 max-w-2xl text-center text-stone-600">Sin permanencia. Los pagos de la obra van directamente al reformista que elijas.</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {[
+            { n: "Gratis", p: "0 €", d: "Presupuesto orientativo partida a partida y comunidad.", cls: "border-stone-200" },
+            { n: "Básico", p: "5 €/mes", d: "Suscríbete y accede a nuestra red de profesionales homologados. Pide presupuestos y compáralos con tu referencia.", cls: "border-teal-600 ring-2 ring-teal-100" },
+            { n: "Pro", p: "30 €/mes", d: "Todo lo del Básico y un asistente IA especializado en obra: presupuestos, licencias en Madrid y dudas técnicas.", cls: "border-indigo-300" },
+          ].map((x) => (
+            <Link key={x.n} href="/suscripcion" className={`rounded-2xl border bg-white p-5 hover:shadow-sm ${x.cls}`}>
+              <div className="font-semibold">{x.n}</div>
+              <div className="mt-1 text-3xl font-semibold tracking-tight">{x.p}</div>
+              <p className="mt-2 text-sm text-stone-600">{x.d}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Reformistas */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid items-center gap-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 ring-1 ring-amber-100 md:grid-cols-2 md:p-12">
@@ -226,6 +275,8 @@ export default function Inicio() {
         <p className="flex flex-wrap justify-center gap-4">
           <span>© {NOMBRE}</span>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
+          <Link href="/comunidad" className="hover:underline">Comunidad</Link>
+          <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
           <Link href="/empresa" className="hover:underline">Acceso empresa</Link>
         </p>

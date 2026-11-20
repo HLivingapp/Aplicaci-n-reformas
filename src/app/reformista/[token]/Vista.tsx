@@ -7,6 +7,8 @@ import { Boton, inputCls, Tarjeta, Vacio } from "@/components/ui";
 import { hoy } from "@/lib/calc";
 import { CON_CSV, csvValido, docActual, DOCUMENTOS, documentosExigidos, requisitos, situacionDoc, sumarMeses, type SituacionDoc, type VistaProveedor } from "@/lib/proveedores";
 import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
+import { recordarProfesional } from "@/lib/foro-cliente";
+import Link from "next/link";
 import type { TipoDocProveedor } from "@/lib/types";
 
 const ESTADOS: Record<VistaProveedor["estado"], { texto: string; cls: string }> = {
@@ -118,6 +120,14 @@ export default function PortalReformista() {
         </ul>
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
+
+      {p.estado === "aprobado" && !pendientes && (
+        <Tarjeta>
+          <h2 className="font-semibold">Comunidad de reformas</h2>
+          <p className="mt-1 text-sm text-stone-600">Responde dudas de gente que está reformando su casa. Tus respuestas llevan el sello de profesional homologado y tu empresa sigue siendo anónima. Es la mejor forma de que te conozcan antes de pedir presupuesto.</p>
+          <Link href="/comunidad" onClick={() => recordarProfesional(token)} className="mt-3 inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">Responder en la comunidad</Link>
+        </Tarjeta>
+      )}
 
       <Tarjeta className="space-y-4">
         <h2 className="font-semibold">Documentos</h2>

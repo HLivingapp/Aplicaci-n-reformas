@@ -52,6 +52,7 @@ export function presupuestoDemo(d: Datos, clienteId: string, fecha: string): Pre
     calidad: "media",
   });
   d.contador += 1;
+  const e = estimar(v, r, d.tarifas);
   return {
     id: "p-demo-detalle",
     numero: `${fecha.slice(0, 4)}-${String(d.contador).padStart(3, "0")}`,
@@ -64,7 +65,8 @@ export function presupuestoDemo(d: Datos, clienteId: string, fecha: string): Pre
     ivaPct: 10,
     descuentoPct: 0,
     notas: "Presupuesto de ejemplo generado con el tarifario genérico de la app.",
-    capitulos: capitulosDesdeEstimacion(estimar(v, r, d.tarifas)),
+    capitulos: capitulosDesdeEstimacion(e),
+    referenciaBase: e.base,
   };
 }
 

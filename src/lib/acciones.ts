@@ -17,6 +17,7 @@ export function useCrearPresupuesto() {
       d.contador += 1;
       const cliente = d.clientes.find((c) => c.id === clienteId);
       const proyecto = d.proyectos.find((x) => x.id === proyectoId);
+      const estimacion = proyecto ? estimar(proyecto.vivienda, proyecto.reforma, d.tarifas) : null;
       const p: Presupuesto = {
         id,
         numero: `${hoy().slice(0, 4)}-${String(d.contador).padStart(3, "0")}`,
@@ -29,7 +30,8 @@ export function useCrearPresupuesto() {
         ivaPct: 10,
         descuentoPct: 0,
         notas: "",
-        capitulos: proyecto ? conCapitulos(capitulosDesdeEstimacion(estimar(proyecto.vivienda, proyecto.reforma, d.tarifas))) : capitulosIniciales(),
+        capitulos: estimacion ? conCapitulos(capitulosDesdeEstimacion(estimacion)) : capitulosIniciales(),
+        referenciaBase: estimacion?.base,
       };
       d.presupuestos.unshift(p);
       if (proyecto) {
