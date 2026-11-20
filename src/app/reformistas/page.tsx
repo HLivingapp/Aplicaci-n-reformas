@@ -64,6 +64,15 @@ export default function AltaReformista() {
         riesgos laborales), seguro de responsabilidad civil, estar al corriente de pagos, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
         después te daremos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
       </p>
+      <div className="grid gap-2 text-sm sm:grid-cols-3">
+        {[
+          ["💶", "Solo pagas si firmas", "Sin cuotas por contacto: una pequeña comisión solo de las obras que firmas en la app."],
+          ["📋", "Clientes con presupuesto", "Llegan con medidas, partidas y acabados elegidos. Menos visitas perdidas."],
+          ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en la comunidad te dan más visibilidad."],
+        ].map(([i, t, d]) => (
+          <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>
+        ))}
+      </div>
 
       <Tarjeta className="space-y-3 border-teal-200">
         <h2 className="font-semibold">Declaración responsable</h2>

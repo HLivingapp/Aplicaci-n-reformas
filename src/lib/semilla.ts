@@ -126,6 +126,13 @@ export function datosIniciales(): Datos {
           { id: "n2", fecha: sumarDias(h, -2), texto: "Fontanería instalada. Mañana empieza el electricista.", visibleCliente: true },
           { id: "n3", fecha: sumarDias(h, -1), texto: "Pedir azulejo al proveedor antes del viernes.", visibleCliente: false },
         ],
+        hitos: [
+          { id: "h-firma", nombre: "A la firma del contrato", pct: 30, estado: "pagado", solicitado: inicio, pagado: inicio },
+          { id: "h-instalaciones", nombre: "Al terminar demoliciones e instalaciones", pct: 30, estado: "solicitado", solicitado: sumarDias(h, -1) },
+          { id: "h-acabados", nombre: "Al terminar alicatados y suelos", pct: 30, estado: "pendiente" },
+          { id: "h-entrega", nombre: "A la entrega, con la obra revisada", pct: 10, estado: "pendiente" },
+        ],
+        extras: [{ id: "x1", descripcion: "Hornacina en la ducha con iluminación LED", importe: 240, referencia: 220, fecha: sumarDias(h, -1), estado: "propuesto" }],
       },
     ],
   };

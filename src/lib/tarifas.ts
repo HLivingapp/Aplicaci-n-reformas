@@ -102,3 +102,6 @@ export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
   return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, recargoPorCapitulo: { ...base.recargoPorCapitulo, ...t.recargoPorCapitulo }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }
+
+/** Precio de venta (sin IVA) de una unidad de una partida del tarifario, con su recargo. */
+export const ventaUnidad = (t: Tarifas, p: PrecioTarifa) => Math.round(p.coste * recargoDe(t, p.grupo, p.capitulo) * 100) / 100;

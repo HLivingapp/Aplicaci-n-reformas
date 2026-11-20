@@ -7,7 +7,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { avanceFase, avanceObra, euros, fecha, finObra, totales } from "@/lib/calc";
 import { textoDireccion } from "@/lib/proyecto";
-import { cargarPortal, guardarMateriales } from "@/lib/publico-cliente";
+import { cargarPortal, enviarAccionObra, guardarMateriales } from "@/lib/publico-cliente";
+import { diferenciaReferencia, HitosPago, importeObra, ValorarFase } from "@/components/ContratoObra";
+import type { AccionObraCliente } from "@/lib/obra";
+import type { Obra, Presupuesto } from "@/lib/types";
 import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
@@ -98,6 +101,7 @@ export default function PortalCliente() {
                 ))}
               </ol>
             </Tarjeta>
+            <ContratoCliente o={o} pres={presupuestos.find((x) => x.id === o.presupuestoId)} accion={async (a) => { if (await enviarAccionObra(token, o.id, a)) setDatos(await cargarPortal(token)); }} />
             {novedades.length > 0 && (
               <>
                 <h3 className="mb-2 mt-4 font-semibold">Novedades</h3>
@@ -204,6 +208,54 @@ function Comparador({ base, referencia }: { base: number; referencia: number }) 
   return (
     <div className={`mt-2 rounded-lg px-3 py-2 text-xs ${cls}`}>
       ⚖️ <b>{dif > 0 ? "+" : ""}{dif} %</b> {texto} ({euros(referencia)} sin IVA).
+    </div>
+  );
+}
+
+/** Pagos por hitos, cambios y extras, y valoraciones por fase de la obra del cliente. */
+function ContratoCliente({ o, pres, accion }: { o: Obra; pres?: Presupuesto; accion: (a: AccionObraCliente) => Promise<void> }) {
+  const [comentario, setComentario] = useState("");
+  const total = pres ? importeObra(o, totales(pres).total, pres.ivaPct) : 0;
+  const extras = o.extras ?? [];
+  const porValorar = o.fases.filter((f) => f.estado === "terminada" && !o.valoraciones?.some((v) => v.faseId === f.id));
+  return (
+    <div className="mt-4 space-y-4">
+      {extras.length > 0 && (
+        <Tarjeta>
+          <h3 className="mb-2 font-semibold">Cambios y extras</h3>
+          <ul className="space-y-2">
+            {extras.map((e) => {
+              const dif = diferenciaReferencia(e);
+              return (
+                <li key={e.id} className="rounded-lg border border-stone-200 p-3 text-sm">
+                  <div className="flex justify-between gap-2"><span className="font-medium">{e.descripcion}</span><span className="font-semibold">{euros(e.importe)} + IVA</span></div>
+                  <div className="text-xs text-stone-500">Propuesto el {fecha(e.fecha)}{dif !== null ? ` · ${dif > 0 ? "+" : ""}${dif} % frente al precio de referencia (${euros(e.referencia!)})` : ""}</div>
+                  {e.estado === "propuesto" ? (
+                    <div className="mt-2 space-y-2">
+                      <input value={comentario} onChange={(x) => setComentario(x.target.value)} placeholder="Comentario (opcional)" className="w-full rounded-md border border-stone-200 p-2 text-sm" />
+                      <div className="flex gap-2">
+                        <button onClick={() => accion({ tipo: "extra", extraId: e.id, acepta: true, comentario })} className="rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white">Aceptar y firmar</button>
+                        <button onClick={() => accion({ tipo: "extra", extraId: e.id, acepta: false, comentario })} className="rounded-full border border-stone-300 px-4 py-1.5 text-sm">Rechazar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`mt-1 text-xs font-medium ${e.estado === "aceptado" ? "text-emerald-700" : "text-stone-500"}`}>{e.estado === "aceptado" ? `✓ Aceptado el ${fecha(e.respuesta!.fecha)}: se suma al contrato` : "Rechazado"}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Tarjeta>
+      )}
+      {pres && (
+        <Tarjeta>
+          <h3 className="mb-2 font-semibold">Pagos del contrato</h3>
+          <HitosPago o={o} total={total} accion={(id, estado) => estado === "solicitado" ? <button onClick={() => confirm("¿Confirmas que has pagado este hito al reformista?") && accion({ tipo: "pagado", hitoId: id })} className="rounded-full bg-stone-900 px-3 py-1.5 text-xs font-medium text-white">Confirmar que he pagado</button> : null} />
+        </Tarjeta>
+      )}
+      {porValorar.map((f) => (
+        <ValorarFase key={f.id} nombre={f.nombre} alEnviar={(v) => accion({ tipo: "valorar", faseId: f.id, ...v })} />
+      ))}
     </div>
   );
 }

@@ -52,6 +52,7 @@ export default function Inicio() {
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             <a href="#como-funciona" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Cómo funciona</a>
+            <Link href="/disena" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Diseña</Link>
             <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Comunidad</Link>
             <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Planes</Link>
             <Link href="/reformistas" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Soy reformista</Link>
@@ -162,6 +163,18 @@ export default function Inicio() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Diseña */}
+      <section className="mx-auto max-w-6xl px-4 pt-16">
+        <Link href="/disena" className="flex flex-col items-start gap-4 rounded-3xl bg-gradient-to-br from-teal-700 to-teal-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-teal-200">Nuevo</p>
+            <h2 className="mt-1 text-3xl font-semibold tracking-tight">Diseña tu baño o tu cocina desde una foto</h2>
+            <p className="mt-2 max-w-xl text-teal-50">Sube una foto, elige básico, medio o premium y mira los materiales y el precio al momento.</p>
+          </div>
+          <span className="shrink-0 rounded-xl bg-white px-5 py-3 font-semibold text-teal-800">Probar ahora →</span>
+        </Link>
       </section>
 
       {/* Comunidad */}

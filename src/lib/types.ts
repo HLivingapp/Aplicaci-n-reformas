@@ -49,6 +49,8 @@ export interface Presupuesto {
   obraId?: string;
   /** Presupuesto de referencia de la vivienda (sin IVA) para comparar la oferta */
   referenciaBase?: number;
+  /** Referencia por capítulo (sin IVA), para comparar la oferta capítulo a capítulo */
+  referenciaCapitulos?: Record<string, number>;
   respuestaCliente?: { fecha: string; comentario: string };
 }
 
@@ -83,6 +85,43 @@ export interface Obra {
   inicio: string;
   fases: Fase[];
   novedades: Novedad[];
+  /** Hitos de pago del contrato: el pago es directo al reformista; ambas partes lo confirman aquí */
+  hitos?: HitoPago[];
+  /** Cambios y extras pedidos durante la obra, presupuestados y aceptados en la app */
+  extras?: Extra[];
+  /** Valoraciones del cliente al terminar cada fase */
+  valoraciones?: ValoracionFase[];
+}
+
+export interface HitoPago {
+  id: string;
+  nombre: string;
+  pct: number;
+  /** pendiente → el reformista lo pide al cumplirse → el cliente confirma que ha pagado */
+  estado: "pendiente" | "solicitado" | "pagado";
+  solicitado?: string;
+  pagado?: string;
+}
+
+export interface Extra {
+  id: string;
+  descripcion: string;
+  /** Importe sin IVA */
+  importe: number;
+  /** Precio de referencia del tarifario para lo mismo, si lo hay (sin IVA) */
+  referencia?: number;
+  fecha: string;
+  estado: "propuesto" | "aceptado" | "rechazado";
+  respuesta?: { fecha: string; comentario: string };
+}
+
+export interface ValoracionFase {
+  faseId: string;
+  fecha: string;
+  puntualidad: number;
+  limpieza: number;
+  cumplimiento: number;
+  comentario: string;
 }
 
 export interface Direccion {

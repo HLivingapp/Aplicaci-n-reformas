@@ -5,7 +5,7 @@ import { hoy } from "./calc";
 import { nuevoId } from "./id";
 import { useDatos } from "./store";
 import { estimar } from "./estimacion";
-import { capitulosDesdeEstimacion } from "./presupuesto-estimacion";
+import { capitulosDesdeEstimacion, referenciaCapitulos } from "./presupuesto-estimacion";
 import type { Capitulo, Presupuesto } from "./types";
 
 export function useCrearPresupuesto() {
@@ -32,6 +32,7 @@ export function useCrearPresupuesto() {
         notas: "",
         capitulos: estimacion ? conCapitulos(capitulosDesdeEstimacion(estimacion)) : capitulosIniciales(),
         referenciaBase: estimacion?.base,
+        referenciaCapitulos: estimacion ? referenciaCapitulos(estimacion) : undefined,
       };
       d.presupuestos.unshift(p);
       if (proyecto) {

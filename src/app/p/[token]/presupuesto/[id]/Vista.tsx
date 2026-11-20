@@ -21,6 +21,7 @@ export default function PresupuestoCliente() {
   const p = datos?.presupuestos.find((x) => x.id === id);
   if (!datos || !p) return <main className="p-6"><Vacio>Presupuesto no disponible.</Vacio></main>;
   const t = totales(p);
+  const ref = p.referenciaCapitulos;
 
   const responder = async (acepta: boolean) => {
     if (!confirm(acepta ? "¿Aceptas este presupuesto?" : "¿Rechazas este presupuesto?")) return;
@@ -67,17 +68,37 @@ export default function PresupuestoCliente() {
       <Tarjeta className="print-plain mb-4">
         <h2 className="mb-2 font-semibold">Resumen por capítulos</h2>
         <table className="w-full text-sm">
-          <tbody className="divide-y divide-stone-100">
-            {p.capitulos.map((c, ci) => (
-              <tr key={c.id}>
-                <td className="w-10 py-1.5 text-stone-400">{String(ci + 1).padStart(2, "0")}</td>
-                <td className="py-1.5"><a href={`#cap-${ci + 1}`} className="hover:underline">{c.nombre}</a></td>
-                <td className="py-1.5 text-right text-xs text-stone-400">{t.bruto > 0 ? `${Math.round((totalCapitulo(c) / t.bruto) * 100)} %` : ""}</td>
-                <td className="w-28 py-1.5 text-right">{euros(totalCapitulo(c))}</td>
+          {ref && (
+            <thead>
+              <tr className="text-left text-xs text-stone-500">
+                <th colSpan={2} />
+                <th className="py-1 text-right font-normal">%</th>
+                <th className="py-1 text-right font-normal">Importe</th>
+                <th className="no-print hidden py-1 text-right font-normal sm:table-cell">Frente a referencia</th>
               </tr>
-            ))}
+            </thead>
+          )}
+          <tbody className="divide-y divide-stone-100">
+            {p.capitulos.map((c, ci) => {
+              const r = ref?.[c.nombre];
+              const dif = r ? Math.round(((totalCapitulo(c) - r) / r) * 100) : null;
+              return (
+                <tr key={c.id}>
+                  <td className="w-10 py-1.5 text-stone-400">{String(ci + 1).padStart(2, "0")}</td>
+                  <td className="py-1.5"><a href={`#cap-${ci + 1}`} className="hover:underline">{c.nombre}</a></td>
+                  <td className="py-1.5 text-right text-xs text-stone-400">{t.bruto > 0 ? `${Math.round((totalCapitulo(c) / t.bruto) * 100)} %` : ""}</td>
+                  <td className="w-28 py-1.5 text-right">{euros(totalCapitulo(c))}</td>
+                  {ref && (
+                    <td className={`no-print hidden w-32 py-1.5 text-right text-xs sm:table-cell ${dif === null ? "text-stone-400" : Math.abs(dif) > 15 ? "font-medium text-amber-700" : "text-emerald-700"}`}>
+                      {dif === null ? "sin referencia" : `${dif > 0 ? "+" : ""}${dif} %`}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {ref && <RevisionOferta capitulos={p.capitulos.map((c) => ({ nombre: c.nombre, importe: totalCapitulo(c) }))} referencia={ref} base={t.base} referenciaBase={p.referenciaBase} />}
       </Tarjeta>
 
       <div className="space-y-4">
@@ -147,5 +168,23 @@ export default function PresupuestoCliente() {
         p.respuestaCliente && <p className="mt-4 text-sm text-stone-500">Respondiste el {fecha(p.respuestaCliente.fecha)}.</p>
       )}
     </main>
+  );
+}
+
+/** Revisión automática de la oferta frente al presupuesto de referencia de la vivienda. */
+function RevisionOferta({ capitulos, referencia, base, referenciaBase }: { capitulos: { nombre: string; importe: number }[]; referencia: Record<string, number>; base: number; referenciaBase?: number }) {
+  const faltan = Object.keys(referencia).filter((n) => referencia[n] > 0 && !capitulos.some((c) => c.nombre === n && c.importe > 0));
+  const altos = capitulos.filter((c) => referencia[c.nombre] && c.importe > referencia[c.nombre] * 1.15).map((c) => c.nombre);
+  const bajos = capitulos.filter((c) => referencia[c.nombre] && c.importe < referencia[c.nombre] * 0.85).map((c) => c.nombre);
+  const dif = referenciaBase ? Math.round(((base - referenciaBase) / referenciaBase) * 100) : null;
+  return (
+    <div className="no-print mt-3 rounded-xl bg-stone-50 p-3 text-sm">
+      <div className="font-semibold">⚖️ Revisión frente a tu presupuesto de referencia</div>
+      {dif !== null && <p className="mt-1 text-stone-700">En total, esta oferta está un <b>{dif > 0 ? "+" : ""}{dif} %</b> {Math.abs(dif) <= 15 ? "dentro del rango normal." : dif > 0 ? "por encima: pregunta qué incluye de más." : "por debajo: comprueba que no falte nada."}</p>}
+      {faltan.length > 0 && <p className="mt-1 text-amber-800">Falta o no se valora: {faltan.join(", ")}. Pregunta si va incluido en otra partida.</p>}
+      {altos.length > 0 && <p className="mt-1 text-stone-700">Más caro que la referencia: {altos.join(", ")}.</p>}
+      {bajos.length > 0 && <p className="mt-1 text-stone-700">Más barato que la referencia: {bajos.join(", ")}. Revisa las calidades y mediciones.</p>}
+      {!faltan.length && !altos.length && !bajos.length && <p className="mt-1 text-emerald-800">Todos los capítulos están dentro del rango de referencia.</p>}
+    </div>
   );
 }

@@ -45,3 +45,10 @@ export function capitulosDesdeEstimacion(e: Estimacion): Capitulo[] {
   }
   return caps;
 }
+
+/** Importe de referencia (venta sin IVA) de cada capítulo de la estimación. */
+export function referenciaCapitulos(e: Estimacion): Record<string, number> {
+  const r: Record<string, number> = {};
+  for (const l of e.lineas) r[l.capitulo] = Math.round(((r[l.capitulo] ?? 0) + l.cantidad * l.precio) * 100) / 100;
+  return r;
+}
