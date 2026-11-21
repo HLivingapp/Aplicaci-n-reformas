@@ -15,10 +15,10 @@ export function RequiereRegistro({ children, motivo }: { children: React.ReactNo
 }
 
 const VENTAJAS = [
-  ["🧾", "Tu presupuesto de reforma gratis, partida a partida"],
+  ["🧾", "Tu presupuesto partida a partida, al momento en la app"],
   ["💬", "La comunidad: experiencias reales y respuestas de profesionales"],
   ["🎨", "Diseña tu baño o cocina y compara acabados"],
-  ["✅", "Acceso a reformistas homologados de tu zona"],
+  ["✅", "Pide presupuesto a reformistas homologados (plan Básico)"],
 ];
 
 export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerrar?: () => void }) {

@@ -39,6 +39,7 @@ export function Calculadora() {
         <div className="text-xs text-teal-100">+ IVA (10 %) · el precio exacto sale partida a partida con tu vivienda</div>
       </div>
       <Link href="/nuevo" className="mt-4 block rounded-2xl bg-amber-400 py-3.5 text-center font-semibold text-stone-900 transition hover:bg-amber-300">Calcular el de mi casa →</Link>
+      <p className="mt-2 text-center text-xs text-stone-500">Partida a partida y gratis con tu email. Lo ves al momento en la app.</p>
     </div>
   );
 }

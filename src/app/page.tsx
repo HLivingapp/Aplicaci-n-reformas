@@ -16,13 +16,13 @@ const PASOS = [
   },
   {
     n: "2",
-    t: "Recibe tu presupuesto al momento",
-    d: "Partida a partida, con lo que incluye cada una y las cantidades de tu vivienda. Elige acabados básicos, medios o premium y ve cómo cambia el precio.",
+    t: "Míralo al momento, aquí mismo",
+    d: "Partida a partida, en la app y sin esperar a que te llegue un email. Elige acabados básicos, medios o premium y ve cómo cambia el precio.",
   },
   {
     n: "3",
     t: "Te presentamos reformistas de tu zona",
-    d: "Con tu presupuesto orientativo te ponemos en contacto con reformistas homologados y disponibles cerca de ti. Tú eliges con quién firmar.",
+    d: "Con el plan Básico (5 €/mes) pides presupuesto a los reformistas homologados de tu zona que tú elijas, y los comparas con tu referencia. Tú decides con quién firmar.",
   },
 ];
 
@@ -32,11 +32,11 @@ const VENTAJAS = [
   { i: "🎨", t: "Tú eliges los acabados", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
   { i: "✍️", t: "Contrato estándar en la app", d: "El encargo y el contrato se firman en la app, con plazos, hitos de pago y los acabados que elegiste." },
   { i: "📆", t: "Sigues tu obra paso a paso", d: "Fases y plazos calculados para tu reforma, y todo el proyecto en un enlace privado." },
-  { i: "🔒", t: "Tus datos, protegidos", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono no se comparte hasta que tú aceptas un presupuesto." },
+  { i: "🔒", t: "Tus datos, protegidos", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
 ];
 
 const PREGUNTAS = [
-  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. El presupuesto orientativo es gratis y sin compromiso. Para pedir presupuestos a la red de reformistas homologados está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
+  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Solo si quieres pedir presupuestos a los reformistas homologados está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
   { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado de Hacienda al corriente y seguro de responsabilidad civil vigentes. El registro REA se vuelve a comprobar cada mes." },
   { q: "¿Y si cambio de opinión?", a: "Puedes cancelar el contrato desde la app. Se hace un acta con lo ejecutado hasta ese momento." },
@@ -61,7 +61,7 @@ export default function Inicio() {
               Tu reforma, con precio claro <em className="font-medium text-amber-300">desde el primer día</em>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-stone-300">
-              Escribe tu dirección y en 3 minutos tienes tu presupuesto partida a partida. Con él te ponemos en contacto con <strong className="text-white">reformistas homologados de tu zona</strong>, y tú eliges con quién firmar.
+              Únete gratis con tu email, escribe tu dirección y en 3 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Después, si quieres, lo pides a reformistas homologados de tu zona.
             </p>
             <Link href={empezar} className="group mt-8 flex max-w-xl items-center gap-3 rounded-2xl bg-white p-2 pl-4 text-stone-500 shadow-2xl shadow-teal-900/40 ring-4 ring-white/10 transition hover:ring-amber-300/40">
               <span className="text-xl">📍</span>
@@ -69,7 +69,7 @@ export default function Inicio() {
               <span className="shrink-0 rounded-xl bg-teal-700 px-4 py-3 sm:px-5 font-semibold text-white transition group-hover:bg-teal-600">Calcular precio</span>
             </Link>
             <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-300">
-              {["Gratis y sin compromiso", "Datos del Catastro al momento", "Sin dar tu teléfono"].map((x) => (
+              {["Gratis con tu email", "Datos del Catastro al momento", "Tu presupuesto en la app, no por email"].map((x) => (
                 <li key={x} className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span>{x}</li>
               ))}
             </ul>
@@ -234,11 +234,11 @@ export default function Inicio() {
 
       {/* Planes */}
       <section className="mx-auto max-w-6xl px-4 pt-16">
-        <h2 className="text-center font-display text-4xl font-semibold tracking-tight">Empieza gratis. Suscríbete cuando lo necesites</h2>
+        <h2 className="text-center font-display text-4xl font-semibold tracking-tight">Tu presupuesto, gratis. La red de reformistas, desde 5 €/mes</h2>
         <p className="mx-auto mt-2 max-w-2xl text-center text-stone-600">Sin permanencia. Los pagos de la obra van directamente al reformista que elijas.</p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
-            { n: "Gratis", p: "0 €", d: "Presupuesto orientativo partida a partida y comunidad.", cls: "border-stone-200" },
+            { n: "Gratis", p: "0 €", d: "Te unes con tu email y ves tu presupuesto partida a partida en la app, al momento. Y la comunidad.", cls: "border-stone-200" },
             { n: "Básico", p: "5 €/mes", d: "Suscríbete y accede a nuestra red de profesionales homologados. Pide presupuestos y compáralos con tu referencia.", cls: "border-teal-600 ring-2 ring-teal-100" },
             { n: "Pro", p: "30 €/mes", d: "Todo lo del Básico y un asistente IA especializado en obra: presupuestos, licencias en Madrid y dudas técnicas.", cls: "border-indigo-300" },
           ].map((x) => (
@@ -297,7 +297,7 @@ export default function Inicio() {
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
           <h2 className="font-display text-4xl font-semibold tracking-tight">¿Cuánto costaría reformar tu casa?</h2>
-          <p className="max-w-xl text-teal-50">Descúbrelo en 3 minutos y conoce a los reformistas homologados de tu zona.</p>
+          <p className="max-w-xl text-teal-50">Únete gratis con tu email y míralo en 3 minutos, aquí mismo. Sin esperar a que te llegue por correo.</p>
           <Link href={empezar} className="rounded-xl bg-white px-6 py-3.5 font-semibold text-teal-800 hover:bg-teal-50">Calcular mi presupuesto gratis</Link>
         </div>
       </section>
