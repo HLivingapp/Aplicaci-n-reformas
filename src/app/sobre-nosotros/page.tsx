@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { publico } from "@/lib/base";
+import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
 
 export const metadata: Metadata = {
   title: "Sobre Human Living · Quiénes somos",
@@ -30,6 +31,15 @@ const QUE_HACEMOS = [
   },
 ];
 
+const EDIFICIOS_CENTRO = [
+  ["Forjados de madera", "Comprobamos vigas, apoyos y flechas antes de cargar el suelo con tabiques, bañeras o pavimentos pesados."],
+  ["Muros de carga", "Sabemos qué se puede abrir, qué necesita refuerzo y cuándo hace falta proyecto técnico."],
+  ["Bajantes y tuberías antiguas", "Plomo o fibrocemento: se sustituyen, y el amianto lo retira una empresa autorizada."],
+  ["Electricidad sin tierra", "Instalaciones de otra época, sin toma de tierra ni potencia suficiente para una vivienda actual."],
+  ["Humedades", "Patios de luces, plantas bajas y cubiertas: localizamos la causa antes de tapar nada."],
+  ["Edificios protegidos", "Fachadas y carpinterías catalogadas, licencias y permisos de la comunidad, desde el primer día."],
+] as const;
+
 const PRINCIPIOS = [
   ["Claridad", "Precio partida a partida y qué incluye cada una, desde el primer día."],
   ["Anticipación", "Lo que suele descubrirse a mitad de obra, lo ves antes de empezar."],
@@ -40,20 +50,7 @@ const PRINCIPIOS = [
 export default function SobreNosotros() {
   return (
     <div className="min-h-dvh bg-white text-stone-900">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-stone-950/80 text-white backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
-            <span className="font-display text-base font-semibold tracking-tight sm:text-lg">Human Living</span>
-          </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white sm:inline">Comunidad</Link>
-            <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white sm:inline">Planes</Link>
-            <Link href="/nuevo" className="whitespace-nowrap rounded-full bg-amber-400 px-4 py-1.5 font-semibold text-stone-900 hover:bg-amber-300">Calcular precio</Link>
-          </nav>
-        </div>
-      </header>
+      <CabeceraSitio />
 
       {/* Portada */}
       <section className="relative overflow-hidden bg-stone-950 text-white">
@@ -67,6 +64,13 @@ export default function SobreNosotros() {
             <p className="mt-6 max-w-xl text-lg text-stone-300">
               Nos hemos especializado en reformar viviendas para poder sistematizar cada obra, anticipar los problemas y ayudar a cada persona a gestionar su proyecto de vivienda en tiempos competitivos y con la mayor consciencia posible.
             </p>
+            <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-4">
+              <div>
+                <div className="font-display text-6xl font-semibold leading-none text-amber-300 sm:text-7xl">+300</div>
+                <div className="mt-2 text-sm text-stone-300">obras ejecutadas en Madrid</div>
+              </div>
+              <p className="max-w-xs border-l border-white/15 pl-6 text-sm text-stone-300">Sobre todo en los barrios del centro, donde conocemos la arquitectura de cada edificio y sus problemas típicos.</p>
+            </div>
           </div>
           <div className="aparecer min-w-0 [animation-delay:200ms]">
             <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
@@ -89,6 +93,42 @@ export default function SobreNosotros() {
           <p>
             Eso es precisamente lo que hacemos. Gracias a la inteligencia artificial, no solo te ayudamos a diseñar mejor con nuestro equipo de arquitectos o a comprar sin incidencias con expertos en vivienda: queremos que accedas a <strong>años de contactos, experiencias, técnicas y opciones</strong>, y que puedas trazar un camino sencillo para conseguir lo que necesitas.
           </p>
+        </div>
+      </section>
+
+      {/* Experiencia en el centro de Madrid */}
+      <section className="bg-stone-950 text-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Experiencia</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+              Más de <span className="text-amber-300">300 obras</span> en Madrid
+            </h2>
+            <p className="mt-4 text-lg text-stone-300">
+              La mayoría, en edificios del centro: fincas antiguas, con su forma de construir y sus problemas de siempre. Por eso sabemos qué vamos a encontrar al abrir una pared, y lo incluimos en tu presupuesto desde el principio, no a mitad de obra.
+            </p>
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+                <div className="font-display text-4xl font-semibold text-amber-300">+300</div>
+                <div className="mt-1 text-sm text-stone-400">obras ejecutadas en Madrid</div>
+              </div>
+              <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+                <div className="font-display text-4xl font-semibold text-amber-300">Centro</div>
+                <div className="mt-1 text-sm text-stone-400">donde más hemos trabajado</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Lo que ya sabemos de los edificios del centro</h3>
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {EDIFICIOS_CENTRO.map(([t, d]) => (
+                <li key={t} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
+                  <div className="font-semibold">{t}</div>
+                  <div className="mt-1 text-sm text-stone-400">{d}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
