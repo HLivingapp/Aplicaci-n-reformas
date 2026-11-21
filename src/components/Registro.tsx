@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { publico } from "@/lib/base";
 import { TEXTO_CONTACTO_MIEMBRO } from "@/lib/miembro";
 import { unirse, useMiembro } from "@/lib/miembro-cliente";
@@ -21,7 +21,7 @@ const VENTAJAS = [
   ["✅", "Acceso a reformistas homologados de tu zona"],
 ];
 
-export function PantallaRegistro({ motivo }: { motivo?: string }) {
+export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerrar?: () => void }) {
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [aceptaPrivacidad, setAceptaPrivacidad] = useState(false);
@@ -33,6 +33,9 @@ export function PantallaRegistro({ motivo }: { motivo?: string }) {
     <div className="relative min-h-dvh overflow-hidden bg-stone-950 text-white">
       <div className="pointer-events-none absolute -left-40 -top-40 h-[30rem] w-[30rem] rounded-full bg-teal-600/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 -right-20 h-[26rem] w-[26rem] rounded-full bg-amber-500/20 blur-3xl" />
+      {alCerrar && (
+        <button type="button" onClick={alCerrar} aria-label="Cerrar" className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl text-white hover:bg-white/20">×</button>
+      )}
       <div className="relative mx-auto grid min-h-dvh max-w-5xl grid-cols-1 items-center gap-10 px-4 py-10 lg:grid-cols-2">
         <div>
           <Link href="/" className="flex items-center gap-2">
@@ -90,4 +93,30 @@ export function PantallaRegistro({ motivo }: { motivo?: string }) {
       </div>
     </div>
   );
+}
+
+/**
+ * Para participar (publicar, responder, votar, pedir presupuesto…) hay que unirse; leer es libre.
+ * `exigir(accion)` ejecuta la acción si ya es miembro o abre el registro y la ejecuta al terminar.
+ */
+export function useExigirRegistro(motivo = "Únete gratis para participar. Leer siempre es libre.") {
+  const m = useMiembro();
+  const [pendiente, setPendiente] = useState<(() => void) | null>(null);
+  const esMiembro = !!m;
+  const exigir = (accion?: () => void) => {
+    if (esMiembro) accion?.();
+    else setPendiente(() => accion ?? (() => {}));
+  };
+  useEffect(() => {
+    if (esMiembro && pendiente) {
+      pendiente();
+      setPendiente(null);
+    }
+  }, [esMiembro, pendiente]);
+  const modal = pendiente && !esMiembro ? (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <PantallaRegistro motivo={motivo} alCerrar={() => setPendiente(null)} />
+    </div>
+  ) : null;
+  return { esMiembro, exigir, modal };
 }

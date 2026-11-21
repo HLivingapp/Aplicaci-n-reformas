@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { conBaseDeDatos } from "@/lib/modo";
 import { guardarSuscripcion, PLANES, useSuscripcion, type Plan } from "@/lib/suscripcion";
+import { useExigirRegistro } from "@/components/Registro";
 
 export default function Planes() {
   return (
@@ -28,6 +29,7 @@ function VistaPlanes() {
   const router = useRouter();
   const volver = useSearchParams().get("volver");
   const [pagando, setPagando] = useState<Plan | null>(null);
+  const { exigir, modal } = useExigirRegistro("Únete gratis con tu email y después elige tu plan.");
 
   const activar = (plan: Plan) => {
     guardarSuscripcion(plan);
@@ -37,6 +39,7 @@ function VistaPlanes() {
 
   return (
     <div className="min-h-dvh bg-stone-50">
+      {modal}
       <CabeceraPublica />
       <section className="bg-gradient-to-b from-amber-50 to-stone-50">
         <div className="mx-auto max-w-5xl px-4 pb-4 pt-10 text-center">
@@ -74,7 +77,7 @@ function VistaPlanes() {
                       <Link href="/nuevo" className="block rounded-xl border border-stone-300 py-2.5 text-center text-sm hover:bg-stone-50">Calcular mi presupuesto</Link>
                     )
                   ) : (
-                    <button onClick={() => setPagando(p.id)} className={`w-full rounded-xl py-2.5 text-sm font-semibold text-white ${p.id === "pro" ? "bg-indigo-700 hover:bg-indigo-800" : "bg-teal-700 hover:bg-teal-800"}`}>
+                    <button onClick={() => exigir(() => setPagando(p.id))} className={`w-full rounded-xl py-2.5 text-sm font-semibold text-white ${p.id === "pro" ? "bg-indigo-700 hover:bg-indigo-800" : "bg-teal-700 hover:bg-teal-800"}`}>
                       Suscribirme por {p.precio} €/mes
                     </button>
                   )}
