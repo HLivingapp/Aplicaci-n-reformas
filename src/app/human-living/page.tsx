@@ -196,6 +196,7 @@ export default function SobreNosotros() {
           <span>© {APP.nombre} · Human Living, empresa destacada</span>
           <Link href="/" className="hover:underline">Inicio</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
+          <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
           <Link href="/comunidad" className="hover:underline">Comunidad</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
         </p>

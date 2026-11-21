@@ -1,4 +1,5 @@
 "use client";
+import { TEXTO_COMERCIALIZADORA } from "@/lib/legal";
 
 import { AvisoMemoriaTecnica } from "./Beneficios";
 import { InvitaClientes } from "./InvitaClientes";
@@ -107,6 +108,7 @@ function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | 
   return (
     <div className="space-y-2 rounded-xl bg-stone-50 p-3 text-sm">
       <div className="font-medium">Contrato de servicios de arquitectura · {servicio.texto}</div>
+      <p className="text-xs text-stone-500">{TEXTO_COMERCIALIZADORA}</p>
       <ul className="space-y-1 text-stone-700">
         <li><b>Honorarios:</b> {euros(p.importe)} + IVA ({IVA} %) = {euros(conIva(p.importe))}</li>
         <li><b>Plazo:</b> {p.plazoSemanas} semanas</li>

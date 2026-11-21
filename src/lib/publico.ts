@@ -1,3 +1,4 @@
+import { RESPONSABLE } from "./legal";
 /**
  * Lo que ve y hace el cliente con su enlace privado. Funciones puras que usan
  * tanto el servidor (con base de datos) como el modo demostración.
@@ -12,7 +13,7 @@ import { textoDireccion } from "./proyecto";
 import type { Cliente, Datos, DatosReforma, Obra, Presupuesto, Proyecto, Tarifas, Vivienda } from "./types";
 
 export const TEXTO_CONSENTIMIENTO =
-  "Acepto que la empresa trate mis datos (contacto, dirección y datos de la vivienda) para estudiar mi reforma, preparar el presupuesto y contactarme, según la política de privacidad.";
+  `Acepto que ${RESPONSABLE.razonSocial}, titular de la app, trate mis datos (contacto, dirección y datos de la vivienda) para estudiar mi reforma, preparar el presupuesto, ponerme en contacto con los profesionales que elija y contactarme, según la política de privacidad.`;
 
 export interface ContactoCliente {
   nombre: string;

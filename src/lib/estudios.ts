@@ -1,4 +1,5 @@
 "use client";
+import { TITULAR } from "./legal";
 
 import { nuevoId } from "./id";
 
@@ -176,4 +177,4 @@ export const ESTADO_ESTUDIO: Record<EstadoEncargoEstudio, { texto: string; cls: 
 
 /** Compromiso de declarar las ventas que llegan por la app (mismo texto que para reformistas). Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_ESTUDIO =
-  "Me comprometo a declarar íntegramente en la app todos los encargos, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, la plataforma podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.";
+  `Me comprometo a declarar íntegramente en la app todos los encargos, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, ${TITULAR} podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.`;

@@ -19,6 +19,7 @@ export default function Privacidad() {
           <li>Domicilio: {R.domicilio}</li>
           <li>Email: <a className="text-teal-700 underline" href={`mailto:${R.email}`}>{R.email}</a> · Teléfono: {R.telefono}</li>
         </ul>
+        <p className="mt-2">{R.razonSocial} es la titular de {APP.nombre} y la comercializadora de los servicios de los profesionales de la app. Las empresas destacadas, como Human Living, son empresas distintas.</p>
       </Seccion>
 
       <Seccion titulo="2. Qué datos tratamos">
@@ -50,7 +51,7 @@ export default function Privacidad() {
       </Seccion>
 
       <Seccion titulo="5. Quién puede ver tus datos">
-        <p>Solo el equipo de {R.marca} que gestiona tu reforma. Para que la aplicación funcione usamos proveedores que tratan los datos por cuenta nuestra (encargados del tratamiento), con contrato conforme al art. 28 del RGPD: {R.proveedores}.</p>
+        <p>El equipo de {R.razonSocial} que gestiona la app y, cuando eliges a un profesional (reformista, estudio de arquitectura o especialista para tu comunidad), ese profesional, que firma al darse de alta un compromiso de usar tus datos solo para tu reforma y protegerlos. Para que la aplicación funcione usamos proveedores que tratan los datos por cuenta nuestra (encargados del tratamiento), con contrato conforme al art. 28 del RGPD: {R.proveedores}.</p>
         <p>Si es necesario para tu obra, compartiremos lo imprescindible con los profesionales e industriales que intervienen en ella, o con entidades financieras si nos pides gestionar la financiación. No vendemos tus datos ni los cedemos a terceros para otros fines, salvo obligación legal.</p>
         <p>Los datos se guardan en servidores ubicados en la Unión Europea.</p>
       </Seccion>

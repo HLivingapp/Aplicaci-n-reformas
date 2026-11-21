@@ -1,4 +1,5 @@
 "use client";
+import { RESPONSABLE, TEXTO_COMERCIALIZADORA, TITULAR } from "@/lib/legal";
 
 import { euros } from "@/lib/calc";
 import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaEncargo, TEXTO_RESERVA, type Encargo } from "@/lib/encargos";
@@ -37,7 +38,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
       </div>
       <ol className="list-decimal space-y-3 pl-5 text-stone-700">
         <li>
-          <b>Partes.</b> {e.cliente} (la propiedad) y el reformista {invitado ? "" : "homologado "}{e.codigo} (el contratista{invitado ? ", invitado a la app por la propiedad" : ""}). Los datos fiscales completos de ambas partes se incorporan al firmar.
+          <b>Partes.</b> {e.cliente} (la propiedad) y el reformista {invitado ? "" : "homologado "}{e.codigo} (el contratista{invitado ? ", invitado a la app por la propiedad" : ""}). Los datos fiscales completos de ambas partes se incorporan al firmar. {TEXTO_COMERCIALIZADORA}
         </li>
         <li>
           <b>Objeto.</b> Reforma de la vivienda de {textoDireccion(e.vivienda.direccion)}, según las partidas, mediciones y acabados de este presupuesto, acordado tras la visita del {fecha(e.visita.fecha) || "día acordado"}.
@@ -63,7 +64,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           {invitado ? (
             <>Contratista invitado por la propiedad: no hay reserva en la app. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           ) : (
-            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}). La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
+            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}) a {RESPONSABLE.razonSocial}, titular de la app. La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           )}
           <ul className="mt-1 space-y-0.5">
             {!invitado && <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app, a la firma</span><span>{euros(reserva)}</span></li>}
@@ -105,7 +106,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
       )}
       {parte === "reformista" && !invitado && (
         <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
-          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). Se la queda la plataforma y se descuenta de lo que cobras de la obra.{" "}
+          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). La cobra {TITULAR} y se descuenta de lo que cobras de la obra.{" "}
           {reserva > (f.importe * COMERCIALIZACION.pct) / 100 && <b>Ojo: en esta obra se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(f.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe. </b>}
           Recuerda que firmaste declarar en la app todas las ventas con este cliente, incluidas ampliaciones. Si el cliente anula el contrato en la app, se te devuelve la parte del fee que corresponda a lo que quede por ejecutar. En esta demostración no se cobra nada.
         </p>
