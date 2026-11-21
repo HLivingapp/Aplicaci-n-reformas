@@ -71,7 +71,7 @@ export default function SobreNosotros() {
           <div className="aparecer min-w-0 [animation-delay:200ms]">
             <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={publico("/fotos/equipo/equipo-madrid.webp")} alt="El equipo de Human Living en Madrid" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
+              <img src={publico("/fotos/obra/cocina-salon.webp")} alt="Cocina abierta al salón en una reforma terminada" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
             </div>
           </div>
         </div>
@@ -129,9 +129,9 @@ export default function SobreNosotros() {
           </div>
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {/* eslint-disable @next/next/no-img-element */}
-            <img src={publico("/fotos/equipo/equipo-showroom.webp")} alt="El equipo de Human Living en el showroom" loading="lazy" className="col-span-2 aspect-[3/2] w-full rounded-3xl object-cover" />
-            <img src={publico("/fotos/equipo/equipo-cocina.webp")} alt="Miembro del equipo de Human Living en una cocina reformada" loading="lazy" className="aspect-square w-full rounded-3xl object-cover" />
-            <img src={publico("/fotos/equipo/equipo-retrato.webp")} alt="Miembro del equipo de Human Living" loading="lazy" className="aspect-square w-full rounded-3xl object-cover object-top" />
+            <img src={publico("/fotos/equipo/equipo-cocina.webp")} alt="Miembro del equipo de Human Living en una cocina reformada" loading="lazy" className="col-span-2 aspect-[3/2] w-full rounded-3xl object-cover" />
+            <img src={publico("/fotos/obra/cocina.webp")} alt="Cocina reformada" loading="lazy" className="aspect-square w-full rounded-3xl object-cover" />
+            <img src={publico("/fotos/obra/bano.webp")} alt="Baño reformado" loading="lazy" className="aspect-square w-full rounded-3xl object-cover" />
             {/* eslint-enable @next/next/no-img-element */}
           </div>
         </div>
