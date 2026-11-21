@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import {
-  aplicarTarifa, COMERCIALIZACION, TEXTO_RESERVA, descartarEncargo, reservaApp, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
+  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, descartarEncargo, reservaApp, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
 } from "@/lib/encargos";
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
@@ -129,8 +129,12 @@ function PresupuestoFinal({ e, reformistaId, alEnviar }: { e: Encargo; reformist
       </div>
       <textarea rows={2} className={inputCls} placeholder="Condiciones particulares acordadas en la visita (opcional)" value={notas} onChange={(x) => setNotas(x.target.value)} />
       <p className="text-xs text-stone-600">Reserva del cliente al firmar, que es el fee de la app: <b>{euros(reservaApp(cifra))}</b> ({TEXTO_RESERVA}). Se descuenta de lo que cobras.</p>
-      {cifra < COMERCIALIZACION.obraMinima && <p className="text-xs text-red-700">Las obras que se contratan por la app son de al menos {euros(COMERCIALIZACION.obraMinima)}.</p>}
-      <Boton disabled={cifra < COMERCIALIZACION.obraMinima} onClick={() => { enviarPresupuestoFinal(e.id, { importe: cifra, capitulos: capitulos(), plazoSemanas: plazo, notas }); alEnviar(); }}>
+      {reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
+        <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">
+          ⚠ Obra pequeña: el fee mínimo es de {euros(COMERCIALIZACION.minimo)}, que en esta obra supone un {pctReserva(cifra).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe (en vez del {COMERCIALIZACION.pct} %). Puedes generar el contrato igualmente.
+        </p>
+      )}
+      <Boton onClick={() => { enviarPresupuestoFinal(e.id, { importe: cifra, capitulos: capitulos(), plazoSemanas: plazo, notas }); alEnviar(); }}>
         {e.final ? "Actualizar presupuesto y contrato" : "Generar el contrato y enviárselo al cliente"}
       </Boton>
     </div>

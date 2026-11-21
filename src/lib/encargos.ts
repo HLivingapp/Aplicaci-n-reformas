@@ -20,7 +20,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 
 export const IVA_REFORMA = 10;
 
-export { COMERCIALIZACION, reservaApp, TEXTO_RESERVA } from "./comercializacion";
+export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo } from "./comercializacion";
 
 export type { TarifaReformista };
 
