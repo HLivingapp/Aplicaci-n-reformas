@@ -71,7 +71,7 @@ export default function SobreNosotros() {
           <div className="aparecer min-w-0 [animation-delay:200ms]">
             <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={publico("/fotos/obra/cocina-salon.webp")} alt="Cocina abierta al salón en una reforma terminada" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
+              <img src={publico("/fotos/equipo/malaga-equipo.webp")} alt="El equipo de Human Living" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function SobreNosotros() {
             <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">El equipo</p>
             <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Personas que conocen la obra por dentro</h2>
             <p className="mt-4 text-lg text-stone-600">
-              Arquitectos, técnicos de obra y expertos en vivienda que llevan años reformando casas en la ciudad. Lo que hemos aprendido en cada proyecto está ahora en la app, para que tú no tengas que aprenderlo a base de errores.
+              Arquitectos, técnicos de obra y expertos en vivienda, con equipos en Madrid y Málaga, que llevan años reformando casas en la ciudad. Lo que hemos aprendido en cada proyecto está ahora en la app, para que tú no tengas que aprenderlo a base de errores.
             </p>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
               {PRINCIPIOS.map(([t, d]) => (
@@ -129,9 +129,9 @@ export default function SobreNosotros() {
           </div>
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {/* eslint-disable @next/next/no-img-element */}
-            <img src={publico("/fotos/equipo/equipo-cocina.webp")} alt="Miembro del equipo de Human Living en una cocina reformada" loading="lazy" className="col-span-2 aspect-[3/2] w-full rounded-3xl object-cover" />
-            <img src={publico("/fotos/obra/cocina.webp")} alt="Cocina reformada" loading="lazy" className="aspect-square w-full rounded-3xl object-cover" />
-            <img src={publico("/fotos/obra/bano.webp")} alt="Baño reformado" loading="lazy" className="aspect-square w-full rounded-3xl object-cover" />
+            <img src={publico("/fotos/equipo/malaga-equipo-3.webp")} alt="El equipo de Human Living en Málaga" loading="lazy" className="col-span-2 aspect-[3/2] w-full rounded-3xl object-cover" />
+            <img src={publico("/fotos/equipo/madrid-equipo.webp")} alt="Parte del equipo de Human Living en Madrid" loading="lazy" className="aspect-[3/4] w-full rounded-3xl object-cover object-top" />
+            <img src={publico("/fotos/equipo/malaga-grupo.webp")} alt="Parte del equipo de Human Living en Málaga" loading="lazy" className="aspect-[3/4] w-full rounded-3xl object-cover" />
             {/* eslint-enable @next/next/no-img-element */}
           </div>
         </div>
