@@ -102,30 +102,124 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
   },
 ];
 
+export interface ProductoBanco {
+  banco: string;
+  producto: string;
+  tipo: "Préstamo personal" | "Préstamo hipotecario";
+  /** Importe máximo en euros, si la web lo indica */
+  importeMax: number | null;
+  /** Hipotecas: % máximo del valor de tasación */
+  pctTasacion?: number;
+  plazoMeses: number | null;
+  interes: "fijo" | "variable" | "mixto" | null;
+  resumen: string;
+  url: string;
+}
+
 /**
- * Productos de financiación de reformas de bancos (resumen propio de su información pública,
+ * Productos de financiación de reformas de bancos y cajas (resumen propio de su información pública,
  * consultada el 21/11/2026). Human Living no tiene acuerdo con estas entidades por ahora.
  */
-export const BANCOS_REFORMA = [
+export const BANCOS_REFORMA: ProductoBanco[] = [
   {
     banco: "Unicaja",
     producto: "Préstamo Reforma",
     tipo: "Préstamo personal",
-    resumen: "Para reformar la vivienda (baños, cocina, climatización…). Hasta 60.000 €, a tipo fijo y hasta 8 años. Se tramita con el presupuesto o una factura proforma de la obra.",
+    importeMax: 60000,
+    plazoMeses: 96,
+    interes: "fijo",
+    resumen: "Para reformar la vivienda (baños, cocina, climatización…). Se tramita con el presupuesto o una factura proforma de la obra.",
     url: "https://www.unicajabanco.es/es/particulares/hipotecas-y-prestamos/prestamos-personales/prestamo-reforma",
   },
   {
     banco: "Kutxabank",
     producto: "Préstamo Reforma Hogar",
     tipo: "Préstamo personal",
-    resumen: "Para reformar o rehabilitar la vivienda o el edificio. De 1.500 € a 75.000 €, de 3 meses a 7 años y cuotas fijas. Se presenta el presupuesto de la obra; por debajo de 70.000 € se puede contratar online.",
+    importeMax: 75000,
+    plazoMeses: 84,
+    interes: "fijo",
+    resumen: "Para reformar o rehabilitar la vivienda o el edificio, desde 1.500 € y con cuotas fijas. Se presenta el presupuesto; por debajo de 70.000 € se puede contratar online.",
     url: "https://portal.kutxabank.es/cs/Satellite/kb/en/private-customers/productos/prestamos-consumo/prestamo-reforma-hogar/pys",
+  },
+  {
+    banco: "Globalcaja",
+    producto: "Hipoteca Inversión y Reforma",
+    tipo: "Préstamo hipotecario",
+    importeMax: null,
+    pctTasacion: 70,
+    plazoMeses: 360,
+    interes: null,
+    resumen: "Hipoteca para comprar una vivienda o reformarla, con la vivienda como garantía, hasta el 70 % del valor de tasación.",
+    url: "https://www.globalcaja.es/sites/default/files/2026-05/720_fipre_hip_inversion_reforma.pdf",
   },
   {
     banco: "Caja Rural de Soria",
     producto: "Préstamo Personal",
     tipo: "Préstamo personal",
-    resumen: "Préstamo para lo que necesites, también reformar tu casa: hasta 60.000 € y hasta 8 años, a tipo fijo, con rebajas si domicilias la nómina. Para obras de ahorro energético (aislamiento, placas solares, reformas eco) tiene además un préstamo de mejora energética.",
+    importeMax: 60000,
+    plazoMeses: 96,
+    interes: "fijo",
+    resumen: "Préstamo para lo que necesites, también reformar tu casa, con rebajas si domicilias la nómina. Para obras de ahorro energético tiene además el Préstamo Verde.",
     url: "https://www.cajaruraldesoria.com/es/particulares/prestamos/prestamo-personal",
+  },
+  {
+    banco: "Banco Santander",
+    producto: "Préstamo Reforma Vivienda",
+    tipo: "Préstamo personal",
+    importeMax: 100000,
+    plazoMeses: 84,
+    interes: "fijo",
+    resumen: "Para reformar tu casa, contratable online. Si en 90 días justificas con factura o presupuesto un uso sostenible, mantienes la rebaja del tipo.",
+    url: "https://www.bancosantander.es/particulares/prestamos/prestamo-reforma-vivienda",
+  },
+  {
+    banco: "CaixaBank",
+    producto: "Préstamo Hogar",
+    tipo: "Préstamo personal",
+    importeMax: 30000,
+    plazoMeses: 72,
+    interes: null,
+    resumen: "Para reformar o amueblar la casa, desde 2.000 €. Se pide 100 % online y responden en unas 24 horas.",
+    url: "https://www.caixabank.es/particular/prestamos-personales/prestamo-muebles.html",
+  },
+  {
+    banco: "BBVA",
+    producto: "Préstamo Reforma Vivienda",
+    tipo: "Préstamo personal",
+    importeMax: 20000,
+    plazoMeses: null,
+    interes: null,
+    resumen: "Para la reforma de tu vivienda, desde 3.000 € y con un solo titular. Se contrata en digital, sin necesidad de ser cliente; mejor tipo si domicilias la nómina.",
+    url: "https://www.bbva.es/personas/productos/prestamos/prestamo-reforma-vivienda.html",
+  },
+  {
+    banco: "Abanca",
+    producto: "Préstamo Reforma 24h",
+    tipo: "Préstamo personal",
+    importeMax: 60000,
+    plazoMeses: 96,
+    interes: null,
+    resumen: "Para reformar tu casa, desde 6.000 €, solicitándolo en su web. Tiene comisión de apertura y pide tener su tarjeta.",
+    url: "https://www.abanca.com/es/prestamos/prestamo-reforma-24h/",
+  },
+  {
+    banco: "Laboral Kutxa",
+    producto: "Financiación Sostenible",
+    tipo: "Préstamo personal",
+    importeMax: 99999,
+    plazoMeses: 96,
+    interes: null,
+    resumen: "Para obras sostenibles de la vivienda: ascensor, baño accesible, ventanas, placas solares o aerotermia.",
+    url: "https://www.laboralkutxa.com/es/personas/prestamo-online/financiacion-sostenible/",
+  },
+  {
+    banco: "Bankinter",
+    producto: "Préstamo EcoReforma",
+    tipo: "Préstamo personal",
+    importeMax: null,
+    plazoMeses: null,
+    interes: null,
+    resumen: "Para obras de eficiencia energética (ventanas, aislamiento, bomba de calor, placas solares), desde 3.000 €, contratable online.",
+    url: "https://www.bankinter.com/banca/en/mortgages-loans/loans/ecoreforma-loan",
   },
 ];
