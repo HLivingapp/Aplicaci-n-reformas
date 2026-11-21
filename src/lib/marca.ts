@@ -5,9 +5,9 @@
  * Human Living aparece solo como empresa destacada en su propio apartado (/human-living).
  */
 export const APP = {
-  nombre: process.env.NEXT_PUBLIC_NOMBRE_APP ?? "Reforma Clara",
+  nombre: process.env.NEXT_PUBLIC_NOMBRE_APP ?? "ReformaMejor",
   /** Versión corta para cabeceras en móvil */
-  corto: process.env.NEXT_PUBLIC_NOMBRE_APP_CORTO ?? "RC",
+  corto: process.env.NEXT_PUBLIC_NOMBRE_APP_CORTO ?? "RM",
   lema: "Tu reforma con precio claro",
 };
 
