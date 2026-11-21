@@ -11,7 +11,6 @@ const MENU = [
   { href: "/disena", texto: "Diseña", ver: "md:inline" },
   { href: "/comunidad", texto: "Comunidad", ver: "md:inline" },
   { href: "/suscripcion", texto: "Planes", ver: "md:inline" },
-  { href: "/reformistas", texto: "Soy reformista", ver: "lg:inline" },
   { href: "/cliente", texto: "Mi reforma", ver: "sm:inline" },
 ];
 
@@ -40,6 +39,9 @@ export function CabeceraSitio() {
               </Link>
             );
           })}
+          <Link href="/#profesionales" className="whitespace-nowrap rounded-full border border-amber-300/70 px-3 py-1.5 font-semibold text-amber-200 hover:bg-white/10">
+            <span className="sm:hidden">Soy pro</span><span className="hidden sm:inline">Soy profesional</span>
+          </Link>
           <Link href="/nuevo" className="whitespace-nowrap rounded-full bg-amber-400 px-4 py-1.5 font-semibold text-stone-900 hover:bg-amber-300">Calcular precio</Link>
         </nav>
       </div>

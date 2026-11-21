@@ -58,7 +58,7 @@ export default function AltaArquitectos() {
         {[
           ["💶", "Solo pagas si firmas", `Sin cuotas por contacto. El fee es la reserva que paga el cliente al firmar en la app (${TEXTO_RESERVA}) y se descuenta de tus honorarios.`],
           ["📐", "Encargos con la vivienda definida", "Llegan con m², distribución, presupuesto de obra y lo que el cliente quiere hacer."],
-          ...BENEFICIOS_PROFESIONAL.filter((b) => b.t.startsWith("Menos impagos") || b.t.startsWith("Financiación") || b.t.startsWith("Memoria")).map((b) => [b.i, b.t, b.d]),
+          ...BENEFICIOS_PROFESIONAL.filter((b) => b.t.startsWith("Menos impagos") || b.t.startsWith("Financiación") || b.t.startsWith("Memoria") || b.t.startsWith("Invita")).map((b) => [b.i, b.t, b.d]),
         ].map(([i, t, d]) => (
           <div key={t} className="rounded-xl bg-indigo-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>
         ))}

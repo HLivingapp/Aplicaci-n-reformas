@@ -54,6 +54,8 @@ export interface EncargoEstudio {
   nota: string;
   propuesta?: { importe: number; plazoSemanas: number; alcance: string; fecha: string };
   firmas?: { cliente?: string; estudio?: string };
+  /** «invitado»: cliente propio del estudio, que le invitó a la app. Sin reserva ni fee. */
+  origen?: "app" | "invitado";
 }
 
 export const precioServicio = (t: TarifaEstudio, s: Servicio, m2: number) => {
@@ -141,6 +143,12 @@ export function solicitarEstudio(est: Estudio, d: Pick<EncargoEstudio, "servicio
   guardar({ ...d, id: nuevoId(), estudioId: est.id, codigo: est.codigo, precioCalculado: precioServicio(est.tarifa, d.servicio, d.m2) ?? 0, creado: new Date().toISOString(), estado: "solicitado" });
 }
 
+/** Encargo de un cliente que ha invitado el propio estudio: sin reserva ni fee. */
+export function encargoInvitadoEstudio(d: Pick<EncargoEstudio, "estudioId" | "codigo" | "servicio" | "proyectoId" | "cliente" | "zona" | "m2" | "precioCalculado" | "nota">) {
+  if (leerEncargosEstudio().some((x) => x.estudioId === d.estudioId && x.proyectoId === d.proyectoId)) return;
+  guardar({ ...d, id: nuevoId(), creado: new Date().toISOString(), estado: "solicitado", origen: "invitado" });
+}
+
 export const enviarPropuesta = (id: string, p: { importe: number; plazoSemanas: number; alcance: string }) =>
   cambiar(id, (e) => ({ ...e, estado: "propuesta", firmas: undefined, propuesta: { ...p, fecha: new Date().toISOString() } }));
 
@@ -152,7 +160,7 @@ export function firmarPropuestaCliente(id: string) {
   escribir(
     CLAVE_ENCARGOS,
     leerEncargosEstudio().map((x) =>
-      x.id === id ? { ...x, firmas: { cliente: ahora } } : x.proyectoId === e.proyectoId && x.servicio === e.servicio && !x.firmas?.estudio ? { ...x, estado: "descartado" as const } : x,
+      x.id === id ? { ...x, firmas: { cliente: ahora } } : x.proyectoId === e.proyectoId && x.servicio === e.servicio && !x.firmas?.estudio && x.estado !== "descartado" ? { ...x, estado: "descartado" as const } : x,
     ),
   );
 }

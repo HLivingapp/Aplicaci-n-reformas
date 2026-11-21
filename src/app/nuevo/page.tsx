@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 import { hoy } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
 import { enviarProyecto, pedirEstimacion } from "@/lib/publico-cliente";
+import { aplicarInvitacionPro, leerInvitacionPro, olvidarInvitacionPro, type InvitacionPro } from "@/lib/invita-pro";
+import { conBaseDeDatos } from "@/lib/modo";
+import { leerLocal } from "@/lib/store";
 import { TEXTO_CONSENTIMIENTO } from "@/lib/publico";
 import { tarifasPorDefecto } from "@/lib/tarifas";
 import { PROVINCIAS, PROVINCIAS_FORALES, TIPOS_VIA } from "@/lib/catastro/provincias";
@@ -53,6 +56,8 @@ function NuevoProyectoContenido() {
   };
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
+  const [invitacion, setInvitacion] = useState<InvitacionPro | null>(null);
+  useEffect(() => setInvitacion(leerInvitacionPro()), []);
 
   // Recupera el borrador si el cliente cerró la página a medias
   useEffect(() => {
@@ -135,6 +140,14 @@ function NuevoProyectoContenido() {
     try {
       const token = await enviarProyecto(v, r, { nombre: c.nombre, telefono: c.telefono, email: miembro?.email ?? c.email }, c.acepto);
       try { localStorage.removeItem(BORRADOR); } catch { /* ignorar */ }
+      // Demostración: la obra queda unida al profesional que invitó al cliente, sin reserva ni fee
+      if (invitacion && !conBaseDeDatos) {
+        const d = leerLocal();
+        const cli = d.clientes.find((x) => x.token === token);
+        const pr = cli && d.proyectos.find((x) => x.clienteId === cli.id);
+        if (cli && pr) aplicarInvitacionPro(invitacion, { proyectoId: pr.id, tokenCliente: token, cliente: cli.nombre, vivienda: pr.vivienda, reforma: pr.reforma });
+        olvidarInvitacionPro();
+      }
       router.push(`/p/${token}?enviado=1`);
     } catch (e) {
       setErrorEnvio(e instanceof Error ? e.message : "No se ha podido enviar. Inténtalo de nuevo.");
@@ -147,6 +160,11 @@ function NuevoProyectoContenido() {
       <Link href="/" className="text-sm text-stone-500 hover:underline">← Inicio</Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Tu proyecto de reforma</h1>
       <p className="text-sm text-stone-500">Cuéntanos cómo es tu casa y qué quieres hacer. Son 7 pasos cortos, unos 4 minutos. Al final verás tu presupuesto partida a partida aquí mismo, al momento.</p>
+      {invitacion && (
+        <p className="mt-3 rounded-xl bg-violet-50 p-3 text-sm text-violet-950 ring-1 ring-violet-200">
+          🤝 Te invita tu {invitacion.tipo === "reformista" ? "reformista" : "arquitecto"} {invitacion.codigo}. Al terminar, tu proyecto le llegará directamente, y con él no pagas reserva en la app.
+        </p>
+      )}
 
       <ol className="my-5 flex gap-1" aria-label="Pasos">
         {PASOS.map((p, i) => (

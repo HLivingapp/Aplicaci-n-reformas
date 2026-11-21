@@ -237,6 +237,12 @@ export function invitarProveedor(datos: Invitacion["datos"], proveedor: string):
   return inv;
 }
 
+/** Obra de un cliente que ha invitado el propio reformista: sin reserva ni fee. */
+export function guardarEncargoInvitado(d: Omit<Encargo, "id" | "creado" | "estado" | "origen">) {
+  if (leerEncargos().some((e) => e.proyectoId === d.proyectoId && e.reformistaId === d.reformistaId)) return;
+  guardarEncargo({ ...d, id: nuevoId(), creado: new Date().toISOString(), estado: "visita_fijada", origen: "invitado" });
+}
+
 /** El proveedor invitado se ha dado de alta: se crea su obra con el cliente, sin reserva ni fee. */
 export function aceptarInvitacion(codigo: string, reformista: { id: string; codigo: string }) {
   const inv = invitacionDe(codigo);
