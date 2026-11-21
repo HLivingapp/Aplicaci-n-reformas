@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { euros } from "@/lib/calc";
-import { confirmarPago, IVA_REFORMA, pagosDe, publicarAvance, reservaApp, solicitarPago, type Encargo } from "@/lib/encargos";
+import { confirmarPago, IVA_REFORMA, pagosDe, publicarAvance, reservaEncargo, solicitarPago, type Encargo } from "@/lib/encargos";
 import { HITOS } from "./ContratoEncargo";
 import { inputCls } from "./ui";
 
@@ -14,7 +14,7 @@ export function SeguimientoEncargo({ e, parte }: { e: Encargo; parte: "cliente" 
   const [texto, setTexto] = useState("");
   if (e.estado !== "firmado" || !e.final) return null;
   const total = e.final.importe * (1 + IVA_REFORMA / 100);
-  const reserva = reservaApp(e.final.importe);
+  const reserva = reservaEncargo(e, e.final.importe);
   const pagos = pagosDe(e);
   const pagado = pagos.reduce((s, p, i) => s + (p === "pagado" ? (total * HITOS[i].pct) / 100 - (i === 0 ? reserva : 0) : 0), reserva);
   const pendientes = pagos.filter((p) => p === "solicitado").length;
@@ -30,7 +30,7 @@ export function SeguimientoEncargo({ e, parte }: { e: Encargo; parte: "cliente" 
         </p>
       )}
       <ul className="space-y-1.5">
-        <li className="flex justify-between gap-2 text-xs text-stone-500"><span>Reserva en la app</span><span>{euros(reserva)} · ✓ Pagado</span></li>
+        {reserva > 0 && <li className="flex justify-between gap-2 text-xs text-stone-500"><span>Reserva en la app</span><span>{euros(reserva)} · ✓ Pagado</span></li>}
         {HITOS.map((h, i) => {
           const p = pagos[i];
           const importe = (total * h.pct) / 100 - (i === 0 ? reserva : 0);

@@ -10,6 +10,7 @@ import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import { recordarProfesional } from "@/lib/foro-cliente";
 import Link from "next/link";
 import { MisEncargos, MisTarifas } from "@/components/AreaReformista";
+import { useEncargos } from "@/components/ComparativaRed";
 import type { TipoDocProveedor } from "@/lib/types";
 
 const ESTADOS: Record<VistaProveedor["estado"], { texto: string; cls: string }> = {
@@ -82,6 +83,7 @@ export default function PortalReformista() {
   const [p, setP] = useState<VistaProveedor | null | undefined>(undefined);
   const [nuevo, setNuevo] = useState(false);
   const cargar = useCallback(() => cargarProveedor(token).then(setP), [token]);
+  const encargos = useEncargos();
   useEffect(() => {
     cargar();
     setNuevo(new URLSearchParams(window.location.search).has("nuevo"));
@@ -92,6 +94,8 @@ export default function PortalReformista() {
 
   const reqs = requisitos(p);
   const pendientes = reqs.filter((r) => !r.ok).length;
+  // Los reformistas invitados por su cliente ven esa obra aunque aún no estén homologados
+  const tieneInvitados = encargos.some((e) => e.reformistaId === p.id && e.origen === "invitado");
   return (
     <main className="mx-auto max-w-2xl space-y-4 px-4 pb-16 pt-6">
       <div className="flex items-start justify-between gap-2">
@@ -122,7 +126,7 @@ export default function PortalReformista() {
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
 
-      {p.estado === "aprobado" && !pendientes && <MisEncargos reformistaId={p.id} />}
+      {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} />}
       <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />
 
       {p.estado === "aprobado" && !pendientes && (

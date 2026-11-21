@@ -3,12 +3,16 @@
 import { publico } from "@/lib/base";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { aceptarInvitacion, invitacionDe, type Invitacion } from "@/lib/encargos";
+import { conBaseDeDatos } from "@/lib/modo";
+import { fichaRed } from "@/lib/red";
+import { leerLocal } from "@/lib/store";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
-import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
+import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
@@ -21,6 +25,11 @@ export default function AltaReformista() {
   const [declaro, setDeclaro] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invitacion, setInvitacion] = useState<Invitacion | null>(null);
+  useEffect(() => {
+    const c = new URLSearchParams(window.location.search).get("invita");
+    if (c) setInvitacion(invitacionDe(c) ?? null);
+  }, []);
   const set = <K extends keyof AltaProveedor>(k: K, v: AltaProveedor[K]) => setA((x) => ({ ...x, [k]: v }));
   const setObra = (i: number, campo: keyof AltaProveedor["obras"][number], v: string | number) =>
     setA((x) => ({ ...x, obras: x.obras.map((o, j) => (j === i ? { ...o, [campo]: v } : o)) }));
@@ -33,7 +42,7 @@ export default function AltaReformista() {
     !a.telefono.trim() && !a.email.trim() && "teléfono o email",
     a.rea.inscrito && !a.rea.numero.trim() && "número de REA",
     !a.rc.aseguradora.trim() && "aseguradora de RC",
-    !obrasOk && `${OBRAS_MINIMAS} obras de referencia`,
+    !obrasOk && !invitacion && `${OBRAS_MINIMAS} obras de referencia`,
     !a.zonas.length && "zonas",
     !a.especialidades.length && "especialidades",
     !acepto && "aceptar la política de privacidad",
@@ -44,6 +53,9 @@ export default function AltaReformista() {
     setError(null);
     try {
       const token = await enviarAlta(a, declaro, acepto);
+      // Demostración: la obra del cliente que le ha invitado aparece en su área, sin reserva ni fee
+      const p = invitacion && !conBaseDeDatos ? leerLocal().proveedores.find((x) => x.token === token) : undefined;
+      if (invitacion && p) aceptarInvitacion(invitacion.codigo, fichaRed(p));
       router.push(`/reformista/${token}?nuevo`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo enviar");
@@ -61,6 +73,14 @@ export default function AltaReformista() {
           <h1 className="text-xl font-semibold">Homologación de reformistas</h1>
         </div>
       </div>
+      {invitacion && (
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
+          <div className="font-semibold">🤝 {invitacion.datos.cliente} te ha invitado a llevar su reforma con la app</div>
+          <p className="mt-1">
+            Al ser tu cliente, en esta obra no pagáis nada ninguno de los dos: ni reserva ni fee. Rellena tu alta y la obra aparecerá en tu área para meter el presupuesto acordado y firmar el contrato en la app.
+          </p>
+        </div>
+      )}
       <p className="text-sm text-stone-600">
         Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: inscripción en el REA (o tu documentación de prevención de
         riesgos laborales), seguro de responsabilidad civil, estar al corriente de pagos, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
@@ -81,6 +101,7 @@ export default function AltaReformista() {
         <h2 className="font-semibold">Declaración responsable y compromiso de ventas</h2>
         <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
         <p className="text-sm text-stone-700"><b>Ventas que llegan por la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
+        <p className="text-sm text-stone-700"><b>Clientes tuyos y clientes de la app.</b> {TEXTO_COMPROMISO_INVITADOS}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
         <label className="flex items-start gap-2 text-sm font-medium">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />

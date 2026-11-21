@@ -20,6 +20,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 
 export const IVA_REFORMA = 10;
 
+import { reservaApp } from "./comercializacion";
 export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo } from "./comercializacion";
 
 export type { TarifaReformista };
@@ -51,7 +52,18 @@ export interface Encargo {
   pagos?: EstadoPago[];
   /** Avances de obra que publica el reformista y ve el cliente */
   avances?: { fecha: string; texto: string }[];
+  /** «app»: el cliente lo encontró en la app (reserva y fee). «invitado»: el cliente lo invitó (sin reserva ni fee, sin seguro gratis). */
+  origen?: OrigenEncargo;
 }
+
+export type OrigenEncargo = "app" | "invitado";
+export const ORIGEN_ENCARGO: Record<OrigenEncargo, { texto: string; cls: string }> = {
+  app: { texto: "Cliente de la app", cls: "bg-teal-50 text-teal-800 ring-1 ring-teal-200" },
+  invitado: { texto: "Cliente tuyo (te invitó)", cls: "bg-violet-50 text-violet-800 ring-1 ring-violet-200" },
+};
+/** Reserva de esta obra: 0 si el reformista viene invitado por el cliente. */
+export const reservaEncargo = (e: Pick<Encargo, "origen">, importeSinIva: number) => (e.origen === "invitado" ? 0 : reservaApp(importeSinIva));
+export const esInvitado = (e: Pick<Encargo, "origen">) => e.origen === "invitado";
 
 export const CAPITULOS = [...new Set(tarifasPorDefecto().precios.map((p) => p.capitulo))];
 
@@ -157,6 +169,7 @@ export function pedirVisitas(
       creado: new Date().toISOString(),
       estado: "visita_pedida",
       visita: { preferencia },
+      origen: "app",
     });
   }
 }
@@ -200,6 +213,48 @@ export const confirmarPago = (id: string, i: number) =>
 export const publicarAvance = (id: string, texto: string) =>
   actualizarEncargo(id, (e) => ({ ...e, avances: [{ fecha: new Date().toISOString(), texto }, ...(e.avances ?? [])] }));
 export { pagosDe };
+
+// ---------- Invita a tu proveedor ----------
+
+const CLAVE_INVITACIONES = "app-reformas:invitaciones";
+
+export interface Invitacion {
+  codigo: string;
+  datos: Pick<Encargo, "proyectoId" | "tokenCliente" | "cliente" | "zona" | "vivienda" | "reforma">;
+  /** Nombre o empresa del proveedor, tal como lo escribe el cliente */
+  proveedor: string;
+  creado: string;
+  /** Encargo creado cuando el proveedor acepta */
+  encargoId?: string;
+}
+
+export const leerInvitaciones = (): Invitacion[] => leer<Invitacion[]>(CLAVE_INVITACIONES, []);
+export const invitacionDe = (codigo: string) => leerInvitaciones().find((i) => i.codigo === codigo);
+
+export function invitarProveedor(datos: Invitacion["datos"], proveedor: string): Invitacion {
+  const inv: Invitacion = { codigo: nuevoId().replace(/-/g, "").slice(0, 10), datos, proveedor, creado: new Date().toISOString() };
+  escribir(CLAVE_INVITACIONES, [inv, ...leerInvitaciones()]);
+  return inv;
+}
+
+/** El proveedor invitado se ha dado de alta: se crea su obra con el cliente, sin reserva ni fee. */
+export function aceptarInvitacion(codigo: string, reformista: { id: string; codigo: string }) {
+  const inv = invitacionDe(codigo);
+  if (!inv || inv.encargoId) return;
+  const id = nuevoId();
+  guardarEncargo({
+    ...inv.datos,
+    id,
+    reformistaId: reformista.id,
+    codigo: reformista.codigo,
+    baseInicial: referencia(inv.datos.vivienda, inv.datos.reforma).base,
+    creado: new Date().toISOString(),
+    estado: "visita_fijada",
+    visita: { preferencia: "Te ha invitado el cliente" },
+    origen: "invitado",
+  });
+  escribir(CLAVE_INVITACIONES, leerInvitaciones().map((i) => (i.codigo === codigo ? { ...i, encargoId: id } : i)));
+}
 
 export const descartarEncargo = (id: string) => actualizarEncargo(id, (e) => ({ ...e, estado: "descartado" }));
 

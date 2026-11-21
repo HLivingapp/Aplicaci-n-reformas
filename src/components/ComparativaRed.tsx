@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
-import { alCambiar, ESTADO_ENCARGO, TEXTO_RESERVA, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
+import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
@@ -12,6 +12,7 @@ import type { DatosReforma, Vivienda } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
 import { SeguimientoEncargo } from "./SeguimientoEncargo";
 import { SimuladorHipoteca } from "./SimuladorHipoteca";
+import { ServiciosContratables } from "./SeguroPromotor";
 import { Muro } from "./Muro";
 import { inputCls } from "./ui";
 
@@ -68,12 +69,12 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   const firmado = encargos.find((e) => e.estado === "firmado" || e.estado === "firmado_cliente");
 
   if (!fichas) return null;
-  if (!lista.length) return <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>;
+  const datos = { proyectoId, tokenCliente: token, cliente, zona: vivienda.direccion.municipio || "Madrid", vivienda, reforma };
 
   const encargoDe = (id: string) => encargos.find((e) => e.reformistaId === id);
   const alternar = (id: string) => setElegidos((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= 3 ? x : [...x, id]));
   const pedir = () => {
-    pedirVisitas(lista.filter((o) => elegidos.includes(o.ficha.id)), { proyectoId, tokenCliente: token, cliente, zona: vivienda.direccion.municipio || "Madrid", vivienda, reforma }, preferencia);
+    pedirVisitas(lista.filter((o) => elegidos.includes(o.ficha.id)), datos, preferencia);
     setElegidos([]);
   };
 
@@ -85,7 +86,8 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y te regalamos un seguro de promotor con responsabilidad civil y defensa jurídica.
         </p>
       </div>
-      {!suscrito && (
+      {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
+      {!suscrito && lista.length > 0 && (
         <Muro plan="basico" volver={`/p/${token}`} titulo={`${lista.length} reformistas homologados ya tienen precio para tu reforma`}>
           Desde {eurosRedondo(conIva(lista[0].e.base))} hasta {eurosRedondo(conIva(lista[lista.length - 1].e.base))} con IVA. Suscríbete para ver quién es cada uno, comparar sus partidas y quedar para una visita.
         </Muro>
@@ -114,14 +116,16 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">Pedir visita</button>
         </div>
       )}
+      <InvitaProveedor datos={datos} invitados={encargos.filter(esInvitado)} bloqueado={!!firmado} />
       {encargos.filter((e) => e.final && e.estado !== "descartado").map((e) => (
         <div key={e.id}>
-          <h3 className="mb-2 font-semibold">Contrato con el reformista {e.codigo}</h3>
+          <h3 className="mb-2 font-semibold">Contrato con {esInvitado(e) ? "tu reformista" : "el reformista"} {e.codigo}</h3>
           {e.estado === "firmado" && <div className="mb-3"><SeguimientoEncargo e={e} parte="cliente" /></div>}
           <ContratoEncargo e={e} parte="cliente" alFirmar={() => firmarCliente(e.id)} />
         </div>
       ))}
       <SimuladorHipoteca importe={conIva(ref.base)} />
+      <ServiciosContratables proyectoId={proyectoId} encargos={encargos} />
     </section>
   );
 }
@@ -179,5 +183,61 @@ function Oferta({ o, refBase, suscrito, encargo, elegido, bloqueado, alElegir, a
         </table>
       )}
     </li>
+  );
+}
+
+/** «Invita a tu proveedor»: el cliente trae a su propio reformista. Sin reserva ni fee para ninguno de los dos. */
+function InvitaProveedor({ datos, invitados, bloqueado }: { datos: Invitacion["datos"]; invitados: Encargo[]; bloqueado: boolean }) {
+  const [nombre, setNombre] = useState("");
+  const [abierto, setAbierto] = useState(false);
+  const [mias, setMias] = useState<Invitacion[]>([]);
+  const [copiado, setCopiado] = useState(false);
+  useEffect(() => {
+    const f = () => setMias(leerInvitaciones().filter((i) => i.datos.proyectoId === datos.proyectoId));
+    f();
+    return alCambiar(f);
+  }, [datos.proyectoId]);
+  const enlace = (i: Invitacion) => `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/reformistas/?invita=${i.codigo}`;
+  const pendiente = mias.find((i) => !i.encargoId);
+  const copiar = async (i: Invitacion) => {
+    try {
+      await navigator.clipboard.writeText(enlace(i));
+      setCopiado(true);
+    } catch {
+      /* sin portapapeles */
+    }
+  };
+  return (
+    <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-4 text-sm">
+      <div className="font-semibold">🤝 ¿Ya tienes tu reformista? Invítalo a la app</div>
+      <p className="mt-1 text-stone-700">
+        Trae a tu propio reformista o proveedor para esta reforma: ninguno de los dos paga reserva ni comisión, y seguís usando la app con contrato, pagos por fases y avances. El seguro de promotor no va
+        incluido gratis, pero puedes contratarlo online aquí mismo.
+      </p>
+      {invitados.map((e) => (
+        <p key={e.id} className="mt-2 text-xs text-violet-900">✓ Tu reformista {e.codigo} ya está en la app · {ESTADO_ENCARGO[e.estado].texto}</p>
+      ))}
+      {pendiente ? (
+        <div className="mt-3 space-y-2">
+          <p className="text-xs text-stone-600">Invitación para <b>{pendiente.proveedor}</b>. Mándale este enlace por WhatsApp o email: al darse de alta, la obra aparece en su área.</p>
+          <div className="flex flex-wrap gap-2">
+            <input readOnly className={`${inputCls} min-w-0 flex-1 text-xs`} value={enlace(pendiente)} />
+            <button onClick={() => copiar(pendiente)} className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white">{copiado ? "✓ Copiado" : "Copiar enlace"}</button>
+            <a href={`https://wa.me/?text=${encodeURIComponent(`Te invito a llevar mi reforma con la app: ${enlace(pendiente)}`)}`} target="_blank" rel="noreferrer" className="rounded-lg border border-violet-700 px-3 py-2 text-xs font-semibold text-violet-800">WhatsApp</a>
+          </div>
+          <Link href={`/reformistas/?invita=${pendiente.codigo}`} className="text-xs text-stone-400 underline">Demo: abrir el enlace como el reformista</Link>
+        </div>
+      ) : (
+        !bloqueado &&
+        (abierto ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <input className={`${inputCls} min-w-0 flex-1`} placeholder="Nombre o empresa de tu reformista" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+            <button disabled={!nombre.trim()} onClick={() => { invitarProveedor(datos, nombre.trim()); setNombre(""); }} className="rounded-lg bg-violet-700 px-4 py-2 font-semibold text-white disabled:opacity-40">Crear invitación</button>
+          </div>
+        ) : (
+          <button onClick={() => setAbierto(true)} className="mt-3 rounded-lg border border-violet-700 px-3 py-1.5 font-medium text-violet-800 hover:bg-violet-100">Invitar a mi proveedor</button>
+        ))
+      )}
+    </div>
   );
 }
