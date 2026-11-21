@@ -7,6 +7,7 @@ import { useForo } from "@/lib/foro-cliente";
 import { useExigirRegistro } from "@/components/Registro";
 import { nuevoId } from "@/lib/id";
 import { CabeceraComunidad, EtiquetaTipo, haceTiempo, useFormularioMensaje } from "@/components/foro/Comun";
+import { VideosNormativa } from "@/components/foro/VideosNormativa";
 import { Boton, inputCls } from "@/components/ui";
 
 export default function Comunidad() {
@@ -50,6 +51,7 @@ export default function Comunidad() {
           <Tarjeta icono="🦺" titulo="Responden profesionales" texto="Reformistas homologados opinan con su sello. Su empresa sigue siendo anónima hasta que tú decides." />
           <Tarjeta icono="🤖" titulo="Asistente IA de obra" texto="En cada tema puedes pedir una primera opinión técnica con fuentes, mientras llegan las respuestas." />
         </div>
+        <VideosNormativa soloLegal={categoria === CATEGORIA_LEGAL} />
         {!esProfesional && (
           <p className="mb-4 text-xs text-stone-500">¿Eres reformista homologado? Entra desde tu portal (botón «Responder en la comunidad») para que tus respuestas lleven el sello. <Link href="/reformistas" className="underline">Homologarme</Link></p>
         )}
