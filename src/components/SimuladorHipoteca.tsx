@@ -24,6 +24,9 @@ export function SimuladorHipoteca({ importe }: { importe: number }) {
       </div>
       <div className="mt-3 text-lg">Cuota aproximada: <b>{euros(cuota)}/mes</b></div>
       <p className="mt-1 text-xs text-stone-500">Simulación orientativa con el interés que indiques: no es una oferta. El tipo, los gastos y la concesión los decide el banco.</p>
+      <p className="mt-3 rounded-xl bg-white p-3 text-xs text-stone-600 ring-1 ring-stone-200">
+        📑 Si financias la reforma con la hipoteca, el banco suele pedir una memoria técnica firmada por un arquitecto colegiado, que también sirve para legalizar la obra. Te ayudamos a prepararla con tu reformista y un arquitecto homologado de la app, junto con la documentación para el banco.
+      </p>
       <div className="mt-4 font-medium">Bancos con financiación para reformas</div>
       <ul className="mt-2 space-y-2">
         {BANCOS_REFORMA.map((b) => (

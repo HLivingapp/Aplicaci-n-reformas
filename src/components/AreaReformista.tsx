@@ -1,5 +1,6 @@
 "use client";
 
+import { AvisoMemoriaTecnica } from "./Beneficios";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import {
@@ -43,6 +44,7 @@ export function MisEncargos({ reformistaId }: { reformistaId: string }) {
       <h2 className="font-semibold">Clientes que quieren una visita</h2>
       {!encargos.length && <p className="text-sm text-stone-500">Todavía no te ha pedido visita nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu presupuesto calculado.</p>}
       {encargos.map((e) => <EncargoReformista key={e.id} e={e} reformistaId={reformistaId} />)}
+      <AvisoMemoriaTecnica />
     </Tarjeta>
   );
 }

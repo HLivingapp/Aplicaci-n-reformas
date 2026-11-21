@@ -74,6 +74,11 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
     pendiente: "Bancos colaboradores en preparación.",
   },
   {
+    i: "📑",
+    t: "Memoria técnica y financiación, con nuestra ayuda",
+    d: "Las reformas financiadas con hipoteca necesitan una memoria técnica firmada por arquitecto colegiado, para legalizar la obra y para el banco. Te ayudamos a preparar la memoria y la documentación de la financiación con tu cliente.",
+  },
+  {
     i: "📋",
     t: "Clientes que ya saben lo que cuesta",
     d: "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a las visitas de quien ya te ha elegido.",

@@ -22,3 +22,13 @@ export function ListaBeneficios({ items, columnas = 3 }: { items: Beneficio[]; c
     </div>
   );
 }
+
+/** Aviso en las áreas de profesionales: ayuda con la memoria técnica y la financiación. */
+export function AvisoMemoriaTecnica() {
+  return (
+    <div className="rounded-2xl bg-indigo-50 p-4 text-sm text-indigo-950 ring-1 ring-indigo-100">
+      <div className="font-semibold">📑 ¿Tu cliente financia la reforma con hipoteca?</div>
+      <p className="mt-1">El banco y la legalización piden una memoria técnica firmada por arquitecto colegiado. Te ayudamos a preparar la memoria y la documentación de la financiación con tu cliente. Escríbenos desde el encargo.</p>
+    </div>
+  );
+}
