@@ -33,9 +33,11 @@ export function finObra(o: Obra) {
   return o.fases.reduce((m, f) => (f.fin > m ? f.fin : m), o.inicio);
 }
 
-const eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
+// Punto de miles también en cifras de cuatro dígitos (1.000 €), como se escribe en los presupuestos
+const SIEMPRE = { useGrouping: "always" } as unknown as Intl.NumberFormatOptions;
+const eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", ...SIEMPRE });
 export const euros = (n: number) => eur.format(n || 0);
-const eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, ...SIEMPRE });
 /** Importe redondeado, sin céntimos */
 export const eurosRedondo = (n: number) => eur0.format(n || 0);
 
