@@ -58,7 +58,14 @@ export const ESPECIALIDADES = [
   { valor: "cocinas", texto: "Montaje de cocinas" },
   { valor: "banos", texto: "Baños completos" },
   { valor: "cristaleria", texto: "Cristalería y mamparas" },
+  { valor: "fachadas", texto: "Fachadas y rehabilitación de edificios" },
+  { valor: "cubiertas", texto: "Tejados y cubiertas" },
+  { valor: "sate", texto: "Aislamiento SATE" },
+  { valor: "impermeabilizacion", texto: "Impermeabilización" },
 ] as const;
+
+/** Especialidades de obra en edificios (comunidades de propietarios). */
+export const ESPECIALIDADES_COMUNIDAD = ["fachadas", "cubiertas", "sate", "impermeabilizacion"] as const;
 
 const DISTRITOS_MADRID = [
   "Arganzuela", "Barajas", "Carabanchel", "Centro", "Chamartín", "Chamberí", "Ciudad Lineal", "Fuencarral-El Pardo", "Hortaleza", "Latina", "Moncloa-Aravaca",

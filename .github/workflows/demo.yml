@@ -4,6 +4,9 @@ name: Demo en GitHub Pages
 on:
   push:
     branches: [main]
+  # Cada día a las 6:00 (hora peninsular aprox.) para refrescar las subvenciones desde la BDNS
+  schedule:
+    - cron: "0 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -23,6 +26,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Subvenciones desde la BDNS (si no responde, se publican los datos anteriores)
+        run: node scripts/actualizar-subvenciones.mjs || true
       - run: ./scripts/exportar-demo.sh "/${{ github.event.repository.name }}"
       - uses: JamesIves/github-pages-deploy-action@v4
         with:

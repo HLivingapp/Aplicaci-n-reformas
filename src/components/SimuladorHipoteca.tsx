@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { euros } from "@/lib/calc";
 import { ComparativaBancos } from "./ComparativaBancos";
@@ -27,6 +28,9 @@ export function SimuladorHipoteca({ importe }: { importe: number }) {
       <p className="mt-3 rounded-xl bg-white p-3 text-xs text-stone-600 ring-1 ring-stone-200">
         📑 Si financias la reforma con la hipoteca, el banco suele pedir una memoria técnica firmada por un arquitecto colegiado, que también sirve para legalizar la obra. Te ayudamos a prepararla con tu reformista y un arquitecto homologado de la app, junto con la documentación para el banco.
       </p>
+      <Link href="/subvenciones" className="mt-3 block rounded-xl bg-emerald-50 p-3 text-xs font-medium text-emerald-900 ring-1 ring-emerald-200 hover:bg-emerald-100">
+        💶 Antes de financiar, mira las subvenciones y deducciones activas para tu reforma en Madrid y Málaga →
+      </Link>
       <ComparativaBancos />
     </div>
   );

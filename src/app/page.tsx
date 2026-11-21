@@ -80,6 +80,9 @@ export default function Inicio() {
             <Link href="/#profesionales" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-amber-200 ring-1 ring-white/15 hover:bg-white/15">
               ¿Eres reformista o arquitecto? Invita a tus clientes sin coste →
             </Link>
+            <Link href="/comunidades" className="ml-0 mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-sky-200 ring-1 ring-white/15 hover:bg-white/15 sm:ml-2">
+              🏢 ¿Comunidad de vecinos? Fachadas y tejados →
+            </Link>
           </div>
 
           <div className="relative min-w-0 aparecer [animation-delay:200ms]">

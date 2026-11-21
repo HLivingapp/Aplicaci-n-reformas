@@ -10,6 +10,8 @@ const MENU = [
   { href: "/sobre-nosotros", texto: "Quiénes somos", ver: "sm:inline" },
   { href: "/disena", texto: "Diseña", ver: "md:inline" },
   { href: "/materiales", texto: "Materiales", ver: "lg:inline" },
+  { href: "/comunidades", texto: "Comunidades", ver: "lg:inline" },
+  { href: "/subvenciones", texto: "Subvenciones", ver: "xl:inline" },
   { href: "/comunidad", texto: "Comunidad", ver: "md:inline" },
   { href: "/suscripcion", texto: "Planes", ver: "md:inline" },
   { href: "/cliente", texto: "Mi reforma", ver: "sm:inline" },
