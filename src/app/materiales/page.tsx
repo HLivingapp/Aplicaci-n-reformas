@@ -1,0 +1,35 @@
+"use client";
+
+import Link from "next/link";
+import { CabeceraPublica } from "@/components/CabeceraPublica";
+import { MaterialesMedia } from "@/components/MaterialesMedia";
+import { GuiaAudio } from "@/components/SeleccionProductos";
+
+/** Materiales de gama media: lo que ponemos en nuestras obras, con foto y catálogo. */
+export default function Materiales() {
+  return (
+    <div className="min-h-dvh bg-stone-50">
+      <CabeceraPublica />
+      <main className="mx-auto max-w-6xl px-4 pb-16 pt-8">
+        <h1 className="text-3xl font-semibold tracking-tight">Materiales de gama media</h1>
+        <p className="mt-2 max-w-2xl text-stone-600">
+          Lo que ponemos en nuestras obras en la gama media, la más elegida. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
+        </p>
+        <div className="mt-6">
+          <MaterialesMedia />
+        </div>
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          <GuiaAudio />
+          <div className="rounded-2xl border border-stone-200 bg-white p-4">
+            <div className="font-semibold">¿Quieres ver los vídeos del equipo?</div>
+            <p className="mt-1 text-sm text-stone-600">Te explicamos cocina, ventanas, puertas, armarios, electricidad y climatización en vídeos cortos.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link href="/disena#seleccion" className="rounded-xl bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800">Ver vídeos y selección</Link>
+              <Link href="/nuevo" className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium hover:bg-stone-50">Calcular mi reforma</Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
