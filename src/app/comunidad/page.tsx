@@ -1,16 +1,17 @@
 "use client";
 
-import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { buscarTemas, CATEGORIA_LEGAL, CATEGORIAS, DENUNCIAS_OCULTAR, tieneSolucion, TIPOS, type Accion, type TipoTema } from "@/lib/foro";
 import { useForo } from "@/lib/foro-cliente";
+import { useExigirRegistro } from "@/components/Registro";
 import { nuevoId } from "@/lib/id";
 import { CabeceraComunidad, EtiquetaTipo, haceTiempo, useFormularioMensaje } from "@/components/foro/Comun";
 import { Boton, inputCls } from "@/components/ui";
 
-function ComunidadContenido() {
+export default function Comunidad() {
   const { temas: cargados, error, enviar, esProfesional } = useForo();
+  const { exigir, modal } = useExigirRegistro("Únete gratis para contar tu experiencia o preguntar. Leer la comunidad siempre es libre.");
   const temas = useMemo(() => cargados ?? [], [cargados]);
   const [q, setQ] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -25,6 +26,7 @@ function ComunidadContenido() {
 
   return (
     <div className="min-h-dvh bg-stone-50">
+      {modal}
       <CabeceraComunidad />
       <section className="bg-gradient-to-b from-teal-50 to-stone-50">
         <div className="mx-auto max-w-4xl px-4 pb-6 pt-10">
@@ -34,7 +36,7 @@ function ComunidadContenido() {
           </p>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
             <input className={`${inputCls} flex-1 py-3`} placeholder="Busca: moho en la ducha, aerotermia, retrasos…" value={q} onChange={(e) => setQ(e.target.value)} />
-            <Boton onClick={() => setNuevo(!nuevo)} className="py-3">{nuevo ? "Cerrar" : "Compartir mi experiencia"}</Boton>
+            <Boton onClick={() => (nuevo ? setNuevo(false) : exigir(() => setNuevo(true)))} className="py-3">{nuevo ? "Cerrar" : "Compartir mi experiencia"}</Boton>
           </div>
         </div>
       </section>
@@ -155,13 +157,5 @@ function NuevoTema({ alPublicar, categoriaInicial }: { alPublicar: (a: Accion) =
         Publicar
       </Boton>
     </div>
-  );
-}
-
-export default function Comunidad() {
-  return (
-    <RequiereRegistro motivo="Únete gratis para leer y compartir experiencias de reforma. Solo te pedimos tu email.">
-      <ComunidadContenido />
-    </RequiereRegistro>
   );
 }

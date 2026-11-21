@@ -1,18 +1,18 @@
 "use client";
 
-import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { DENUNCIAS_OCULTAR, type Accion, type Mensaje } from "@/lib/foro";
 import { useForo } from "@/lib/foro-cliente";
+import { useExigirRegistro } from "@/components/Registro";
 import { nuevoId } from "@/lib/id";
 import { CabeceraComunidad, Cuerpo, EtiquetaTipo, haceTiempo, NombreAutor, useFormularioMensaje } from "@/components/foro/Comun";
 import { AsistenteIA } from "@/components/foro/AsistenteIA";
 import { Boton } from "@/components/ui";
 import { conBaseDeDatos } from "@/lib/modo";
 
-function PaginaTemaContenido() {
+export default function PaginaTema() {
   return (
     <Suspense fallback={<main className="p-6 text-stone-500">Cargando…</main>}>
       <VistaTema />
@@ -23,6 +23,7 @@ function PaginaTemaContenido() {
 function VistaTema() {
   const id = useSearchParams().get("id") ?? "";
   const { temas, ia, mios, utiles, error, enviar, esProfesional } = useForo();
+  const { esMiembro, exigir, modal } = useExigirRegistro("Únete gratis para responder, votar o pedir la opinión de la IA. Leer siempre es libre.");
   if (!temas) return <main className="p-6 text-stone-500">Cargando…</main>;
   const t = temas.find((x) => x.id === id);
 
@@ -36,7 +37,7 @@ function VistaTema() {
   }
 
   const esMio = mios.has(t.id);
-  const accion = (tipo: "util" | "denunciar" | "borrar" | "solucion", m: Mensaje) => enviar({ tipo, temaId: t.id, mensajeId: m.id } as Accion);
+  const accion = (tipo: "util" | "denunciar" | "borrar" | "solucion", m: Mensaje) => exigir(() => enviar({ tipo, temaId: t.id, mensajeId: m.id } as Accion));
 
   const Acciones = ({ m }: { m: Mensaje }) => (
     <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-stone-500">
@@ -58,6 +59,7 @@ function VistaTema() {
 
   return (
     <div className="min-h-dvh bg-stone-50">
+      {modal}
       <CabeceraComunidad />
       <main className="mx-auto max-w-3xl px-4 pb-16 pt-6">
         <Link href="/comunidad" className="text-sm text-stone-500 hover:underline">← Comunidad</Link>
@@ -73,7 +75,7 @@ function VistaTema() {
           <Acciones m={t} />
         </article>
 
-        <AsistenteIA tema={t} disponible={ia} pedir={() => enviar({ tipo: "ia", temaId: t.id })} />
+        <AsistenteIA tema={t} disponible={ia} pedir={() => (esMiembro ? enviar({ tipo: "ia", temaId: t.id }) : (exigir(() => enviar({ tipo: "ia", temaId: t.id })), Promise.resolve()))} />
 
         <h2 className="mb-2 mt-6 font-semibold">{respuestas.length} respuesta{respuestas.length === 1 ? "" : "s"}</h2>
         <ul className="space-y-3">
@@ -87,7 +89,15 @@ function VistaTema() {
           ))}
         </ul>
 
-        <Responder esProfesional={esProfesional} alResponder={(mensaje, comoPro) => enviar({ tipo: "responder", id: nuevoId(), temaId: t.id, mensaje }, { comoPro })} />
+        {!esMiembro ? (
+          <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-5 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <div className="font-semibold">¿Te ha pasado algo parecido o sabes la respuesta?</div>
+              <div className="text-sm text-stone-600">Únete gratis a la comunidad Human Living con tu email para responder.</div>
+            </div>
+            <button onClick={() => exigir()} className="rounded-full bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Unirme y responder</button>
+          </div>
+        ) : <Responder esProfesional={esProfesional} alResponder={(mensaje, comoPro) => enviar({ tipo: "responder", id: nuevoId(), temaId: t.id, mensaje }, { comoPro })} />}
       </main>
     </div>
   );
@@ -120,13 +130,5 @@ function Responder({ alResponder, esProfesional }: { alResponder: (m: { alias: s
         {enviando ? "Publicando…" : "Publicar respuesta"}
       </Boton>
     </div>
-  );
-}
-
-export default function PaginaTema() {
-  return (
-    <RequiereRegistro motivo="Únete gratis para leer este tema y responder. Solo te pedimos tu email.">
-      <PaginaTemaContenido />
-    </RequiereRegistro>
   );
 }

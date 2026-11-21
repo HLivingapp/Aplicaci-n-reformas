@@ -1,6 +1,5 @@
 "use client";
 
-import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -9,6 +8,7 @@ import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
+import { useExigirRegistro } from "@/components/Registro";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 const CLAVE_PEDIDOS = "app-reformas:pedidos-red";
@@ -21,8 +21,9 @@ const leerPedidos = (): string[] => {
   }
 };
 
-function RedProfesionalesContenido() {
+export default function RedProfesionales() {
   const s = useSuscripcion();
+  const { exigir, modal } = useExigirRegistro("Únete gratis para pedir presupuesto a los reformistas. Ver la red siempre es libre.");
   const [fichas, setFichas] = useState<FichaRed[] | null>(null);
   const [zona, setZona] = useState("");
   const [pedidos, setPedidos] = useState<string[]>([]);
@@ -55,6 +56,7 @@ function RedProfesionalesContenido() {
 
   return (
     <div className="min-h-dvh bg-stone-50">
+      {modal}
       <CabeceraPublica />
       <section className="bg-gradient-to-b from-teal-50 to-stone-50">
         <div className="mx-auto max-w-5xl px-4 pb-6 pt-10">
@@ -126,7 +128,7 @@ function RedProfesionalesContenido() {
                 {pedidos.includes(f.id) ? (
                   <div className="rounded-xl bg-emerald-50 p-2.5 text-center text-sm text-emerald-900">✓ Presupuesto pedido. Te responderá en la app; tu teléfono no se comparte hasta que tú aceptes.</div>
                 ) : suscrito ? (
-                  <button onClick={() => pedir(f)} className="rounded-xl bg-teal-700 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Pedir presupuesto</button>
+                  <button onClick={() => exigir(() => pedir(f))} className="rounded-xl bg-teal-700 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Pedir presupuesto</button>
                 ) : (
                   <Link href="/suscripcion?volver=%2Fred" className="rounded-xl border border-teal-700 py-2.5 text-center text-sm font-semibold text-teal-800 hover:bg-teal-50">🔒 Pedir presupuesto · Plan Básico 5 €/mes</Link>
                 )}
@@ -137,13 +139,5 @@ function RedProfesionalesContenido() {
         {!conServidor && <p className="mt-6 text-center text-xs text-stone-400">Demostración: los reformistas que aparecen son ficticios.</p>}
       </main>
     </div>
-  );
-}
-
-export default function RedProfesionales() {
-  return (
-    <RequiereRegistro>
-      <RedProfesionalesContenido />
-    </RequiereRegistro>
   );
 }
