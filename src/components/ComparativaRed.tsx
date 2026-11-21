@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
 import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
-import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
+import { FICHAS_EJEMPLO, fichasRed, soloComunidades, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 import type { DatosReforma, Vivienda } from "@/lib/types";
@@ -28,7 +28,7 @@ export function useFichasRed() {
         .then((j) => setFichas(j.fichas ?? []))
         .catch(() => setFichas([]));
     } else {
-      setFichas([...fichasRed(leerLocal().proveedores).map((f) => ({ ...f, obrasEnApp: 1 })), ...FICHAS_EJEMPLO]);
+      setFichas([...fichasRed(leerLocal().proveedores).map((f) => ({ ...f, obrasEnApp: 1 })), ...FICHAS_EJEMPLO].filter((f) => !soloComunidades(f)));
     }
   }, []);
   return fichas;

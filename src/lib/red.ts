@@ -1,5 +1,5 @@
 import type { TarifaReformista } from "./types";
-import { ESPECIALIDADES, homologado, type ProveedorBase } from "./proveedores";
+import { ESPECIALIDADES, ESPECIALIDADES_COMUNIDAD, homologado, type ProveedorBase } from "./proveedores";
 
 /**
  * Escaparate anónimo de la red: lo que ve un cliente suscrito de cada reformista homologado.
@@ -69,5 +69,31 @@ export const FICHAS_EJEMPLO: FichaRed[] = [
     id: "ej-r3", codigo: "R-8833", tipo: "autonomo", zonas: ["Madrid norte", "Alcobendas"], especialidades: ["Electricidad", "Fontanería"], trabajadores: 2,
     presentacion: "Instalaciones eléctricas y de fontanería con boletín. Adaptación de cuadros y cambio de bajantes.", obrasReferencia: 2, comprobado: haceDias(15), capitalRC: 150000, obrasEnApp: 3,
     valoraciones: [{ fase: "Instalaciones", media: 4.9, n: 3 }],
+  },
+];
+
+const TEXTOS_COMUNIDAD = ESPECIALIDADES.filter((e) => (ESPECIALIDADES_COMUNIDAD as readonly string[]).includes(e.valor)).map((e) => e.texto as string);
+
+/** Hace obras en edificios (fachadas, tejados…) para comunidades de propietarios. */
+export const paraComunidades = (f: FichaRed) => f.especialidades.some((e) => TEXTOS_COMUNIDAD.includes(e));
+/** Solo trabaja en edificios: no sale en la comparativa de reformas de vivienda. */
+export const soloComunidades = (f: FichaRed) => f.especialidades.length > 0 && f.especialidades.every((e) => TEXTOS_COMUNIDAD.includes(e));
+
+/** Especialistas de ejemplo (ficticios) en fachadas y tejados para comunidades. */
+export const FICHAS_COMUNIDADES: FichaRed[] = [
+  {
+    id: "ej-c1", codigo: "R-3317", tipo: "empresa", zonas: ["Madrid capital", "Alcorcón", "Móstoles"], especialidades: ["Fachadas y rehabilitación de edificios", "Aislamiento SATE"], trabajadores: 22,
+    presentacion: "Rehabilitación de fachadas y SATE en edificios de viviendas. Andamio propio, técnico de obra y gestión de la licencia y la ocupación de vía pública.", obrasReferencia: 3, comprobado: haceDias(4), capitalRC: 1200000, obrasEnApp: 5,
+    valoraciones: [{ fase: "Andamio y seguridad", media: 4.8, n: 5 }, { fase: "Ejecución", media: 4.7, n: 5 }, { fase: "Trato con los vecinos", media: 4.9, n: 4 }],
+  },
+  {
+    id: "ej-c2", codigo: "R-6402", tipo: "empresa", zonas: ["Madrid norte", "Alcobendas", "San Sebastián de los Reyes"], especialidades: ["Tejados y cubiertas", "Impermeabilización"], trabajadores: 9,
+    presentacion: "Tejados de teja, cubiertas planas e impermeabilización de terrazas y patios. Trabajos verticales sin andamio cuando se puede.", obrasReferencia: 3, comprobado: haceDias(11), capitalRC: 600000, obrasEnApp: 4,
+    valoraciones: [{ fase: "Ejecución", media: 4.6, n: 4 }, { fase: "Limpieza y entrega", media: 4.8, n: 4 }],
+  },
+  {
+    id: "ej-c3", codigo: "R-7754", tipo: "empresa", zonas: ["Málaga", "Torremolinos", "Benalmádena"], especialidades: ["Fachadas y rehabilitación de edificios", "Tejados y cubiertas", "Impermeabilización"], trabajadores: 12,
+    presentacion: "Equipo en Málaga para fachadas, cubiertas y patios de luces de comunidades. Informe previo y fotos de cada fase para la junta.", obrasReferencia: 3, comprobado: haceDias(6), capitalRC: 600000, obrasEnApp: 2,
+    valoraciones: [{ fase: "Ejecución", media: 4.7, n: 2 }],
   },
 ];

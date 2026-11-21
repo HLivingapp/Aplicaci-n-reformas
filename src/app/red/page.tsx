@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { Muro } from "@/components/Muro";
 import { conBaseDeDatos } from "@/lib/modo";
-import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
+import { FICHAS_COMUNIDADES, FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 import { tarifaDe } from "@/lib/encargos";
@@ -25,7 +25,7 @@ export default function RedProfesionales() {
         .then((j) => setFichas(j.fichas ?? []))
         .catch(() => setFichas([]));
     } else {
-      setFichas([...fichasRed(leerLocal().proveedores).map((f) => ({ ...f, obrasEnApp: 1 })), ...FICHAS_EJEMPLO]);
+      setFichas([...fichasRed(leerLocal().proveedores).map((f) => ({ ...f, obrasEnApp: 1 })), ...FICHAS_EJEMPLO, ...FICHAS_COMUNIDADES]);
     }
   }, []);
 
