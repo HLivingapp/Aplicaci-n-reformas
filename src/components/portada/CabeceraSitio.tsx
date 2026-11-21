@@ -9,6 +9,7 @@ const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas"
 const MENU = [
   { href: "/sobre-nosotros", texto: "Quiénes somos", ver: "sm:inline" },
   { href: "/disena", texto: "Diseña", ver: "md:inline" },
+  { href: "/materiales", texto: "Materiales", ver: "lg:inline" },
   { href: "/comunidad", texto: "Comunidad", ver: "md:inline" },
   { href: "/suscripcion", texto: "Planes", ver: "md:inline" },
   { href: "/cliente", texto: "Mi reforma", ver: "sm:inline" },

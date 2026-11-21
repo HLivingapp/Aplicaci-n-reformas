@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { publico } from "@/lib/base";
 import { GUIA_AUDIO, seleccionPara, type CategoriaSeleccion } from "@/lib/seleccion";
 
@@ -73,6 +74,7 @@ export function SeleccionProductos({ grupos, excluir, conGuia = false }: { grupo
           <Categoria key={c.id} c={c} />
         ))}
       </div>
+      <Link href="/materiales" className="block rounded-xl border border-teal-200 bg-white px-4 py-3 text-sm font-semibold text-teal-800 hover:bg-teal-50">🧱 Ver todos los materiales de gama media, con fotos →</Link>
       <p className="text-xs text-stone-400">Enlaces a los catálogos públicos de cada fabricante. Los precios de tu reforma son los de tu presupuesto.</p>
     </div>
   );
