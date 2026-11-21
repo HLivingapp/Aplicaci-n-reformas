@@ -18,6 +18,7 @@ import { ComparativaRed } from "@/components/ComparativaRed";
 import { ServiciosArquitectura } from "@/components/Arquitectura";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
+import { SeleccionPlegable } from "@/components/SeleccionProductos";
 import { PlanoBase } from "@/components/PlanoBase";
 import { Barra, EstadoFaseTag, EstadoPresupuestoTag, Tarjeta, Vacio } from "@/components/ui";
 
@@ -169,6 +170,7 @@ export default function PortalCliente() {
                   <summary className="cursor-pointer font-semibold">Elige tus acabados</summary>
                   <div className="mt-3">
                     <ElegirMateriales materiales={p.estimacion.materiales} ocupado={guardando} onElegir={(g, o) => elegir(p.id, p.reforma.materiales, g, o)} />
+                    <SeleccionPlegable />
                   </div>
                 </details>
               )}

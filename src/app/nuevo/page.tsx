@@ -24,6 +24,7 @@ import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from 
 import { VistaEstimacion } from "@/components/Estimacion";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
+import { SeleccionPlegable } from "@/components/SeleccionProductos";
 import { Contador, Opciones } from "@/components/Opciones";
 import { PreguntaInstalacion } from "@/components/PreguntaInstalacion";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -464,6 +465,7 @@ function NuevoProyectoContenido() {
             <Tarjeta>
               <h3 className="mb-2 font-semibold">Elige tus acabados</h3>
               <ElegirMateriales materiales={estimacion.materiales} onElegir={elegirMaterial} ocupado={recalculando} />
+              <SeleccionPlegable />
             </Tarjeta>
           )}
           {estimacion && <FasesYParecidas e={estimacion} v={v} r={r} />}
