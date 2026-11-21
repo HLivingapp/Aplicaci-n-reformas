@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
+import { GuiaAudio, SeleccionProductos } from "@/components/SeleccionProductos";
 import { euros } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
 import { fotoSinUbicacion } from "@/lib/foto-segura";
@@ -122,6 +123,17 @@ export default function Disena() {
             <p className="text-center text-xs text-stone-400">Muy pronto: verás tu foto con los acabados elegidos.</p>
           </aside>
         </div>
+
+        <section id="seleccion" className="mt-12">
+          <h2 className="text-2xl font-semibold tracking-tight">Nuestra selección de productos</h2>
+          <p className="mt-1 max-w-2xl text-stone-600">Lo que ponemos en nuestras obras, explicado por el equipo en vídeos cortos, con el catálogo de cada marca.</p>
+          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_22rem]">
+            <SeleccionProductos grupos={GRUPOS[estancia]} />
+            <div className="lg:sticky lg:top-20 lg:self-start"><GuiaAudio /></div>
+          </div>
+          <h3 className="mt-8 font-semibold text-stone-700">Y para el resto de la vivienda</h3>
+          <div className="mt-3"><SeleccionProductos excluir={GRUPOS[estancia]} /></div>
+        </section>
       </main>
     </div>
   );
