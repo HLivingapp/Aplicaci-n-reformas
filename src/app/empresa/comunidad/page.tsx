@@ -8,7 +8,7 @@ import { conBaseDeDatos } from "@/lib/modo";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { inputCls, Tarjeta, Titulo, Vacio } from "@/components/ui";
 
-/** Miembros de la comunidad Human Living. Solo se contacta por WhatsApp o teléfono a quien lo autorizó. */
+/** Miembros de la comunidad de la app. Solo se contacta por WhatsApp o teléfono a quien lo autorizó. */
 export default function Miembros() {
   const [lista, setLista] = useState<Miembro[] | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -26,7 +26,7 @@ export default function MaterialesEquipo() {
     if (fallo) return setError(fallo);
     const limpio = { ...f, marca: f.marca.trim(), nombre: f.nombre.trim(), detalle: f.detalle.trim(), url: f.url?.trim() || undefined, imagen: f.imagen?.trim() || undefined };
     const actual = leerMaterialesMedia();
-    const nueva = editando ? actual.map((x) => (x.id === editando ? { ...x, ...limpio } : x)) : [{ ...limpio, id: nuevoId(), autor: "Human Living", fecha: hoy() }, ...actual];
+    const nueva = editando ? actual.map((x) => (x.id === editando ? { ...x, ...limpio } : x)) : [{ ...limpio, id: nuevoId(), autor: "Equipo", fecha: hoy() }, ...actual];
     try {
       guardarMaterialesMedia(nueva);
       setF(vacio());

@@ -42,7 +42,7 @@ const SALGAR = "https://www.salgar.net/salgar-catalogues-uk";
 const ROCA = "https://www.roca.es/productos/descargas";
 const KASSANDRA = "https://kassandra.net/";
 
-/** Nuestra selección inicial (carpeta 10 PRODUCTO), solo con enlaces a catálogos. */
+/** Selección inicial aportada por Human Living (carpeta 10 PRODUCTO), solo con enlaces a catálogos. */
 export const MATERIALES_MEDIA_INICIALES: MaterialMedia[] = [
   m("alvic-luxe", "cocina", "Alvic", "Frentes Luxe", "Puertas de cocina de la colección Luxe", "https://alvic.com/es/descargas/"),
   m("alvic-zenit", "cocina", "Alvic", "Frentes Zenit", "Puertas de cocina de la colección Zenit", "https://alvic.com/es/descargas/"),
@@ -55,8 +55,8 @@ export const MATERIALES_MEDIA_INICIALES: MaterialMedia[] = [
   m("salgar-attila", "bano", "Salgar", "Mueble de baño Attila", "35 cm de fondo, con lavabo", SALGAR),
   m("salgar-uniq", "bano", "Salgar", "Mueble de baño Uniq", "35 cm de fondo, con lavabo", SALGAR),
   m("salgar-marville", "bano", "Salgar", "Mueble de baño Marville", "22 cm de fondo, para baños estrechos", SALGAR),
-  m("roca-gap", "bano", "Roca", "Inodoro Gap", "Inodoro de nuestra selección", ROCA),
-  m("roca-contessa", "bano", "Roca", "Bañera Contessa", "Bañera de nuestra selección", ROCA),
+  m("roca-gap", "bano", "Roca", "Inodoro Gap", "Inodoro de la selección recomendada", ROCA),
+  m("roca-contessa", "bano", "Roca", "Bañera Contessa", "Bañera de la selección recomendada", ROCA),
   m("imex-bano", "bano", "Imex", "Grifería de baño", "Negra o cromada, vista o empotrada", IMEX),
   m("kassandra-delta", "bano", "Kassandra", "Mampara Delta", "Mampara de ducha", KASSANDRA),
   m("kassandra-luna", "bano", "Kassandra", "Mampara Luna", "Mampara de ducha", KASSANDRA),

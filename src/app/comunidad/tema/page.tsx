@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { APP } from "@/lib/marca";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { DENUNCIAS_OCULTAR, type Accion, type Mensaje } from "@/lib/foro";
@@ -93,7 +94,7 @@ function VistaTema() {
           <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-5 sm:flex-row sm:items-center">
             <div className="flex-1">
               <div className="font-semibold">¿Te ha pasado algo parecido o sabes la respuesta?</div>
-              <div className="text-sm text-stone-600">Únete gratis a la comunidad Human Living con tu email para responder.</div>
+              <div className="text-sm text-stone-600">Únete gratis a la comunidad {APP.nombre} con tu email para responder.</div>
             </div>
             <button onClick={() => exigir()} className="rounded-full bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Unirme y responder</button>
           </div>

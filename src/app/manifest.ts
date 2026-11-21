@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 import { publico } from "@/lib/base";
+import { APP } from "@/lib/marca";
 
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Reformas · Gestión de obras",
-    short_name: "Reformas",
+    name: APP.nombre,
+    short_name: APP.nombre,
     description: "Presupuestos, planificación de obra y portal del cliente.",
     start_url: publico("/"),
     display: "standalone",

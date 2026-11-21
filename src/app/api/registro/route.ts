@@ -3,7 +3,7 @@ import { miembroLimpio } from "@/lib/miembro";
 import { esDelEquipo } from "@/lib/servidor/equipo";
 import { db } from "@/lib/servidor/repo";
 
-/** Alta en la comunidad Human Living con el email (y, si quiere, teléfono y permiso de contacto). */
+/** Alta en la comunidad de la app con el email (y, si quiere, teléfono y permiso de contacto). */
 const usos = new Map<string, number[]>();
 
 export async function POST(req: Request) {

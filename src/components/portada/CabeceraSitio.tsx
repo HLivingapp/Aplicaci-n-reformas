@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { APP } from "@/lib/marca";
 import { usePathname } from "next/navigation";
 import { publico } from "@/lib/base";
 
-const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
+const NOMBRE = APP.nombre;
 
 const MENU = [
-  { href: "/sobre-nosotros", texto: "Quiénes somos", ver: "sm:inline" },
+  { href: "/human-living", texto: "★ Human Living", ver: "sm:inline" },
   { href: "/disena", texto: "Diseña", ver: "md:inline" },
   { href: "/materiales", texto: "Materiales", ver: "lg:inline" },
   { href: "/comunidades", texto: "Comunidades", ver: "lg:inline" },
@@ -17,7 +18,7 @@ const MENU = [
   { href: "/cliente", texto: "Mi reforma", ver: "sm:inline" },
 ];
 
-/** Cabecera oscura de la portada y de las páginas de la marca (Quiénes somos). Marca la sección en la que estás. */
+/** Cabecera oscura de la portada y de las páginas de la marca (empresas destacadas). Marca la sección en la que estás. */
 export function CabeceraSitio() {
   const ruta = usePathname() ?? "/";
   return (

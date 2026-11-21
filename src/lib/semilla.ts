@@ -32,7 +32,7 @@ export function datosIniciales(): Datos {
     proveedores: [],
     tarifas: tarifasPorDefecto(),
     empresa: {
-      nombre: "Human Living Reformas",
+      nombre: "Reformas Ejemplo SL",
       cif: "B00000000",
       telefono: "600 000 000",
       email: "info@ejemplo.es",

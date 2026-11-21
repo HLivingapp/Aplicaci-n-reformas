@@ -1,5 +1,5 @@
 /**
- * Selección de productos de Human Living: las marcas y gamas que usamos en nuestras obras,
+ * Selección de productos recomendada (aportada por Human Living, empresa destacada): marcas y gamas,
  * con el vídeo del equipo que lo explica y el enlace al catálogo público del fabricante.
  * Sin precios ni tarifas de proveedor (los enlaces son catálogos, no listas de precios).
  */
@@ -28,7 +28,7 @@ export const SELECCION: CategoriaSeleccion[] = [
     icono: "🍳",
     grupos: ["cocina", "electrodomesticos", "revest_cocina"],
     resumen: "Frentes y encimera los eliges en el showroom; los electrodomésticos, online.",
-    video: video("cocina", "Así elegimos una cocina", "1 min"),
+    video: video("cocina", "Cómo elegir una cocina", "1 min"),
     marcas: [
       { marca: "Alvic", que: "Frentes de cocina Luxe, Zenit y Syncron", url: "https://alvic.com/es/descargas/" },
       { marca: "Alvic Center (Hermosilla 75, Madrid)", que: "Showroom donde eliges puertas y encimera", url: "https://alviccenter.es/centros-distribucion/madrid-hermosilla/" },

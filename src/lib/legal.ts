@@ -1,10 +1,12 @@
+import { APP } from "./marca";
 /**
  * Datos del responsable del tratamiento que aparecen en la política de privacidad.
  * Revisar con la asesoría antes de publicar.
  */
 export const RESPONSABLE = {
   razonSocial: "Human Building SL",
-  marca: "Human Living",
+  /** Nombre de la app (provisional, ver marca.ts). El titular sigue siendo Human Building SL. */
+  marca: APP.nombre,
   cif: "B01941400",
   domicilio: "Calle Arrieta 5, 1º, 28013 Madrid",
   email: "admin@humanliving.es",
