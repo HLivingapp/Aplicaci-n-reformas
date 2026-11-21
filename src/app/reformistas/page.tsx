@@ -77,13 +77,13 @@ export default function AltaReformista() {
         <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
           <div className="font-semibold">🤝 {invitacion.datos.cliente} te ha invitado a llevar su reforma con la app</div>
           <p className="mt-1">
-            Al ser tu cliente, en esta obra no pagáis nada ninguno de los dos: ni reserva ni fee. Rellena tu alta y la obra aparecerá en tu área para meter el presupuesto acordado y firmar el contrato en la app.
+            Al ser tu cliente, en esta obra no pagáis nada ninguno de los dos: ni reserva ni fee. Rellena tu alta y la obra aparecerá en tu área para meter el presupuesto acordado y firmar el contrato en la app. Para generar el contrato tendrás que subir tu seguro RSC (responsabilidad civil) y los certificados al corriente de pago.
           </p>
         </div>
       )}
       <p className="text-sm text-stone-600">
         Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: inscripción en el REA (o tu documentación de prevención de
-        riesgos laborales), seguro de responsabilidad civil, estar al corriente de pagos, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
+        riesgos laborales), seguro RSC (responsabilidad civil), certificado al corriente de pago, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
         después te daremos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-3">
@@ -151,7 +151,7 @@ export default function AltaReformista() {
       </Tarjeta>
 
       <Tarjeta className="space-y-3">
-        <h2 className="font-semibold">3. Seguro de responsabilidad civil</h2>
+        <h2 className="font-semibold">3. Seguro RSC (responsabilidad civil)</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <Campo etiqueta="Aseguradora *"><input className={inputCls} value={a.rc.aseguradora} onChange={(e) => set("rc", { ...a.rc, aseguradora: e.target.value })} /></Campo>
           <Campo etiqueta="Capital asegurado (€)"><input type="number" min={0} step={50000} className={inputCls} value={a.rc.capital || ""} onChange={(e) => set("rc", { ...a.rc, capital: Number(e.target.value) || 0 })} /></Campo>

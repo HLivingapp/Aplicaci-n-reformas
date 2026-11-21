@@ -12,7 +12,7 @@ export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
   "Acepto que la empresa trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.";
 
 export const TEXTO_DECLARACION_RESPONSABLE =
-  "Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, deudas con Hacienda o la Seguridad Social). Acepto que la empresa haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.";
+  "Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, dejar de estar al corriente de pago con la Agencia Tributaria o la Seguridad Social). Acepto que la empresa haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.";
 
 /** Compromiso de declarar en la app las ventas que llegan por la app. Pendiente de revisión por el abogado. */
 export const TEXTO_COMPROMISO_VENTAS =
@@ -76,10 +76,10 @@ export const DOCUMENTOS: Record<TipoDocProveedor, { texto: string; ayuda: string
   prl_modalidad: { texto: "Modalidad preventiva", ayuda: "Contrato con el servicio de prevención ajeno o documento de tu modalidad.", caduca: true, mesesPorDefecto: 12 },
   prl_evaluacion: { texto: "Evaluación de riesgos y planificación preventiva", ayuda: "", caduca: false },
   prl_formacion: { texto: "Formación en PRL de los trabajadores", ayuda: "Certificados de formación (20 h construcción o según puesto).", caduca: false },
-  rc_poliza: { texto: "Póliza de responsabilidad civil", ayuda: "Condiciones particulares con el capital asegurado.", caduca: true, mesesPorDefecto: 12 },
-  rc_recibo: { texto: "Recibo pagado del seguro", ayuda: "Último recibo de la póliza de RC.", caduca: true, mesesPorDefecto: 12 },
+  rc_poliza: { texto: "Póliza del seguro RSC (responsabilidad civil)", ayuda: "Condiciones particulares con el capital asegurado.", caduca: true, mesesPorDefecto: 12 },
+  rc_recibo: { texto: "Recibo pagado del seguro RSC", ayuda: "Último recibo pagado de la póliza de responsabilidad civil.", caduca: true, mesesPorDefecto: 12 },
   hacienda: {
-    texto: "Certificado de estar al corriente con Hacienda",
+    texto: "Certificado al corriente de pago (Agencia Tributaria)",
     ayuda: "Certificado de contratistas y subcontratistas o de estar al corriente, descargado de la sede electrónica de la AEAT. Lo comprobamos automáticamente con su código seguro de verificación (CSV).",
     caduca: true,
     mesesPorDefecto: 12,
@@ -163,8 +163,8 @@ export function requisitos(p: ProveedorBase, h = hoy()): Requisito[] {
   return [
     { clave: "datos", texto: "Datos de la empresa completos", ok: !!(p.razonSocial && nifValido(p.nif) && p.contacto && (p.telefono || p.email)), documentos: [] },
     prevencion(p, h),
-    { clave: "rc", texto: "Seguro de responsabilidad civil en vigor", ...docs("rc_poliza", "rc_recibo") },
-    { clave: "corriente", texto: "Al corriente con Hacienda y Seguridad Social", ...docs("hacienda", "seguridad_social") },
+    { clave: "rc", texto: "Seguro RSC (responsabilidad civil) en vigor", ...docs("rc_poliza", "rc_recibo") },
+    { clave: "corriente", texto: "Certificados al corriente de pago (Agencia Tributaria y Seguridad Social)", ...docs("hacienda", "seguridad_social") },
     { clave: "cuentas", texto: "Cuentas anuales depositadas", ...docs("cuentas") },
     { clave: "obras", texto: `Al menos ${OBRAS_MINIMAS} obras de referencia comprobables`, ok: p.obras.filter((o) => o.descripcion && o.contacto).length >= OBRAS_MINIMAS, documentos: [] },
     { clave: "zonas", texto: "Zonas donde trabaja", ok: p.zonas.length > 0, documentos: [] },

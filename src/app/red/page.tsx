@@ -41,7 +41,7 @@ export default function RedProfesionales() {
         <div className="mx-auto max-w-5xl px-4 pb-6 pt-10">
           <h1 className="text-3xl font-semibold tracking-tight">Red de reformistas homologados</h1>
           <p className="mt-2 max-w-2xl text-stone-600">
-            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, al corriente con Hacienda y con seguro de responsabilidad civil. Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho con nosotros.
+            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, con certificado al corriente de pago y con seguro RSC (responsabilidad civil). Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho con nosotros.
           </p>
           <p className="mt-2 max-w-2xl text-stone-600">Cada uno ha cargado sus tarifas, así que no tienes que pedir presupuestos uno a uno: calcula el tuyo y verás lo que te costaría con cada reformista.</p>
           <BotonLink href="/nuevo" className="mt-4">Calcular mi presupuesto gratis</BotonLink>
@@ -78,7 +78,7 @@ export default function RedProfesionales() {
                     <div className="font-semibold">Reformista {f.codigo}</div>
                     <div className="text-xs text-stone-500">{f.tipo === "empresa" ? "Empresa" : "Autónomo"} · {f.trabajadores} persona{f.trabajadores === 1 ? "" : "s"} · {f.zonas.join(", ")}</div>
                   </div>
-                  <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 ring-1 ring-emerald-200" title="Registro de Empresas Acreditadas, Hacienda y seguro de responsabilidad civil">
+                  <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 ring-1 ring-emerald-200" title="Registro de Empresas Acreditadas, certificado al corriente de pago y seguro RSC">
                     ✓ Homologado · comprobado el {new Date(f.comprobado).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
                   </span>
                 </div>
@@ -89,7 +89,7 @@ export default function RedProfesionales() {
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="rounded-lg bg-stone-50 p-2"><div className="text-base font-semibold">{f.obrasEnApp}</div>obras en la app</div>
                   <div className="rounded-lg bg-stone-50 p-2"><div className="text-base font-semibold">{f.obrasReferencia}</div>obras de referencia</div>
-                  <div className="rounded-lg bg-stone-50 p-2"><div className="text-base font-semibold">{(f.capitalRC / 1000).toLocaleString("es-ES")} mil €</div>seguro RC</div>
+                  <div className="rounded-lg bg-stone-50 p-2"><div className="text-base font-semibold">{(f.capitalRC / 1000).toLocaleString("es-ES")} mil €</div>seguro RSC</div>
                 </div>
                 {f.valoraciones && f.valoraciones.length > 0 && (
                   <div className="mt-3 text-xs">
