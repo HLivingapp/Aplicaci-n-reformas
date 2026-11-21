@@ -10,6 +10,8 @@ import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 import type { DatosReforma, Vivienda } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
+import { SeguimientoEncargo } from "./SeguimientoEncargo";
+import { SimuladorHipoteca } from "./SimuladorHipoteca";
 import { Muro } from "./Muro";
 import { inputCls } from "./ui";
 
@@ -115,9 +117,11 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
       {encargos.filter((e) => e.final && e.estado !== "descartado").map((e) => (
         <div key={e.id}>
           <h3 className="mb-2 font-semibold">Contrato con el reformista {e.codigo}</h3>
+          {e.estado === "firmado" && <div className="mb-3"><SeguimientoEncargo e={e} parte="cliente" /></div>}
           <ContratoEncargo e={e} parte="cliente" alFirmar={() => firmarCliente(e.id)} />
         </div>
       ))}
+      <SimuladorHipoteca importe={conIva(ref.base)} />
     </section>
   );
 }

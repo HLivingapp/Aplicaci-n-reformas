@@ -35,6 +35,7 @@ export const PLANES: InfoPlan[] = [
       "Red de reformistas homologados de tu zona, con sello y fecha de la última comprobación",
       "El presupuesto de cada reformista para tu casa, calculado con sus tarifas",
       "Elige los que más te interesen y queda con ellos para una visita, sin dar tu teléfono a nadie más",
+      "Estudios de arquitectura homologados: precio de cada uno para tu proyecto, licencia o legalización",
       "Presupuesto final tras la visita y contrato estándar firmado en la app, con seguro de promotor gratis (responsabilidad civil y defensa jurídica)",
       "Seguimiento de la obra por fases, con fotos y valoraciones",
     ],
