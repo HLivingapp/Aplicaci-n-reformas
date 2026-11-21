@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
-import { alCambiar, ESTADO_ENCARGO, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
+import { alCambiar, ESTADO_ENCARGO, TEXTO_RESERVA, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
@@ -80,7 +80,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
       <div>
         <h2 className="text-lg font-semibold">El presupuesto de cada reformista para tu casa</h2>
         <p className="text-sm text-stone-600">
-          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita y, después, te mandan aquí su presupuesto final y el contrato. Si firmas por la app, te regalamos un seguro de promotor con responsabilidad civil y defensa jurídica.
+          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y te regalamos un seguro de promotor con responsabilidad civil y defensa jurídica.
         </p>
       </div>
       {!suscrito && (

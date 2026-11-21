@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
+import { COMERCIALIZACION, miles, TEXTO_RESERVA } from "@/lib/comercializacion";
 import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
@@ -66,7 +67,7 @@ export default function AltaReformista() {
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-3">
         {[
-          ["💶", "Solo pagas si firmas", "Sin cuotas por contacto: un fee de comercialización solo de las obras que firmas en la app."],
+          ["💶", "Solo pagas si firmas", `Sin cuotas por contacto. Solo pagas cuando el cliente firma en la app: el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}) y se descuenta de lo que cobras. Obras desde ${miles(COMERCIALIZACION.obraMinima)} €.`],
           ["📋", "Tus tarifas trabajan por ti", "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido."],
           ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en la comunidad te dan más visibilidad."],
         ].map(([i, t, d]) => (

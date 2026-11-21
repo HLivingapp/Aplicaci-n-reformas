@@ -1,7 +1,7 @@
 "use client";
 
 import { euros } from "@/lib/calc";
-import { COMERCIALIZACION, feeComercializacion, IVA_REFORMA, type Encargo } from "@/lib/encargos";
+import { IVA_REFORMA, reservaApp, TEXTO_RESERVA, type Encargo } from "@/lib/encargos";
 import { textoDireccion } from "@/lib/proyecto";
 
 const fecha = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "");
@@ -20,6 +20,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
   if (!f) return null;
   const iva = Math.round(f.importe * IVA_REFORMA) / 100;
   const total = f.importe + iva;
+  const reserva = reservaApp(f.importe);
   const capitulos = [...new Set(f.lineas.map((l) => l.capitulo))].map((c) => ({
     c,
     importe: f.lineas.filter((l) => l.capitulo === c).reduce((s, l) => s + l.cantidad * l.precio, 0),
@@ -56,10 +57,14 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Plazo.</b> {f.plazoSemanas} semanas desde el inicio de la obra, salvo causas ajenas al contratista que se anotarán en la app.
         </li>
         <li>
-          <b>Pagos.</b> Al firmar pagas en la app una primera reserva{COMERCIALIZACION.confirmado ? ` de ${euros(feeComercializacion(f.importe))}` : ""}, que se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:
+          <b>Pagos.</b> Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}). La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:
           <ul className="mt-1 space-y-0.5">
-            {HITOS.map((h) => (
-              <li key={h.texto} className="flex justify-between gap-2 text-xs"><span>{h.pct} % · {h.texto}</span><span>{euros((total * h.pct) / 100)}</span></li>
+            <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app, a la firma</span><span>{euros(reserva)}</span></li>
+            {HITOS.map((h, i) => (
+              <li key={h.texto} className="flex justify-between gap-2 text-xs">
+                <span>{h.pct} % · {h.texto}{i === 0 ? " (menos la reserva)" : ""}</span>
+                <span>{euros((total * h.pct) / 100 - (i === 0 ? reserva : 0))}</span>
+              </li>
             ))}
           </ul>
         </li>
@@ -83,9 +88,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
       </ol>
       {parte === "reformista" && (
         <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
-          {COMERCIALIZACION.confirmado
-            ? `Fee de comercialización: ${euros(feeComercializacion(f.importe))} (el mayor entre ${euros(COMERCIALIZACION.minimo)} y el ${COMERCIALIZACION.pct} % de la obra sin IVA). Lo cobra la app como reserva del cliente al firmar y se descuenta de tu primer pago.`
-            : "Fee de comercialización: lo cobra la app como reserva del cliente al firmar y se descuenta de tu primer pago. Condiciones pendientes de confirmar."}{" "}
+          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). Se la queda Human Living y se descuenta de lo que cobras de la obra.{" "}
           Recuerda que firmaste declarar en la app todas las ventas con este cliente, incluidas ampliaciones. Si el cliente anula el contrato en la app, se te devuelve la parte del fee que corresponda a lo que quede por ejecutar. En esta demostración no se cobra nada.
         </p>
       )}
