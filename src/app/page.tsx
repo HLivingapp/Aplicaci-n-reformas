@@ -265,7 +265,7 @@ export default function Inicio() {
           </div>
           <ul className="space-y-3 text-sm">
             {[
-              "Sin pagar por cada contacto: solo la reserva del cliente cuando firma en la app",
+              "Sin pagar por cada contacto: solo pagas por las obras que firmas",
               "Homologación automática en minutos: REA, Hacienda y seguro",
               "Más visibilidad cuantas más obras haces con la app",
               "Contrato estándar y encargo firmados en la app",
