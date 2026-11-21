@@ -1,0 +1,36 @@
+{
+ "actualizado": "2026-11-21T17:50:08.672Z",
+ "convocatorias": {
+  "908939": {
+   "titulo": "Convocatoria pública de subvenciones con destino a actuaciones de accesibilidad, conservación, eficiencia energética, salubridad y seguridad de edificios existentes de uso residencial vivienda, “Plan Rehabilita Madrid 2026",
+   "presupuesto": 50000000
+  },
+  "927856": {
+   "titulo": "Sexta convocatoria de subvenciones a la rehab., adecuación y reparación de edificios, para la mejora de la accesibilidad e implantación de ascensores. (Línea Especial)\nconvoc.2026-2, que concede el Instituto Municipal de la Vivienda, la Rehab. Reg.Urbana",
+   "presupuesto": 2000000,
+   "desde": "2026-09-15",
+   "hasta": "2026-11-13"
+  },
+  "930702": {
+   "titulo": "Resolución de 21 de setiembre de , convocatoria Linea 2 Energía del Programa 1 Sector residencial y edificios e instalaciones públicas. Act. Eiciencia energética en viviendas y edificios residenciales privados y públicos no residen. REG (UE) 651/2014",
+   "presupuesto": 550293.13,
+   "hasta": "2026-10-30"
+  },
+  "930703": {
+   "titulo": "Resolución de 21 de setiembre de 2026, convocatoria Linea 2 Energía del Programa 1 Sector residencial y edificios e instalaciones públicas. Act. Energías renovables en viviendas y edificios residenciales privados. REG (UE) 651/2014.",
+   "presupuesto": 281101.43,
+   "hasta": "2026-10-23"
+  },
+  "930704": {
+   "titulo": "Resolución de 21 de setiembre de 2026, convocatoria Linea 2 Energía del Programa 1 Sector residencial y edificios e instalaciones públicas. Act. Energías renovables y eficiencia energética. No Ayudas de Estado",
+   "presupuesto": 19941111.8,
+   "hasta": "2026-10-23"
+  },
+  "940275": {
+   "titulo": "AYUDAS URGENTES REHABILITACIÓN DE VIVIENDAS INCENDIOS SIERRA OESTE",
+   "presupuesto": 8000000,
+   "desde": "2026-11-11",
+   "hasta": "2027-01-11"
+  }
+ }
+}
