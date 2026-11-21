@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { COMERCIALIZACION, miles, TEXTO_RESERVA } from "@/lib/comercializacion";
 import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
 import { AntesDespues } from "@/components/portada/AntesDespues";
@@ -37,6 +38,7 @@ const VENTAJAS = [
 
 const PREGUNTAS = [
   { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Para ver el precio de cada reformista homologado para tu casa y quedar con ellos está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
+  { q: "¿Qué pago al contratar la obra?", a: `Al firmar el contrato en la app pagas una reserva: ${TEXTO_RESERVA}. No es un coste extra: forma parte del precio y se descuenta de tu primer pago al reformista. El resto se lo pagas directamente a él, por fases. Las obras que se contratan por la app son de al menos ${miles(COMERCIALIZACION.obraMinima)} €.` },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
   { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado de Hacienda al corriente y seguro de responsabilidad civil vigentes. El registro REA se vuelve a comprobar cada mes." },
   { q: "¿Y si cambio de opinión?", a: "Puedes cancelar el contrato desde la app. Se hace un acta con lo ejecutado hasta ese momento." },
@@ -263,7 +265,7 @@ export default function Inicio() {
           </div>
           <ul className="space-y-3 text-sm">
             {[
-              "Sin pagar por cada contacto: fee solo sobre las obras que firmas",
+              "Sin pagar por cada contacto: solo pagas por las obras que firmas",
               "Homologación automática en minutos: REA, Hacienda y seguro",
               "Más visibilidad cuantas más obras haces con la app",
               "Contrato estándar y encargo firmados en la app",

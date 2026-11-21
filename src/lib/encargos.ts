@@ -20,20 +20,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 
 export const IVA_REFORMA = 10;
 
-/**
- * Fee de comercialización al reformista. Lo cobra la app como primera reserva del cliente al
- * firmar (se descuenta del primer pago al reformista). Fee = máximo entre el mínimo y el % de la obra.
- * Las cifras (mínimo, %, obra mínima) son condiciones comerciales: no se guardan en este repositorio,
- * que es público. Se configuran en el entorno del servidor cuando estén confirmadas.
- */
-const num = (v: string | undefined) => (v && Number.isFinite(Number(v)) ? Number(v) : 0);
-export const COMERCIALIZACION = {
-  minimo: num(process.env.NEXT_PUBLIC_FEE_MINIMO),
-  pct: num(process.env.NEXT_PUBLIC_FEE_PCT),
-  obraMinima: num(process.env.NEXT_PUBLIC_OBRA_MINIMA),
-  confirmado: process.env.NEXT_PUBLIC_FEE_CONFIRMADO === "1",
-};
-export const feeComercializacion = (importeSinIva: number, c = COMERCIALIZACION) => Math.max(c.minimo, Math.round(importeSinIva * c.pct) / 100);
+export { COMERCIALIZACION, reservaApp, TEXTO_RESERVA } from "./comercializacion";
 
 export type { TarifaReformista };
 
