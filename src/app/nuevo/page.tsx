@@ -456,7 +456,7 @@ function NuevoProyectoContenido() {
           <Tarjeta className="border-teal-600 ring-2 ring-teal-100">
             <h2 className="text-lg font-semibold">Guarda tu presupuesto en la app</h2>
             <p className="mt-1 text-sm text-stone-600">
-              No te lo enviamos por email: queda guardado aquí, en tu enlace privado, con todas sus partidas. Desde ahí eliges a qué reformistas homologados pedírselo.
+              No te lo enviamos por email: queda guardado aquí, en tu enlace privado, con todas sus partidas. Ahí verás también lo que te costaría con cada reformista homologado de tu zona, calculado con sus tarifas.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <Campo etiqueta="Nombre y apellidos *" className="sm:col-span-2">

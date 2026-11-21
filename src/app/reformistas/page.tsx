@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
-import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
+import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
@@ -66,8 +66,8 @@ export default function AltaReformista() {
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-3">
         {[
-          ["💶", "Solo pagas si firmas", "Sin cuotas por contacto: una pequeña comisión solo de las obras que firmas en la app."],
-          ["📋", "Clientes con presupuesto", "Llegan con medidas, partidas y acabados elegidos. Menos visitas perdidas."],
+          ["💶", "Solo pagas si firmas", "Sin cuotas por contacto: un fee de comercialización solo de las obras que firmas en la app."],
+          ["📋", "Tus tarifas trabajan por ti", "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido."],
           ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en la comunidad te dan más visibilidad."],
         ].map(([i, t, d]) => (
           <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>
@@ -75,8 +75,10 @@ export default function AltaReformista() {
       </div>
 
       <Tarjeta className="space-y-3 border-teal-200">
-        <h2 className="font-semibold">Declaración responsable</h2>
+        <h2 className="font-semibold">Declaración responsable y compromiso de ventas</h2>
         <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
+        <p className="text-sm text-stone-700"><b>Ventas que llegan por la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
+        <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
         <label className="flex items-start gap-2 text-sm font-medium">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />
           <span>Lo declaro y acepto estas condiciones</span>

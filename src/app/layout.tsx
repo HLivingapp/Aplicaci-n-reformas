@@ -8,7 +8,7 @@ const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axe
 
 export const metadata: Metadata = {
   title: "Human Living Reformas · Tu reforma con precio claro",
-  description: "Únete gratis con tu email y ve al momento, en la app, el presupuesto de tu reforma partida a partida. Después pide presupuesto a reformistas homologados de tu zona.",
+  description: "Únete gratis con tu email y ve al momento, en la app, el presupuesto de tu reforma partida a partida. Después compara el precio de cada reformista homologado de tu zona.",
   appleWebApp: { capable: true, title: "Reformas", statusBarStyle: "default" },
   icons: { icon: publico("/icon.svg"), apple: publico("/icon-192.png") },
 };

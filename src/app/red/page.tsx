@@ -8,28 +8,17 @@ import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
-import { useExigirRegistro } from "@/components/Registro";
+import { tarifaDe } from "@/lib/encargos";
+import { BotonLink } from "@/components/ui";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
-const CLAVE_PEDIDOS = "app-reformas:pedidos-red";
-
-const leerPedidos = (): string[] => {
-  try {
-    return JSON.parse(localStorage.getItem(CLAVE_PEDIDOS) ?? "[]");
-  } catch {
-    return [];
-  }
-};
 
 export default function RedProfesionales() {
   const s = useSuscripcion();
-  const { exigir, modal } = useExigirRegistro("Únete gratis para pedir presupuesto a los reformistas. Ver la red siempre es libre.");
   const [fichas, setFichas] = useState<FichaRed[] | null>(null);
   const [zona, setZona] = useState("");
-  const [pedidos, setPedidos] = useState<string[]>([]);
 
   useEffect(() => {
-    setPedidos(leerPedidos());
     if (conServidor) {
       fetch("/api/red", { cache: "no-store" })
         .then((r) => r.json())
@@ -44,19 +33,9 @@ export default function RedProfesionales() {
   const lista = (fichas ?? []).filter((f) => !zona || f.zonas.includes(zona)).sort((a, b) => b.obrasEnApp - a.obrasEnApp);
   const suscrito = s ? incluye(s.plan, "basico") : false;
 
-  const pedir = (f: FichaRed) => {
-    const n = [...new Set([...pedidos, f.id])];
-    setPedidos(n);
-    try {
-      localStorage.setItem(CLAVE_PEDIDOS, JSON.stringify(n));
-    } catch {
-      /* sin almacenamiento */
-    }
-  };
 
   return (
     <div className="min-h-dvh bg-stone-50">
-      {modal}
       <CabeceraPublica />
       <section className="bg-gradient-to-b from-teal-50 to-stone-50">
         <div className="mx-auto max-w-5xl px-4 pb-6 pt-10">
@@ -64,13 +43,15 @@ export default function RedProfesionales() {
           <p className="mt-2 max-w-2xl text-stone-600">
             Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, al corriente con Hacienda y con seguro de responsabilidad civil. Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho con nosotros.
           </p>
+          <p className="mt-2 max-w-2xl text-stone-600">Cada uno ha cargado sus tarifas, así que no tienes que pedir presupuestos uno a uno: calcula el tuyo y verás lo que te costaría con cada reformista.</p>
+          <BotonLink href="/nuevo" className="mt-4">Calcular mi presupuesto gratis</BotonLink>
         </div>
       </section>
       <main className="mx-auto max-w-5xl px-4 pb-16">
         {s && !suscrito && (
           <div className="mb-5">
             <Muro plan="basico" volver="/red" titulo="Suscríbete y accede a nuestra red de profesionales">
-              Pide presupuesto a los reformistas que elijas y compara sus ofertas con tu presupuesto de referencia.
+              Cada reformista ha cargado sus tarifas: con tu presupuesto ves lo que te costaría con cada uno, eliges los que más te interesan y quedas con ellos para una visita.
             </Muro>
           </div>
         )}
@@ -125,13 +106,9 @@ export default function RedProfesionales() {
                   </div>
                 )}
                 <div className="mt-4 flex-1" />
-                {pedidos.includes(f.id) ? (
-                  <div className="rounded-xl bg-emerald-50 p-2.5 text-center text-sm text-emerald-900">✓ Presupuesto pedido. Te responderá en la app; tu teléfono no se comparte hasta que tú aceptes.</div>
-                ) : suscrito ? (
-                  <button onClick={() => exigir(() => pedir(f))} className="rounded-xl bg-teal-700 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Pedir presupuesto</button>
-                ) : (
-                  <Link href="/suscripcion?volver=%2Fred" className="rounded-xl border border-teal-700 py-2.5 text-center text-sm font-semibold text-teal-800 hover:bg-teal-50">🔒 Pedir presupuesto · Plan Básico 5 €/mes</Link>
-                )}
+                <div className="rounded-xl bg-teal-50 p-2.5 text-center text-sm text-teal-900">
+                  {tarifaDe(f) ? "Ha cargado sus tarifas: verás su precio para tu casa en tu presupuesto." : "Todavía no ha cargado sus tarifas."}
+                </div>
               </li>
             ))}
           </ul>

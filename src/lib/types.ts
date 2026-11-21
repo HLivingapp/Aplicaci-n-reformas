@@ -374,6 +374,15 @@ export interface Proveedor {
   reaVerificado?: import("./rea").ResultadoREA;
   /** true si se aprobó solo al completar los requisitos */
   aprobadoAutomatico?: boolean;
+  /** Tarifas del reformista para que la app calcule su presupuesto a cada cliente */
+  tarifa?: TarifaReformista;
+}
+
+/** Tarifas del reformista: % sobre el precio de referencia, general y por capítulo. */
+export interface TarifaReformista {
+  general: number;
+  capitulos: Record<string, number>;
+  actualizado: string;
 }
 
 export interface Datos {
