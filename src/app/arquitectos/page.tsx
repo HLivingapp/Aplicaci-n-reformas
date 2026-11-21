@@ -28,7 +28,7 @@ export default function AltaArquitectos() {
   const faltan = [
     !nombre.trim() && "nombre",
     !numero.trim() && "número de colegiado",
-    !seguro.trim() && "seguro de responsabilidad civil profesional",
+    !seguro.trim() && "seguro RSC (responsabilidad civil profesional)",
     !zonas.length && "zonas",
     !servicios.length && "servicios",
     !declaro && "aceptar la declaración y el compromiso",
@@ -76,7 +76,7 @@ export default function AltaArquitectos() {
           <Campo etiqueta="Colegio profesional"><input className={inputCls} value={colegio} onChange={(e) => setColegio(e.target.value)} /></Campo>
           <Campo etiqueta="Número de colegiado *"><input className={inputCls} value={numero} onChange={(e) => setNumero(e.target.value)} /></Campo>
         </div>
-        <Campo etiqueta="Seguro de responsabilidad civil profesional (aseguradora) *"><input className={inputCls} value={seguro} onChange={(e) => setSeguro(e.target.value)} /></Campo>
+        <Campo etiqueta="Seguro RSC, responsabilidad civil profesional (aseguradora) *"><input className={inputCls} value={seguro} onChange={(e) => setSeguro(e.target.value)} /></Campo>
         <Campo etiqueta="Servicios que ofreces *"><Chips opciones={SERVICIOS.map((s) => ({ valor: s.id, texto: s.texto }))} valores={servicios} cambiar={setServicios} /></Campo>
         <Campo etiqueta="Zonas *"><Chips opciones={OPCIONES_ZONA} valores={zonas} cambiar={setZonas} /></Campo>
         <Campo etiqueta="Presentación (la verán los clientes, sin tu nombre)"><textarea rows={3} className={inputCls} value={presentacion} onChange={(e) => setPresentacion(e.target.value)} /></Campo>
@@ -84,7 +84,7 @@ export default function AltaArquitectos() {
 
       <Tarjeta className="space-y-3 border-teal-200">
         <h2 className="font-semibold">Declaración y compromiso de encargos</h2>
-        <p className="text-sm text-stone-700">Declaro que estoy colegiado/a y habilitado/a para firmar los trabajos que ofrezco, y que tengo en vigor un seguro de responsabilidad civil profesional. Aportaré el certificado de colegiación y la póliza cuando se me pidan.</p>
+        <p className="text-sm text-stone-700">Declaro que estoy colegiado/a y habilitado/a para firmar los trabajos que ofrezco, y que tengo en vigor un seguro de responsabilidad civil profesional. Aportaré el certificado de colegiación, la póliza del seguro RSC con su último recibo y el certificado al corriente de pago cuando se me pidan.</p>
         <p className="text-sm text-stone-700"><b>Encargos que llegan por la app.</b> {TEXTO_COMPROMISO_ESTUDIO}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
         <label className="flex items-start gap-2 text-sm font-medium">

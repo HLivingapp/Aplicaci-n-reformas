@@ -14,7 +14,7 @@ export interface FichaRed {
   trabajadores: number;
   presentacion: string;
   obrasReferencia: number;
-  /** Fecha de la última comprobación automática (REA, Hacienda, seguro) */
+  /** Fecha de la última comprobación automática (REA, al corriente de pago, seguro RSC) */
   comprobado: string;
   capitalRC: number;
   /** Valoración media por fase de obra (1 a 5) y número de valoraciones */

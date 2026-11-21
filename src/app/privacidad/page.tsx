@@ -61,7 +61,7 @@ export default function Privacidad() {
       </Seccion>
 
       <Seccion titulo="6. Si eres reformista o proveedor">
-        <p>Si pides homologarte como proveedor tratamos los datos de tu empresa y de la persona de contacto, tu número de REA, tus zonas y especialidades, las obras de referencia que nos indicas y los documentos que subes (prevención de riesgos laborales, seguro de responsabilidad civil, certificados de Hacienda y Seguridad Social y cuentas anuales).</p>
+        <p>Si pides homologarte como proveedor tratamos los datos de tu empresa y de la persona de contacto, tu número de REA, tus zonas y especialidades, las obras de referencia que nos indicas y los documentos que subes (prevención de riesgos laborales, seguro de responsabilidad civil, certificados al corriente de pago con la Agencia Tributaria y la Seguridad Social y cuentas anuales).</p>
         <p>Los usamos para comprobar que cumples los requisitos, vigilar que tus documentos sigan en vigor y ponerte en contacto con clientes, con tu consentimiento y como medidas precontractuales (art. 6.1.a y 6.1.b RGPD). Podemos llamar a los contactos de tus obras de referencia solo para confirmarlas: avísales antes de darnos sus datos.</p>
         <p>Tus documentos se guardan en un almacén privado en la Unión Europea y solo los ve nuestro equipo; los clientes nunca los ven. Si no llegas a homologarte, los borramos a los 12 meses; si te homologas, los conservamos mientras colabores con nosotros y después durante los plazos legales.</p>
       </Seccion>

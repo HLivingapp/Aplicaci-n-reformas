@@ -37,20 +37,24 @@ export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: str
 }
 
 /** Visitas pedidas, presupuesto final tras la visita y firma del contrato. */
-export function MisEncargos({ reformistaId }: { reformistaId: string }) {
+/** faltanDocs: documentos que aún tiene que subir para poder generar contratos (p. ej. un proveedor invitado). */
+export function MisEncargos({ reformistaId, faltanDocs = [] }: { reformistaId: string; faltanDocs?: string[] }) {
   const encargos = useEncargos().filter((e) => e.reformistaId === reformistaId);
   return (
     <Tarjeta className="space-y-3">
       <h2 className="font-semibold">Tus clientes y obras</h2>
       {encargos.length > 0 && <p className="text-xs text-stone-500">Los clientes de la app pagan la reserva ({TEXTO_RESERVA}), que es tu fee. Los clientes que tú traes invitándote no te cuestan nada.</p>}
       {!encargos.length && <p className="text-sm text-stone-500">Todavía no te ha pedido visita nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu presupuesto calculado.</p>}
-      {encargos.map((e) => <EncargoReformista key={e.id} e={e} reformistaId={reformistaId} />)}
+      {faltanDocs.length > 0 && encargos.length > 0 && (
+        <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">Para generar el contrato antes tienes que subir: {faltanDocs.join("; ")}.</p>
+      )}
+      {encargos.map((e) => <EncargoReformista key={e.id} e={e} reformistaId={reformistaId} bloqueado={faltanDocs.length > 0} />)}
       <AvisoMemoriaTecnica />
     </Tarjeta>
   );
 }
 
-function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: string }) {
+function EncargoReformista({ e, reformistaId, bloqueado }: { e: Encargo; reformistaId: string; bloqueado: boolean }) {
   const [fecha, setFecha] = useState("");
   const [nota, setNota] = useState("");
   const [editando, setEditando] = useState(false);
@@ -90,7 +94,7 @@ function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: stri
         </div>
       )}
       {(editando || e.estado === "presupuesto_final") && e.estado !== "firmado_cliente" && e.estado !== "firmado" && e.estado !== "descartado" && (
-        <PresupuestoFinal e={e} reformistaId={reformistaId} alEnviar={() => setEditando(false)} />
+        <PresupuestoFinal e={e} reformistaId={reformistaId} bloqueado={bloqueado} alEnviar={() => setEditando(false)} />
       )}
 
       {e.estado === "firmado" && <div className="mt-3"><SeguimientoEncargo e={e} parte="reformista" /></div>}
@@ -104,7 +108,7 @@ function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: stri
   );
 }
 
-function PresupuestoFinal({ e, reformistaId, alEnviar }: { e: Encargo; reformistaId: string; alEnviar: () => void }) {
+function PresupuestoFinal({ e, reformistaId, bloqueado, alEnviar }: { e: Encargo; reformistaId: string; bloqueado: boolean; alEnviar: () => void }) {
   const inicial = e.final?.capitulos ? { general: 0, capitulos: e.final.capitulos } : (() => {
     const t = tarifaDe({ id: reformistaId }) ?? tarifaVacia();
     return { general: t.general, capitulos: t.capitulos };
@@ -150,7 +154,7 @@ function PresupuestoFinal({ e, reformistaId, alEnviar }: { e: Encargo; reformist
           ⚠ Obra pequeña: el fee mínimo es de {euros(COMERCIALIZACION.minimo)}, que en esta obra supone un {pctReserva(cifra).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe (en vez del {COMERCIALIZACION.pct} %). Puedes generar el contrato igualmente.
         </p>
       )}
-      <Boton onClick={() => { enviarPresupuestoFinal(e.id, { importe: cifra, capitulos: capitulos(), plazoSemanas: plazo, notas }); alEnviar(); }}>
+      <Boton disabled={bloqueado} onClick={() => { enviarPresupuestoFinal(e.id, { importe: cifra, capitulos: capitulos(), plazoSemanas: plazo, notas }); alEnviar(); }}>
         {e.final ? "Actualizar presupuesto y contrato" : "Generar el contrato y enviárselo al cliente"}
       </Boton>
     </div>

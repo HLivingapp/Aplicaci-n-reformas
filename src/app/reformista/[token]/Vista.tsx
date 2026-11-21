@@ -126,7 +126,7 @@ export default function PortalReformista() {
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
 
-      {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} />}
+      {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} faltanDocs={reqs.filter((r) => (r.clave === "rc" || r.clave === "corriente") && !r.ok).map((r) => r.texto)} />}
       <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />
 
       {p.estado === "aprobado" && !pendientes && (
