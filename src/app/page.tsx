@@ -53,8 +53,8 @@ export default function Inicio() {
             <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
             <span className="font-display text-base font-semibold leading-tight tracking-tight sm:text-lg">{NOMBRE}</span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <a href="#como-funciona" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Cómo funciona</a>
+          <nav className="flex items-center gap-1 whitespace-nowrap text-sm">
+                        <Link href="/sobre-nosotros" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Quiénes somos</Link>
             <Link href="/disena" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Diseña</Link>
             <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Comunidad</Link>
             <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Planes</Link>
@@ -310,6 +310,20 @@ export default function Inicio() {
         </div>
       </section>
 
+      {/* Quiénes somos */}
+      <section className="mx-auto max-w-6xl px-4 pb-16">
+        <Link href="/sobre-nosotros" className="group grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-stone-950 text-white md:grid-cols-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={publico("/fotos/equipo/equipo-madrid-2.webp")} alt="El equipo de Human Living" loading="lazy" className="aspect-[3/2] h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
+          <div className="p-8 md:p-10">
+            <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Quiénes somos</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Lo que nos habría gustado saber antes de reformar</h2>
+            <p className="mt-3 text-stone-300">Una casa se reforma pocas veces en la vida. Ponemos a tu alcance años de contactos, experiencia y herramientas desde el primer día.</p>
+            <span className="mt-6 inline-block font-semibold text-amber-300 group-hover:underline">Conoce Human Living →</span>
+          </div>
+        </Link>
+      </section>
+
       {/* Llamada final */}
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
@@ -331,6 +345,7 @@ export default function Inicio() {
         )}
         <p className="flex flex-wrap justify-center gap-4">
           <span>© {NOMBRE}</span>
+          <Link href="/sobre-nosotros" className="hover:underline">Quiénes somos</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/comunidad" className="hover:underline">Comunidad</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
