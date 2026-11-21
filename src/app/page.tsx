@@ -342,6 +342,7 @@ export default function Inicio() {
           <span>© {NOMBRE}</span>
           <Link href="/human-living" className="hover:underline">★ Empresa destacada: Human Living</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
+          <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
           <Link href="/comunidad" className="hover:underline">Comunidad</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>

@@ -13,6 +13,7 @@ import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
+import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
 import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
@@ -103,6 +104,7 @@ export default function AltaReformista() {
         <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
         <p className="text-sm text-stone-700"><b>Ventas que llegan por la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
         <p className="text-sm text-stone-700"><b>Clientes tuyos y clientes de la app.</b> {TEXTO_COMPROMISO_INVITADOS}</p>
+        <p className="text-sm text-stone-700"><b>Datos de los clientes.</b> {TEXTO_DATOS_PROFESIONAL}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
         <label className="flex items-start gap-2 text-sm font-medium">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />

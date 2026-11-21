@@ -1,3 +1,4 @@
+import { RESPONSABLE, TEXTO_DATOS_PROFESIONAL, TITULAR } from "./legal";
 /**
  * Homologación de proveedores (reformistas). Funciones puras que usan el servidor
  * y el modo demostración. Un proveedor solo puede mostrarse a clientes si el equipo
@@ -9,18 +10,18 @@ import { mismoNombre, type ResultadoREA } from "./rea";
 import type { Datos, DocumentoProveedor, ObraReferencia, Proveedor, TipoDocProveedor } from "./types";
 
 export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
-  "Acepto que la empresa trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.";
+  `Acepto que ${RESPONSABLE.razonSocial}, titular de la app, trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.`;
 
 export const TEXTO_DECLARACION_RESPONSABLE =
-  "Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, dejar de estar al corriente de pago con la Agencia Tributaria o la Seguridad Social). Acepto que la empresa haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.";
+  `Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, dejar de estar al corriente de pago con la Agencia Tributaria o la Seguridad Social). Acepto que ${RESPONSABLE.razonSocial} haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.`;
 
 /** Compromiso de declarar en la app las ventas que llegan por la app. Pendiente de revisión por el abogado. */
 export const TEXTO_COMPROMISO_VENTAS =
-  "Me comprometo a declarar íntegramente en la app todas las ventas, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, la plataforma podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.";
+  `Me comprometo a declarar íntegramente en la app todas las ventas, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, ${TITULAR} podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.`;
 
 /** Clientes propios (invitación) frente a clientes que llegan por la app. Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_INVITADOS =
-  "Los clientes que yo traiga a la app invitándome desde su cuenta no me generan fee ni reserva. Los clientes que conozca a través de la app pagarán al firmar la reserva habitual (el 3 % del presupuesto sin IVA, con un mínimo de 1.000 €), que es mi fee de comercialización.";
+  `Los clientes que yo traiga a la app invitándome desde su cuenta no me generan fee ni reserva. Los clientes que conozca a través de la app pagarán al firmar la reserva habitual (el 3 % del presupuesto sin IVA, con un mínimo de 1.000 €), que es mi fee de comercialización y cobra ${TITULAR}.`;
 
 const LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
 
@@ -292,7 +293,7 @@ export function registrarProveedor(d: Datos, a: AltaProveedor, reaVerificado?: R
     notasInternas: "",
     creado: hoy(),
     consentimiento: { fecha: new Date().toISOString(), texto: TEXTO_CONSENTIMIENTO_PROVEEDOR },
-    declaracion: { fecha: new Date().toISOString(), texto: `${TEXTO_DECLARACION_RESPONSABLE}\n\n${TEXTO_COMPROMISO_VENTAS}\n\n${TEXTO_COMPROMISO_INVITADOS}` },
+    declaracion: { fecha: new Date().toISOString(), texto: `${TEXTO_DECLARACION_RESPONSABLE}\n\n${TEXTO_COMPROMISO_VENTAS}\n\n${TEXTO_COMPROMISO_INVITADOS}\n\n${TEXTO_DATOS_PROFESIONAL}` },
   });
   return token;
 }

@@ -8,6 +8,7 @@ import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { publico } from "@/lib/base";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
 import { altaEstudio, SERVICIOS, TEXTO_COMPROMISO_ESTUDIO, type TarifaEstudio } from "@/lib/estudios";
 import { ZONAS } from "@/lib/proveedores";
 
@@ -37,7 +38,7 @@ export default function AltaArquitectos() {
   const enviar = () => {
     const tarifa: TarifaEstudio = {};
     for (const s of servicios) tarifa[s as keyof TarifaEstudio] = { fijo: 0, porM2: 0 };
-    const id = altaEstudio({ tipo, nombre, colegio, numeroColegiado: numero, seguroRC: seguro, zonas, presentacion, tarifa, declaracion: TEXTO_COMPROMISO_ESTUDIO });
+    const id = altaEstudio({ tipo, nombre, colegio, numeroColegiado: numero, seguroRC: seguro, zonas, presentacion, tarifa, declaracion: `${TEXTO_COMPROMISO_ESTUDIO}\n\n${TEXTO_DATOS_PROFESIONAL}` });
     router.push(`/arquitectos/demo?e=${id}&nuevo=1`);
   };
 
@@ -86,6 +87,7 @@ export default function AltaArquitectos() {
         <h2 className="font-semibold">Declaración y compromiso de encargos</h2>
         <p className="text-sm text-stone-700">Declaro que estoy colegiado/a y habilitado/a para firmar los trabajos que ofrezco, y que tengo en vigor un seguro de responsabilidad civil profesional. Aportaré el certificado de colegiación, la póliza del seguro RSC con su último recibo y el certificado al corriente de pago cuando se me pidan.</p>
         <p className="text-sm text-stone-700"><b>Encargos que llegan por la app.</b> {TEXTO_COMPROMISO_ESTUDIO}</p>
+        <p className="text-sm text-stone-700"><b>Datos de los clientes.</b> {TEXTO_DATOS_PROFESIONAL}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
         <label className="flex items-start gap-2 text-sm font-medium">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />

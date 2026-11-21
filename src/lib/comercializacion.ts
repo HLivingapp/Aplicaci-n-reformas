@@ -1,7 +1,7 @@
 /**
  * Reserva y fee de comercialización:
  * - Al firmar, el cliente paga en la app una reserva que forma parte del precio y se descuenta
- *   de su primer pago al reformista. Esa reserva se la queda la plataforma: es el fee del reformista.
+ *   de su primer pago al reformista. Esa reserva la cobra VIVIENDA HL CENTRO S.L. (titular de la app, ver legal.ts): es el fee del reformista.
  * - Se pueden contratar obras de cualquier importe; en las pequeñas se avisa al reformista de que paga el mínimo.
  * Fórmula confirmada por el titular de la app (21/11/2026): el 3 % del presupuesto con un mínimo de 1.000 €.
  * Al cliente solo se le habla de la reserva; que es el fee del reformista se explica solo al reformista.
