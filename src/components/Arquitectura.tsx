@@ -1,5 +1,6 @@
 "use client";
 
+import { AvisoMemoriaTecnica } from "./Beneficios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
@@ -143,6 +144,7 @@ export function AreaEstudio({ estudioId }: { estudioId: string }) {
         <h2 className="font-semibold">Encargos de clientes</h2>
         {!mios.length && <p className="text-sm text-stone-500">Todavía no te ha pedido propuesta nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu precio calculado.</p>}
         {mios.map((e) => <EncargoEstudioFila key={e.id} e={e} />)}
+        <AvisoMemoriaTecnica />
       </Tarjeta>
       <Tarjeta className="space-y-3">
         <h2 className="font-semibold">Tus precios</h2>

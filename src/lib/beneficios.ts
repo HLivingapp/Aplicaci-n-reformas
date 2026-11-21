@@ -39,7 +39,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🏦",
     t: "Reforma en tu hipoteca",
-    d: "Financia la reforma junto con la compra o ampliando tu hipoteca, con bancos colaboradores. Simula la cuota desde tu presupuesto.",
+    d: "Financia la reforma con un préstamo o con tu hipoteca: te enseñamos las opciones de Unicaja, Kutxabank y Caja Rural, y simulas la cuota desde tu presupuesto.",
     pendiente: "Sujeto a la aprobación del banco.",
   },
   {
@@ -74,8 +74,41 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
     pendiente: "Bancos colaboradores en preparación.",
   },
   {
+    i: "📑",
+    t: "Memoria técnica y financiación, con nuestra ayuda",
+    d: "Las reformas financiadas con hipoteca necesitan una memoria técnica firmada por arquitecto colegiado, para legalizar la obra y para el banco. Te ayudamos a preparar la memoria y la documentación de la financiación con tu cliente.",
+  },
+  {
     i: "📋",
     t: "Clientes que ya saben lo que cuesta",
     d: "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a las visitas de quien ya te ha elegido.",
+  },
+];
+
+/**
+ * Productos de financiación de reformas de bancos (resumen propio de su información pública,
+ * consultada el 21/11/2026). Human Living no tiene acuerdo con estas entidades por ahora.
+ */
+export const BANCOS_REFORMA = [
+  {
+    banco: "Unicaja",
+    producto: "Préstamo Reforma",
+    tipo: "Préstamo personal",
+    resumen: "Para reformar la vivienda (baños, cocina, climatización…). Hasta 60.000 €, a tipo fijo y hasta 8 años. Se tramita con el presupuesto o una factura proforma de la obra.",
+    url: "https://www.unicajabanco.es/es/particulares/hipotecas-y-prestamos/prestamos-personales/prestamo-reforma",
+  },
+  {
+    banco: "Kutxabank",
+    producto: "Préstamo Reforma Hogar",
+    tipo: "Préstamo personal",
+    resumen: "Para reformar o rehabilitar la vivienda o el edificio. De 1.500 € a 75.000 €, de 3 meses a 7 años y cuotas fijas. Se presenta el presupuesto de la obra; por debajo de 70.000 € se puede contratar online.",
+    url: "https://portal.kutxabank.es/cs/Satellite/kb/en/private-customers/productos/prestamos-consumo/prestamo-reforma-hogar/pys",
+  },
+  {
+    banco: "Caja Rural (Globalcaja)",
+    producto: "Hipoteca Inversión y Reforma",
+    tipo: "Préstamo hipotecario",
+    resumen: "Hipoteca para comprar una vivienda o reformarla. Financia hasta el 70 % del valor de tasación y hasta 30 años, con la vivienda como garantía.",
+    url: "https://www.globalcaja.es/sites/default/files/2026-05/720_fipre_hip_inversion_reforma.pdf",
   },
 ];
