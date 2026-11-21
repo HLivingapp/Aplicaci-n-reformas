@@ -82,3 +82,15 @@ create table if not exists foro_temas (
   actualizado timestamptz not null default now()
 );
 alter table foro_temas enable row level security;
+
+-- Comunidad Human Living: alta con email. Teléfono y permiso de contacto (WhatsApp o llamada) opcionales,
+-- con el texto y la fecha de cada consentimiento. Solo el servidor de la app lee y escribe.
+create table if not exists miembros (
+  email text primary key,
+  telefono text,
+  privacidad jsonb not null,
+  contacto jsonb,
+  creado timestamptz not null default now(),
+  actualizado timestamptz not null default now()
+);
+alter table miembros enable row level security;

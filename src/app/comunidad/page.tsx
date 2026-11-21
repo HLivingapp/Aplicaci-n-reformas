@@ -1,5 +1,6 @@
 "use client";
 
+import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { buscarTemas, CATEGORIA_LEGAL, CATEGORIAS, DENUNCIAS_OCULTAR, tieneSolucion, TIPOS, type Accion, type TipoTema } from "@/lib/foro";
@@ -8,7 +9,7 @@ import { nuevoId } from "@/lib/id";
 import { CabeceraComunidad, EtiquetaTipo, haceTiempo, useFormularioMensaje } from "@/components/foro/Comun";
 import { Boton, inputCls } from "@/components/ui";
 
-export default function Comunidad() {
+function ComunidadContenido() {
   const { temas: cargados, error, enviar, esProfesional } = useForo();
   const temas = useMemo(() => cargados ?? [], [cargados]);
   const [q, setQ] = useState("");
@@ -154,5 +155,13 @@ function NuevoTema({ alPublicar, categoriaInicial }: { alPublicar: (a: Accion) =
         Publicar
       </Boton>
     </div>
+  );
+}
+
+export default function Comunidad() {
+  return (
+    <RequiereRegistro motivo="Únete gratis para leer y compartir experiencias de reforma. Solo te pedimos tu email.">
+      <ComunidadContenido />
+    </RequiereRegistro>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { RequiereRegistro } from "@/components/Registro";
 import { useEffect, useRef, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { Muro } from "@/components/Muro";
@@ -38,7 +39,7 @@ function respuestaDemo(p: string): Turno {
   return { rol: "asistente", fuentes: [], texto: "Te ayudo con mucho gusto. Para darte una respuesta útil, cuéntame:\n• Qué tipo de obra haces (integral, baño, cocina…) y los m² aproximados.\n• En qué fase estás: buscando presupuesto, ya contratado o en obra.\n• Qué te preocupa en concreto: precio, plazos, un problema técnico o un trámite.\n\nTambién puedes pegar aquí el presupuesto que te han dado y te digo qué revisar." + AVISO };
 }
 
-export default function Asistente() {
+function AsistenteContenido() {
   const s = useSuscripcion();
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [texto, setTexto] = useState("");
@@ -168,5 +169,13 @@ export default function Asistente() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Asistente() {
+  return (
+    <RequiereRegistro>
+      <AsistenteContenido />
+    </RequiereRegistro>
   );
 }

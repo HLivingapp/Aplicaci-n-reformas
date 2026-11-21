@@ -54,6 +54,12 @@ export default function Privacidad() {
         <p>Los datos se guardan en servidores ubicados en la Unión Europea.</p>
       </Seccion>
 
+      <Seccion titulo="Comunidad Human Living">
+        <p>Para usar la aplicación te unes a la comunidad con tu <b>email</b>, sin contraseña. Lo usamos para darte acceso y enviarte avisos sobre tu cuenta (art. 6.1.b RGPD).</p>
+        <p>Si además nos das tu <b>teléfono</b> y marcas la casilla, te escribiremos por WhatsApp o te llamaremos sobre tu reforma y la comunidad, con tu consentimiento (art. 6.1.a RGPD). Es opcional, no es necesario para entrar y puedes retirarlo cuando quieras escribiéndonos. Guardamos el texto que aceptaste y la fecha.</p>
+        <p>Si dejas de usar la comunidad, borramos tus datos a los 24 meses de tu última actividad, o antes si nos lo pides.</p>
+      </Seccion>
+
       <Seccion titulo="6. Si eres reformista o proveedor">
         <p>Si pides homologarte como proveedor tratamos los datos de tu empresa y de la persona de contacto, tu número de REA, tus zonas y especialidades, las obras de referencia que nos indicas y los documentos que subes (prevención de riesgos laborales, seguro de responsabilidad civil, certificados de Hacienda y Seguridad Social y cuentas anuales).</p>
         <p>Los usamos para comprobar que cumples los requisitos, vigilar que tus documentos sigan en vigor y ponerte en contacto con clientes, con tu consentimiento y como medidas precontractuales (art. 6.1.a y 6.1.b RGPD). Podemos llamar a los contactos de tus obras de referencia solo para confirmarlas: avísales antes de darnos sus datos.</p>
