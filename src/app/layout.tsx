@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { publico } from "@/lib/base";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["opsz"] });
 
 export const metadata: Metadata = {
-  title: "Reformas · Gestión de obras",
-  description: "Presupuestos, planificación de obra y portal del cliente.",
+  title: "Human Living Reformas · Tu reforma con precio claro",
+  description: "Calcula gratis el presupuesto de tu reforma partida a partida y elige entre reformistas homologados de tu zona.",
   appleWebApp: { capable: true, title: "Reformas", statusBarStyle: "default" },
   icons: { icon: publico("/icon.svg"), apple: publico("/icon-192.png") },
 };
@@ -21,7 +22,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>
