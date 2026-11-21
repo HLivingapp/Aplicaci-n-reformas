@@ -4,7 +4,7 @@ import { AvisoMemoriaTecnica } from "./Beneficios";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import {
-  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, descartarEncargo, reservaApp, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
+  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, descartarEncargo, reservaApp, ORIGEN_ENCARGO, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
 } from "@/lib/encargos";
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
@@ -41,7 +41,8 @@ export function MisEncargos({ reformistaId }: { reformistaId: string }) {
   const encargos = useEncargos().filter((e) => e.reformistaId === reformistaId);
   return (
     <Tarjeta className="space-y-3">
-      <h2 className="font-semibold">Clientes que quieren una visita</h2>
+      <h2 className="font-semibold">Tus clientes y obras</h2>
+      {encargos.length > 0 && <p className="text-xs text-stone-500">Los clientes de la app pagan la reserva ({TEXTO_RESERVA}), que es tu fee. Los clientes que tú traes invitándote no te cuestan nada.</p>}
       {!encargos.length && <p className="text-sm text-stone-500">Todavía no te ha pedido visita nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu presupuesto calculado.</p>}
       {encargos.map((e) => <EncargoReformista key={e.id} e={e} reformistaId={reformistaId} />)}
       <AvisoMemoriaTecnica />
@@ -63,7 +64,10 @@ function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: stri
           </div>
           {e.visita.preferencia && <div className="mt-1 text-xs text-stone-600">Prefiere: {e.visita.preferencia}</div>}
         </div>
-        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ENCARGO[e.estado].cls}`}>{ESTADO_ENCARGO[e.estado].texto}</span>
+        <div className="flex flex-wrap gap-1">
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ORIGEN_ENCARGO[e.origen ?? "app"].cls}`}>{ORIGEN_ENCARGO[e.origen ?? "app"].texto}</span>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ENCARGO[e.estado].cls}`}>{ESTADO_ENCARGO[e.estado].texto}</span>
+        </div>
       </div>
 
       {e.estado === "visita_pedida" && (
@@ -77,7 +81,11 @@ function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: stri
 
       {e.estado === "visita_fijada" && (
         <div className="mt-3">
-          <p className="text-xs text-stone-600">Visita el {new Date(e.visita.fecha!).toLocaleString("es-ES", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}. Después de verla, mete aquí la cifra acordada y tus tarifas para esta obra: la app genera el contrato.</p>
+          <p className="text-xs text-stone-600">
+            {e.visita.fecha
+              ? `Visita el ${new Date(e.visita.fecha).toLocaleString("es-ES", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}. Después de verla, mete aquí la cifra acordada y tus tarifas para esta obra: la app genera el contrato.`
+              : "Tu cliente te ha invitado a la app. Mete aquí la cifra que habéis acordado y tus tarifas para esta obra: la app genera el contrato."}
+          </p>
           {!editando && <Boton className="mt-2" onClick={() => setEditando(true)}>Meter el presupuesto acordado</Boton>}
         </div>
       )}
@@ -132,8 +140,12 @@ function PresupuestoFinal({ e, reformistaId, alEnviar }: { e: Encargo; reformist
         </label>
       </div>
       <textarea rows={2} className={inputCls} placeholder="Condiciones particulares acordadas en la visita (opcional)" value={notas} onChange={(x) => setNotas(x.target.value)} />
-      <p className="text-xs text-stone-600">Reserva del cliente al firmar, que es el fee de la app: <b>{euros(reservaApp(cifra))}</b> ({TEXTO_RESERVA}). Se descuenta de lo que cobras.</p>
-      {reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
+      {e.origen === "invitado" ? (
+        <p className="text-xs text-violet-900">Cliente tuyo: te ha invitado él, así que en esta obra no hay reserva ni fee.</p>
+      ) : (
+        <p className="text-xs text-stone-600">Reserva del cliente al firmar, que es el fee de la app: <b>{euros(reservaApp(cifra))}</b> ({TEXTO_RESERVA}). Se descuenta de lo que cobras.</p>
+      )}
+      {e.origen !== "invitado" && reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
         <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">
           ⚠ Obra pequeña: el fee mínimo es de {euros(COMERCIALIZACION.minimo)}, que en esta obra supone un {pctReserva(cifra).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe (en vez del {COMERCIALIZACION.pct} %). Puedes generar el contrato igualmente.
         </p>

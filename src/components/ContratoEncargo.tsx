@@ -1,7 +1,8 @@
 "use client";
 
 import { euros } from "@/lib/calc";
-import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaApp, TEXTO_RESERVA, type Encargo } from "@/lib/encargos";
+import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaEncargo, TEXTO_RESERVA, type Encargo } from "@/lib/encargos";
+import { SeguroPromotor } from "./SeguroPromotor";
 import { textoDireccion } from "@/lib/proyecto";
 
 const fecha = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "");
@@ -20,7 +21,8 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
   if (!f) return null;
   const iva = Math.round(f.importe * IVA_REFORMA) / 100;
   const total = f.importe + iva;
-  const reserva = reservaApp(f.importe);
+  const reserva = reservaEncargo(e, f.importe);
+  const invitado = e.origen === "invitado";
   const capitulos = [...new Set(f.lineas.map((l) => l.capitulo))].map((c) => ({
     c,
     importe: f.lineas.filter((l) => l.capitulo === c).reduce((s, l) => s + l.cantidad * l.precio, 0),
@@ -35,7 +37,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
       </div>
       <ol className="list-decimal space-y-3 pl-5 text-stone-700">
         <li>
-          <b>Partes.</b> {e.cliente} (la propiedad) y el reformista homologado {e.codigo} (el contratista). Los datos fiscales completos de ambas partes se incorporan al firmar.
+          <b>Partes.</b> {e.cliente} (la propiedad) y el reformista {invitado ? "" : "homologado "}{e.codigo} (el contratista{invitado ? ", invitado a la app por la propiedad" : ""}). Los datos fiscales completos de ambas partes se incorporan al firmar.
         </li>
         <li>
           <b>Objeto.</b> Reforma de la vivienda de {textoDireccion(e.vivienda.direccion)}, según las partidas, mediciones y acabados de este presupuesto, acordado tras la visita del {fecha(e.visita.fecha) || "día acordado"}.
@@ -57,12 +59,17 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Plazo.</b> {f.plazoSemanas} semanas desde el inicio de la obra, salvo causas ajenas al contratista que se anotarán en la app.
         </li>
         <li>
-          <b>Pagos.</b> Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}). La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:
+          <b>Pagos.</b>{" "}
+          {invitado ? (
+            <>Contratista invitado por la propiedad: no hay reserva en la app. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
+          ) : (
+            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}). La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
+          )}
           <ul className="mt-1 space-y-0.5">
-            <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app, a la firma</span><span>{euros(reserva)}</span></li>
+            {!invitado && <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app, a la firma</span><span>{euros(reserva)}</span></li>}
             {HITOS.map((h, i) => (
               <li key={h.texto} className="flex justify-between gap-2 text-xs">
-                <span>{h.pct} % · {h.texto}{i === 0 ? " (menos la reserva)" : ""}</span>
+                <span>{h.pct} % · {h.texto}{i === 0 && !invitado ? " (menos la reserva)" : ""}</span>
                 <span>{euros((total * h.pct) / 100 - (i === 0 ? reserva : 0))}</span>
               </li>
             ))}
@@ -75,7 +82,12 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Garantía.</b> La legal sobre los trabajos ejecutados y la del fabricante en materiales y equipos.
         </li>
         <li>
-          <b>Seguro de promotor.</b> Al contratar por la app, la propiedad recibe gratis un seguro de promotor de MAPFRE, con responsabilidad civil y defensa jurídica, durante la obra. Condiciones de la póliza pendientes de cerrar con la aseguradora.
+          <b>Seguro de promotor.</b>{" "}
+          {invitado
+            ? "Con un contratista invitado por la propiedad el seguro de promotor no va incluido gratis. La propiedad puede contratarlo online, con coste, desde la app."
+            : "Al contratar por la app, la propiedad recibe gratis un seguro de promotor de MAPFRE, con responsabilidad civil y defensa jurídica, durante la obra."}{" "}
+          Condiciones de la póliza pendientes de cerrar con la aseguradora.
+          {invitado && parte === "cliente" && <div className="mt-2"><SeguroPromotor e={e} /></div>}
         </li>
         <li>
           <b>Anulación.</b> La propiedad puede anular el contrato en la app. Se pagará lo ejecutado hasta ese momento.
@@ -86,7 +98,12 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           </li>
         )}
       </ol>
-      {parte === "reformista" && (
+      {parte === "reformista" && invitado && (
+        <p className="rounded-xl bg-violet-50 p-3 text-xs text-violet-900">
+          Cliente tuyo: te ha invitado él, así que en esta obra no pagas fee y el cliente no paga reserva. Los clientes que te lleguen a través de la app sí pagan la reserva habitual ({TEXTO_RESERVA}), que es tu fee. En esta demostración no se cobra nada.
+        </p>
+      )}
+      {parte === "reformista" && !invitado && (
         <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
           Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). Se la queda Human Living y se descuenta de lo que cobras de la obra.{" "}
           {reserva > (f.importe * COMERCIALIZACION.pct) / 100 && <b>Ojo: en esta obra se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(f.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe. </b>}

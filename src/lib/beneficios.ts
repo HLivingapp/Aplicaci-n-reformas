@@ -22,7 +22,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
       "Defensa jurídica y reclamación de daños",
       "Asesoramiento legal telefónico durante la obra",
     ],
-    pendiente: "Coberturas y condiciones según la póliza, pendientes de cerrar con MAPFRE.",
+    pendiente: "Coberturas y condiciones según la póliza, pendientes de cerrar con MAPFRE. Si traes a tu propio reformista, puedes contratarlo online con coste.",
   },
   {
     i: "🤖",
@@ -41,6 +41,18 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
     t: "Reforma en tu hipoteca",
     d: "Financia la reforma con un préstamo o con tu hipoteca: te enseñamos las opciones de Unicaja, Kutxabank y Caja Rural, y simulas la cuota desde tu presupuesto.",
     pendiente: "Sujeto a la aprobación del banco.",
+  },
+  {
+    i: "🏠",
+    t: "Tasación Aesval online",
+    d: "Pide desde la app la tasación oficial que te pide el banco para la hipoteca o para financiar la reforma.",
+    pendiente: "Precio y acuerdo con Aesval pendientes de cerrar.",
+  },
+  {
+    i: "🤝",
+    t: "Invita a tu reformista",
+    d: "¿Ya tienes reformista? Invítalo a la app: ni tú ni él pagáis reserva ni comisión, y tenéis contrato, pagos por fases y avances igualmente.",
+    pendiente: "El seguro de promotor gratis solo va con reformistas de la app.",
   },
   {
     i: "🔑",
@@ -77,6 +89,11 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
     i: "📑",
     t: "Memoria técnica y financiación, con nuestra ayuda",
     d: "Las reformas financiadas con hipoteca necesitan una memoria técnica firmada por arquitecto colegiado, para legalizar la obra y para el banco. Te ayudamos a preparar la memoria y la documentación de la financiación con tu cliente.",
+  },
+  {
+    i: "🤝",
+    t: "Tus clientes, sin coste",
+    d: "Invita a tus propios clientes a llevar su obra con la app: no pagas fee. Solo pagas el fee (la reserva del cliente) en los clientes que te llegan por la app.",
   },
   {
     i: "📋",
