@@ -1,5 +1,6 @@
 "use client";
 import { RequiereRegistro } from "@/components/Registro";
+import { useMiembro } from "@/lib/miembro-cliente";
 import { buscarCatastro } from "@/lib/catastro/cliente";
 
 import Link from "next/link";
@@ -27,7 +28,7 @@ import { Resumen } from "@/components/ResumenProyecto";
 import { Ubicacion } from "@/components/Ubicacion";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 
-const PASOS = ["Dirección", "Tu vivienda", "Distribución", "Estado actual", "Instalaciones", "La reforma", "Contacto"];
+const PASOS = ["Dirección", "Tu vivienda", "Distribución", "Estado actual", "Instalaciones", "La reforma", "Tu presupuesto"];
 const BORRADOR = "app-reformas:borrador-proyecto";
 
 interface Contacto { nombre: string; telefono: string; email: string; acepto: boolean }
@@ -38,6 +39,7 @@ function NuevoProyectoContenido() {
   const [v, setV] = useState<Vivienda>(viviendaVacia);
   const [r, setR] = useState<DatosReforma>(() => reformaVacia());
   const [c, setC] = useState<Contacto>({ nombre: "", telefono: "", email: "", acepto: false });
+  const miembro = useMiembro();
   const [busqueda, setBusqueda] = useState<ResultadoBusqueda | null>(null);
   const [buscando, setBuscando] = useState(false);
   const [cargado, setCargado] = useState(false);
@@ -123,7 +125,7 @@ function NuevoProyectoContenido() {
     r.techoActual != null && r.sueloActual != null && r.cambiarVentanas != null,
     r.climaActual != null && r.climaDeseado != null && r.acsActual != null && r.acsDeseado != null && instOk(r.fontaneria) && instOk(r.electricidad),
     r.estancias.length > 0 || r.alcance === "integral",
-    c.nombre.trim() && (c.telefono.trim() || c.email.trim()) && c.acepto,
+    c.nombre.trim() && c.acepto,
   ][paso];
 
 
@@ -131,7 +133,7 @@ function NuevoProyectoContenido() {
     setEnviando(true);
     setErrorEnvio(null);
     try {
-      const token = await enviarProyecto(v, r, { nombre: c.nombre, telefono: c.telefono, email: c.email }, c.acepto);
+      const token = await enviarProyecto(v, r, { nombre: c.nombre, telefono: c.telefono, email: miembro?.email ?? c.email }, c.acepto);
       try { localStorage.removeItem(BORRADOR); } catch { /* ignorar */ }
       router.push(`/p/${token}?enviado=1`);
     } catch (e) {
@@ -144,7 +146,7 @@ function NuevoProyectoContenido() {
     <main className="mx-auto min-h-dvh max-w-2xl px-4 pb-28 pt-6">
       <Link href="/" className="text-sm text-stone-500 hover:underline">← Inicio</Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Tu proyecto de reforma</h1>
-      <p className="text-sm text-stone-500">Cuéntanos cómo es tu casa y qué quieres hacer. Son 7 pasos cortos, unos 4 minutos. Al final verás una estimación orientativa.</p>
+      <p className="text-sm text-stone-500">Cuéntanos cómo es tu casa y qué quieres hacer. Son 7 pasos cortos, unos 4 minutos. Al final verás tu presupuesto partida a partida aquí mismo, al momento.</p>
 
       <ol className="my-5 flex gap-1" aria-label="Pasos">
         {PASOS.map((p, i) => (
@@ -432,36 +434,11 @@ function NuevoProyectoContenido() {
 
       {paso === 6 && (
         <div className="space-y-4">
-          <Tarjeta>
-            <h2 className="mb-3 text-lg font-semibold">¿Cómo te contactamos?</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Campo etiqueta="Nombre y apellidos *" className="sm:col-span-2">
-                <input className={inputCls} value={c.nombre} onChange={(e) => setC({ ...c, nombre: e.target.value })} autoComplete="name" />
-              </Campo>
-              <Campo etiqueta="Teléfono">
-                <input className={inputCls} type="tel" value={c.telefono} onChange={(e) => setC({ ...c, telefono: e.target.value })} autoComplete="tel" />
-              </Campo>
-              <Campo etiqueta="Email">
-                <input className={inputCls} type="email" value={c.email} onChange={(e) => setC({ ...c, email: e.target.value })} autoComplete="email" />
-              </Campo>
-            </div>
-            <p className="mt-2 text-xs text-stone-500">Indica al menos un teléfono o un email.</p>
-            <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
-              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={c.acepto} onChange={(e) => setC({ ...c, acepto: e.target.checked })} />
-              <span>
-                {TEXTO_CONSENTIMIENTO} *{" "}
-                <Link href="/privacidad" target="_blank" className="text-teal-700 underline">Ver política de privacidad</Link>
-              </span>
-            </label>
-            <p className="mt-3 text-xs text-stone-500">
-              Tus datos se guardan en servidores de la Unión Europea, solo los ve el equipo de la empresa y puedes pedir que los borremos en cualquier momento.
-            </p>
-            {errorEnvio && <p className="mt-3 rounded bg-red-50 p-2 text-sm text-red-800">{errorEnvio}</p>}
-          </Tarjeta>
           {!estimacion && <Tarjeta><p className="text-sm text-stone-500">Calculando tu estimación…</p></Tarjeta>}
           {estimacion && (
             <Tarjeta>
-              <h3 className="mb-3 font-semibold">Primera estimación de tu reforma</h3>
+              <h2 className="text-lg font-semibold">Tu presupuesto orientativo, partida a partida</h2>
+              <p className="mb-3 mt-1 text-sm text-stone-500">Aquí mismo, al momento. Cambia los acabados y verás cómo se actualiza.</p>
               <VistaEstimacion e={estimacion} />
             </Tarjeta>
           )}
@@ -476,6 +453,34 @@ function NuevoProyectoContenido() {
             <h3 className="mb-2 font-semibold">Resumen</h3>
             <Resumen v={v} r={r} />
           </Tarjeta>
+          <Tarjeta className="border-teal-600 ring-2 ring-teal-100">
+            <h2 className="text-lg font-semibold">Guarda tu presupuesto en la app</h2>
+            <p className="mt-1 text-sm text-stone-600">
+              No te lo enviamos por email: queda guardado aquí, en tu enlace privado, con todas sus partidas. Desde ahí eliges a qué reformistas homologados pedírselo.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Campo etiqueta="Nombre y apellidos *" className="sm:col-span-2">
+                <input className={inputCls} value={c.nombre} onChange={(e) => setC({ ...c, nombre: e.target.value })} autoComplete="name" />
+              </Campo>
+              <Campo etiqueta="Teléfono (opcional)">
+                <input className={inputCls} type="tel" value={c.telefono} onChange={(e) => setC({ ...c, telefono: e.target.value })} autoComplete="tel" />
+              </Campo>
+              <Campo etiqueta="Tu email">
+                <input className={`${inputCls} bg-stone-50 text-stone-500`} type="email" value={miembro?.email ?? c.email} readOnly={!!miembro} onChange={(e) => setC({ ...c, email: e.target.value })} autoComplete="email" />
+              </Campo>
+            </div>
+            <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
+              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={c.acepto} onChange={(e) => setC({ ...c, acepto: e.target.checked })} />
+              <span>
+                {TEXTO_CONSENTIMIENTO} *{" "}
+                <Link href="/privacidad" target="_blank" className="text-teal-700 underline">Ver política de privacidad</Link>
+              </span>
+            </label>
+            <p className="mt-3 text-xs text-stone-500">
+              Tus datos se guardan en servidores de la Unión Europea y puedes pedir que los borremos en cualquier momento. Tu teléfono no se muestra a ningún reformista hasta que tú elijas uno.
+            </p>
+            {errorEnvio && <p className="mt-3 rounded bg-red-50 p-2 text-sm text-red-800">{errorEnvio}</p>}
+          </Tarjeta>
         </div>
       )}
 
@@ -485,7 +490,7 @@ function NuevoProyectoContenido() {
           {paso < PASOS.length - 1 ? (
             <Boton onClick={siguiente} disabled={!puedeSeguir} className="min-w-32">Siguiente</Boton>
           ) : (
-            <Boton onClick={enviar} disabled={!puedeSeguir || enviando} className="min-w-32">{enviando ? "Enviando…" : "Enviar mi proyecto"}</Boton>
+            <Boton onClick={enviar} disabled={!puedeSeguir || enviando} className="min-w-32">{enviando ? "Guardando…" : "Guardar mi presupuesto"}</Boton>
           )}
         </div>
       </div>
@@ -539,7 +544,7 @@ function ResultadoCatastro({ res, vivienda, onElegir, buscando }: { res: Resulta
 
 export default function NuevoProyecto() {
   return (
-    <RequiereRegistro motivo="Únete gratis para calcular el presupuesto de tu reforma. Solo te pedimos tu email.">
+    <RequiereRegistro motivo="Únete gratis con tu email y ve tu presupuesto partida a partida aquí mismo, al momento. Sin esperar a que te llegue por correo.">
       <NuevoProyectoContenido />
     </RequiereRegistro>
   );

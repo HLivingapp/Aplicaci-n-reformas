@@ -72,8 +72,9 @@ export default function PortalCliente() {
 
       {recienEnviado && (
         <div className="mb-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
-          <div className="font-semibold">¡Gracias! Hemos recibido tu proyecto.</div>
-          Te llamaremos para concertar una visita. <b>Guarda esta página en favoritos</b>: es tu enlace privado para seguir todo el proceso.
+          <div className="font-semibold">Tu presupuesto está guardado aquí.</div>
+          No te lo enviamos por email: lo tienes siempre en esta página. <b>Guárdala en favoritos</b>, es tu enlace privado. Cuando quieras,{" "}
+          <Link href="/red" className="font-semibold underline">pide presupuesto a reformistas homologados de tu zona</Link> con el plan Básico.
         </div>
       )}
 

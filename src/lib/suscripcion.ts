@@ -24,7 +24,7 @@ export const PLANES: InfoPlan[] = [
     nombre: "Gratis",
     precio: 0,
     lema: "Para saber cuánto cuesta tu reforma",
-    incluye: ["Presupuesto orientativo partida a partida", "Acabados básico, medio o premium", "Comunidad de reformas: leer, preguntar y responder", "Una opinión del asistente IA en cada tema de la comunidad"],
+    incluye: ["Presupuesto orientativo partida a partida, al momento en la app", "Acabados básico, medio o premium", "Comunidad de reformas: leer, preguntar y responder", "Una opinión del asistente IA en cada tema de la comunidad"],
   },
   {
     id: "basico",
