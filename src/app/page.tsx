@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
+import { AntesDespues } from "@/components/portada/AntesDespues";
+import { Calculadora } from "@/components/portada/Calculadora";
+import { SalonReformado } from "@/components/portada/Escenas";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
 
@@ -43,122 +46,160 @@ export default function Inicio() {
   return (
     <div className="min-h-dvh bg-white text-stone-900">
       {/* Cabecera */}
-      <header className="sticky top-0 z-20 border-b border-stone-100 bg-white/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-stone-950/80 text-white backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/" className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
-            <span className="font-semibold tracking-tight">{NOMBRE}</span>
+            <span className="font-display text-base font-semibold leading-tight tracking-tight sm:text-lg">{NOMBRE}</span>
           </Link>
           <nav className="flex items-center gap-1 text-sm">
-            <a href="#como-funciona" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Cómo funciona</a>
-            <Link href="/disena" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Diseña</Link>
-            <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Comunidad</Link>
-            <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 md:inline">Planes</Link>
-            <Link href="/reformistas" className="hidden rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100 sm:inline">Soy reformista</Link>
-            <Link href="/cliente" className="rounded-full px-3 py-1.5 text-stone-600 hover:bg-stone-100">Mi reforma</Link>
-            <Link href={empezar} className="rounded-full bg-teal-700 px-4 py-1.5 font-medium text-white hover:bg-teal-800">Calcular precio</Link>
+            <a href="#como-funciona" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Cómo funciona</a>
+            <Link href="/disena" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Diseña</Link>
+            <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Comunidad</Link>
+            <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Planes</Link>
+            <Link href="/reformistas" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Soy reformista</Link>
+            <Link href="/cliente" className="hidden rounded-full px-3 py-1.5 text-stone-300 sm:inline hover:bg-white/10 hover:text-white">Mi reforma</Link>
+            <Link href={empezar} className="whitespace-nowrap rounded-full bg-amber-400 px-4 py-1.5 font-semibold text-stone-900 hover:bg-amber-300">Calcular precio</Link>
           </nav>
         </div>
       </header>
 
       {/* Portada */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-teal-50 via-white to-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 md:grid-cols-2 md:pt-20">
-          <div>
-            <p className="mb-3 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-800">Reformas integrales y parciales · Madrid</p>
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-              Sabe lo que cuesta tu reforma <span className="text-teal-700">antes de llamar a nadie</span>
-            </h1>
-            <p className="mt-5 text-lg text-stone-600">
-              Calcula gratis tu presupuesto orientativo, partida a partida. Con él te ponemos en contacto con <strong className="text-stone-900">reformistas homologados disponibles en tu zona</strong>.
+      <section className="relative overflow-hidden bg-stone-950 text-white">
+        <div className="pointer-events-none absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-teal-600/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-48 right-0 h-[28rem] w-[28rem] rounded-full bg-amber-500/20 blur-3xl" />
+        <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-20 pt-12 md:pt-20 lg:grid-cols-[1.05fr_1fr]">
+          <div className="aparecer min-w-0">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-teal-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Reformas integrales y parciales en Madrid
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href={empezar} className="rounded-xl bg-teal-700 px-6 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-teal-700/20 hover:bg-teal-800">
-                Calcular mi presupuesto gratis
-              </Link>
-              <a href="#como-funciona" className="rounded-xl border border-stone-300 bg-white px-6 py-3.5 text-center text-base font-medium text-stone-700 hover:border-stone-400">
-                Ver cómo funciona
-              </a>
-            </div>
-            <p className="mt-4 text-sm text-stone-500">En 3 minutos · Gratis · Sin compromiso</p>
+            <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+              Tu reforma, con precio claro <em className="font-medium text-amber-300">desde el primer día</em>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg text-stone-300">
+              Escribe tu dirección y en 3 minutos tienes tu presupuesto partida a partida. Con él te ponemos en contacto con <strong className="text-white">reformistas homologados de tu zona</strong>, y tú eliges con quién firmar.
+            </p>
+            <Link href={empezar} className="group mt-8 flex max-w-xl items-center gap-3 rounded-2xl bg-white p-2 pl-4 text-stone-500 shadow-2xl shadow-teal-900/40 ring-4 ring-white/10 transition hover:ring-amber-300/40">
+              <span className="text-xl">📍</span>
+              <span className="min-w-0 flex-1 truncate text-base">Escribe la dirección de tu casa…</span>
+              <span className="shrink-0 rounded-xl bg-teal-700 px-4 py-3 sm:px-5 font-semibold text-white transition group-hover:bg-teal-600">Calcular precio</span>
+            </Link>
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-300">
+              {["Gratis y sin compromiso", "Datos del Catastro al momento", "Sin dar tu teléfono"].map((x) => (
+                <li key={x} className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span>{x}</li>
+              ))}
+            </ul>
           </div>
 
-          {/* Tarjeta de ejemplo */}
-          <div className="relative">
-            <div className="absolute -right-6 -top-6 h-40 w-40 rounded-full bg-teal-200/40 blur-2xl" />
-            <div className="relative rounded-3xl border border-stone-200 bg-white p-5 shadow-xl">
-              <div className="flex items-center justify-between text-xs text-stone-500">
-                <span>Piso de 78 m² · 2 dormitorios · 2 baños</span>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-800">Ejemplo</span>
-              </div>
-              <div className="mt-3 rounded-2xl bg-teal-700 p-4 text-white">
-                <div className="text-sm opacity-80">Tu presupuesto orientativo</div>
-                <div className="text-3xl font-semibold">76.500 € – 93.500 €</div>
-                <div className="text-xs opacity-80">+ IVA · reforma integral, acabados medios</div>
-              </div>
-              <ul className="mt-3 divide-y divide-stone-100 text-sm">
-                {[
-                  ["Demolición y albañilería", "Toda la vivienda, con contenedores"],
-                  ["Electricidad", "Instalación nueva con boletín"],
-                  ["Baños", "2 baños completos, colocados"],
-                  ["Cocina", "Muebles, encimera y electrodomésticos"],
-                  ["Suelos", "54 m² de laminado AC5 hidrófugo"],
-                ].map(([a, b]) => (
-                  <li key={a} className="flex items-center justify-between gap-3 py-2">
-                    <span className="font-medium">{a}</span>
-                    <span className="text-right text-xs text-stone-500">{b}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-3 flex items-center gap-2 rounded-xl bg-stone-50 p-3 text-sm">
-                <span className="text-xl">👷</span>
-                <span><strong>4 reformistas homologados</strong> disponibles en tu zona</span>
+          <div className="relative min-w-0 aparecer [animation-delay:200ms]">
+            <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
+              <SalonReformado className="block h-auto w-full" />
+            </div>
+            <div className="flotar absolute -left-4 top-8 w-60 rounded-2xl bg-white p-4 text-stone-900 shadow-2xl sm:-left-10">
+              <div className="text-xs text-stone-500">Piso de 80 m² · calidad media</div>
+              <div className="mt-1 font-display text-2xl font-semibold">88.000 €</div>
+              <div className="text-xs text-stone-500">+ IVA · todas las partidas desglosadas</div>
+              <div className="mt-2 flex h-1.5 overflow-hidden rounded-full">
+                <span className="w-[34%] bg-teal-700" /><span className="w-[22%] bg-teal-500" /><span className="w-[18%] bg-amber-400" /><span className="w-[14%] bg-amber-300" /><span className="flex-1 bg-stone-300" />
               </div>
             </div>
+            <div className="flotar-lento absolute -bottom-6 left-6 flex items-center gap-3 rounded-2xl bg-white p-3 pr-4 text-stone-900 shadow-2xl">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-lg">✓</span>
+              <span className="text-sm"><b>4 reformistas homologados</b><br /><span className="text-xs text-stone-500">en tu zona · comprobados hoy</span></span>
+            </div>
+            <div className="flotar absolute -right-2 bottom-24 hidden rounded-2xl bg-stone-900/90 p-3 text-xs text-white shadow-2xl ring-1 ring-white/10 sm:block">
+              <div className="text-stone-400">Tu obra</div>
+              <div className="font-semibold">Instalaciones · 60 %</div>
+              <div className="mt-1.5 h-1.5 w-32 rounded-full bg-white/15"><div className="h-1.5 w-[60%] rounded-full bg-emerald-400" /></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Franja de garantías */}
+        <div className="relative border-t border-white/10 bg-white/[0.03]">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6 text-sm md:grid-cols-4">
+            {[
+              ["Partida a partida", "qué incluye y qué no"],
+              ["REA + Hacienda + seguro", "comprobados en cada reformista"],
+              ["Contrato y pagos por hitos", "firmados en la app"],
+              ["Datos en la UE", "conforme al RGPD"],
+            ].map(([a, b]) => (
+              <div key={a}><div className="font-semibold text-white">{a}</div><div className="text-stone-400">{b}</div></div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Confianza */}
-      <section className="border-y border-stone-100 bg-stone-50">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6 text-center text-sm text-stone-600 md:grid-cols-4">
-          <div><div className="text-lg font-semibold text-stone-900">Gratis</div>presupuesto orientativo</div>
-          <div><div className="text-lg font-semibold text-stone-900">REA + Hacienda</div>en cada reformista</div>
-          <div><div className="text-lg font-semibold text-stone-900">Contrato estándar</div>firmado en la app</div>
-          <div><div className="text-lg font-semibold text-stone-900">Datos en la UE</div>conforme al RGPD</div>
+      {/* Calculadora */}
+      <section className="bg-gradient-to-b from-stone-100 to-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-20 lg:grid-cols-2">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">¿Cuánto cuesta reformar?</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Haz la cuenta en un segundo</h2>
+            <p className="mt-4 max-w-lg text-lg text-stone-600">
+              Precios reales de reformas integrales en Madrid, por metro cuadrado y según los acabados. Después, la app lo calcula con tu vivienda: baños, cocina, falsos techos, climatización y ventanas, partida a partida.
+            </p>
+            <ul className="mt-6 space-y-3 text-stone-700">
+              {["Cada partida con su medición y lo que incluye", "Marcas y modelos de referencia («o similar»)", "Cambia acabados y ve el precio al momento"].map((x) => (
+                <li key={x} className="flex gap-3"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs text-white">✓</span>{x}</li>
+              ))}
+            </ul>
+          </div>
+          <Calculadora />
         </div>
       </section>
 
       {/* Cómo funciona */}
-      <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight">Así de fácil</h2>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-stone-600">De la idea al reformista adecuado, sin visitas a ciegas ni presupuestos imposibles de comparar.</p>
-        <ol className="mt-10 grid gap-6 md:grid-cols-3">
+      <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20">
+        <p className="text-center text-sm font-semibold uppercase tracking-widest text-teal-700">Cómo funciona</p>
+        <h2 className="mt-3 text-center font-display text-4xl font-semibold tracking-tight sm:text-5xl">De la idea al reformista adecuado</h2>
+        <ol className="mt-14 grid gap-6 md:grid-cols-3">
           {PASOS.map((p) => (
-            <li key={p.n} className="rounded-2xl border border-stone-200 p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 text-lg font-semibold text-white">{p.n}</div>
-              <h3 className="mt-4 text-lg font-semibold">{p.t}</h3>
-              <p className="mt-2 text-sm text-stone-600">{p.d}</p>
+            <li key={p.n} className="group relative overflow-hidden rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:-translate-y-1 hover:shadow-xl">
+              <div className="font-display text-7xl font-semibold text-teal-700/15 transition group-hover:text-teal-700/30">{p.n}</div>
+              <h3 className="mt-2 text-xl font-semibold">{p.t}</h3>
+              <p className="mt-2 text-stone-600">{p.d}</p>
             </li>
           ))}
         </ol>
-        <div className="mt-10 text-center">
-          <Link href={empezar} className="inline-block rounded-xl bg-teal-700 px-6 py-3.5 font-semibold text-white hover:bg-teal-800">Empezar ahora</Link>
+      </section>
+
+      {/* Antes y después */}
+      <section className="bg-stone-950 text-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 py-20 lg:grid-cols-2">
+          <AntesDespues />
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Antes de empezar</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Ves el después antes de mover un azulejo</h2>
+            <p className="mt-4 text-lg text-stone-300">Eliges los acabados, ves cómo cambia el precio y llegas al reformista sabiendo exactamente lo que quieres.</p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                ["🧾", "Presupuesto de referencia", "para comparar cualquier oferta"],
+                ["⚖️", "Comparador de ofertas", "capítulo a capítulo, con lo que falta"],
+                ["📆", "Fases y plazos", "calculados para tu reforma"],
+                ["💶", "Pagos por hitos", "confirmados por las dos partes"],
+              ].map(([i, a, b]) => (
+                <li key={a} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10"><div className="text-xl">{i}</div><div className="mt-1 font-semibold">{a}</div><div className="text-sm text-stone-400">{b}</div></li>
+              ))}
+            </ul>
+            <Link href={empezar} className="mt-8 inline-block rounded-2xl bg-amber-400 px-6 py-3.5 font-semibold text-stone-900 hover:bg-amber-300">Empezar mi reforma</Link>
+          </div>
         </div>
       </section>
 
       {/* Ventajas */}
-      <section className="bg-stone-900 text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-3xl font-semibold tracking-tight">Una reforma sin sorpresas</h2>
-          <p className="mt-2 max-w-2xl text-stone-300">Todo lo que normalmente se descubre a mitad de obra, lo ves antes de empezar.</p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Por qué con nosotros</p>
+          <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Una reforma sin sorpresas</h2>
+          <p className="mt-3 max-w-2xl text-lg text-stone-600">Todo lo que normalmente se descubre a mitad de obra, lo ves antes de empezar.</p>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {VENTAJAS.map((v) => (
-              <div key={v.t} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-                <div className="text-2xl">{v.i}</div>
-                <h3 className="mt-3 font-semibold">{v.t}</h3>
-                <p className="mt-1 text-sm text-stone-300">{v.d}</p>
+              <div key={v.t} className="rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:bg-white hover:shadow-xl">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm ring-1 ring-stone-200">{v.i}</div>
+                <h3 className="mt-4 text-lg font-semibold">{v.t}</h3>
+                <p className="mt-1.5 text-stone-600">{v.d}</p>
               </div>
             ))}
           </div>
@@ -170,7 +211,7 @@ export default function Inicio() {
         <Link href="/disena" className="flex flex-col items-start gap-4 rounded-3xl bg-gradient-to-br from-teal-700 to-teal-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-teal-200">Nuevo</p>
-            <h2 className="mt-1 text-3xl font-semibold tracking-tight">Diseña tu baño o tu cocina desde una foto</h2>
+            <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight">Diseña tu baño o tu cocina desde una foto</h2>
             <p className="mt-2 max-w-xl text-teal-50">Sube una foto, elige básico, medio o premium y mira los materiales y el precio al momento.</p>
           </div>
           <span className="shrink-0 rounded-xl bg-white px-5 py-3 font-semibold text-teal-800">Probar ahora →</span>
@@ -182,7 +223,7 @@ export default function Inicio() {
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Comunidad de reformas</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
+            <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
             <p className="mt-3 text-stone-600">
               Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y nuestro asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
             </p>
@@ -207,7 +248,7 @@ export default function Inicio() {
 
       {/* Planes */}
       <section className="mx-auto max-w-6xl px-4 pt-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight">Empieza gratis. Suscríbete cuando lo necesites</h2>
+        <h2 className="text-center font-display text-4xl font-semibold tracking-tight">Empieza gratis. Suscríbete cuando lo necesites</h2>
         <p className="mx-auto mt-2 max-w-2xl text-center text-stone-600">Sin permanencia. Los pagos de la obra van directamente al reformista que elijas.</p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
@@ -217,7 +258,7 @@ export default function Inicio() {
           ].map((x) => (
             <Link key={x.n} href="/suscripcion" className={`rounded-2xl border bg-white p-5 hover:shadow-sm ${x.cls}`}>
               <div className="font-semibold">{x.n}</div>
-              <div className="mt-1 text-3xl font-semibold tracking-tight">{x.p}</div>
+              <div className="mt-1 font-display text-4xl font-semibold tracking-tight">{x.p}</div>
               <p className="mt-2 text-sm text-stone-600">{x.d}</p>
             </Link>
           ))}
@@ -229,7 +270,7 @@ export default function Inicio() {
         <div className="grid items-center gap-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 ring-1 ring-amber-100 md:grid-cols-2 md:p-12">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">¿Eres reformista?</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
+            <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
             <p className="mt-3 text-stone-700">
               Recibe solicitudes de tu zona con el presupuesto orientativo, las medidas y los acabados elegidos. Menos visitas perdidas y más obras firmadas.
             </p>
@@ -252,7 +293,7 @@ export default function Inicio() {
 
       {/* Preguntas */}
       <section className="mx-auto max-w-3xl px-4 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight">Preguntas frecuentes</h2>
+        <h2 className="text-center font-display text-4xl font-semibold tracking-tight">Preguntas frecuentes</h2>
         <div className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200">
           {PREGUNTAS.map((p) => (
             <details key={p.q} className="group p-5">
@@ -269,7 +310,7 @@ export default function Inicio() {
       {/* Llamada final */}
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight">¿Cuánto costaría reformar tu casa?</h2>
+          <h2 className="font-display text-4xl font-semibold tracking-tight">¿Cuánto costaría reformar tu casa?</h2>
           <p className="max-w-xl text-teal-50">Descúbrelo en 3 minutos y conoce a los reformistas homologados de tu zona.</p>
           <Link href={empezar} className="rounded-xl bg-white px-6 py-3.5 font-semibold text-teal-800 hover:bg-teal-50">Calcular mi presupuesto gratis</Link>
         </div>

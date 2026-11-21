@@ -2,6 +2,22 @@
 
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.flotar { animation: flotar 6s ease-in-out infinite; }
+.flotar-lento { animation: flotar 8s ease-in-out infinite 1s; }
+.aparecer { animation: aparecer 0.8s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .flotar, .flotar-lento, .aparecer { animation: none; }
 }
 
 html {
