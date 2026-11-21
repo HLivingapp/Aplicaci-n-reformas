@@ -24,6 +24,9 @@ export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo }
 
 export type { TarifaReformista };
 
+export type EstadoPago = "pendiente" | "solicitado" | "pagado";
+export const NUM_HITOS = 4;
+
 export type EstadoEncargo = "visita_pedida" | "visita_fijada" | "presupuesto_final" | "firmado_cliente" | "firmado" | "descartado";
 
 export interface Encargo {
@@ -44,6 +47,10 @@ export interface Encargo {
   visita: { preferencia: string; fecha?: string; nota?: string };
   final?: { importe: number; capitulos: Record<string, number>; plazoSemanas: number; notas: string; fecha: string; lineas: LineaEstimacion[] };
   firmas?: { cliente?: string; reformista?: string };
+  /** Estado de cada hito de pago del contrato (mismo orden que HITOS) */
+  pagos?: EstadoPago[];
+  /** Avances de obra que publica el reformista y ve el cliente */
+  avances?: { fecha: string; texto: string }[];
 }
 
 export const CAPITULOS = [...new Set(tarifasPorDefecto().precios.map((p) => p.capitulo))];
@@ -184,6 +191,15 @@ export function firmarCliente(id: string) {
 
 export const firmarReformista = (id: string) =>
   actualizarEncargo(id, (e) => ({ ...e, estado: "firmado", firmas: { ...e.firmas, reformista: new Date().toISOString() } }));
+
+const pagosDe = (e: Encargo): EstadoPago[] => e.pagos ?? Array.from({ length: NUM_HITOS }, () => "pendiente" as EstadoPago);
+export const solicitarPago = (id: string, i: number) =>
+  actualizarEncargo(id, (e) => ({ ...e, pagos: pagosDe(e).map((p, j) => (j === i && p === "pendiente" ? "solicitado" : p)) }));
+export const confirmarPago = (id: string, i: number) =>
+  actualizarEncargo(id, (e) => ({ ...e, pagos: pagosDe(e).map((p, j) => (j === i ? "pagado" : p)) }));
+export const publicarAvance = (id: string, texto: string) =>
+  actualizarEncargo(id, (e) => ({ ...e, avances: [{ fecha: new Date().toISOString(), texto }, ...(e.avances ?? [])] }));
+export { pagosDe };
 
 export const descartarEncargo = (id: string) => actualizarEncargo(id, (e) => ({ ...e, estado: "descartado" }));
 

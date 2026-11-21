@@ -15,6 +15,7 @@ import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
 import { ComparativaRed } from "@/components/ComparativaRed";
+import { ServiciosArquitectura } from "@/components/Arquitectura";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -177,6 +178,11 @@ export default function PortalCliente() {
             {p.estimacion && (
               <Tarjeta className="mt-4">
                 <ComparativaRed proyectoId={p.id} token={token} cliente={c.nombre} vivienda={p.vivienda} reforma={p.reforma} />
+              </Tarjeta>
+            )}
+            {p.estimacion && (
+              <Tarjeta className="mt-4">
+                <ServiciosArquitectura proyectoId={p.id} token={token} cliente={c.nombre} zona={p.vivienda.direccion.municipio || "Madrid"} m2={p.vivienda.m2 ?? 80} />
               </Tarjeta>
             )}
           </section>

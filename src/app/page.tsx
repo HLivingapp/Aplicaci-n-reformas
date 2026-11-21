@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { BENEFICIOS_CLIENTE } from "@/lib/beneficios";
+import { ListaBeneficios } from "@/components/Beneficios";
 import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
 import { AntesDespues } from "@/components/portada/AntesDespues";
@@ -32,7 +34,7 @@ const VENTAJAS = [
   { i: "✅", t: "Reformistas homologados", d: "Comprobamos el registro de empresas acreditadas (REA), que estén al corriente con Hacienda y su seguro de responsabilidad civil." },
   { i: "🎨", t: "Tú eliges los acabados", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
   { i: "✍️", t: "Contrato y seguimiento en la app", d: "Tras la visita, el reformista mete la cifra acordada y firmáis el contrato estándar en la app, con plazos, hitos de pago y fases de obra." },
-  { i: "🛡️", t: "Seguro de promotor gratis", d: "Si contratas tu obra por la app, te regalamos un seguro como promotor: responsabilidad civil y defensa jurídica mientras dura la obra." },
+  { i: "📆", t: "Fases y plazos claros", d: "Sabes qué se hace cada semana y cuándo toca cada pago, antes de empezar." },
   { i: "🔒", t: "Tus datos, protegidos", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
 ];
 
@@ -194,6 +196,16 @@ export default function Inicio() {
         </div>
       </section>
 
+      {/* Beneficios */}
+      <section id="beneficios" className="scroll-mt-16 bg-teal-50/60">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Beneficios de hacerlo con la app</p>
+          <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Más que un presupuesto</h2>
+          <p className="mt-3 max-w-2xl text-lg text-stone-600">Lo que tienes al contratar tu reforma a través de la app.</p>
+          <div className="mt-10"><ListaBeneficios items={BENEFICIOS_CLIENTE} /></div>
+        </div>
+      </section>
+
       {/* Diseña */}
       <section className="mx-auto max-w-6xl px-4 pt-16">
         <Link href="/disena" className="flex flex-col items-start gap-4 rounded-3xl bg-gradient-to-br from-teal-700 to-teal-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
@@ -257,7 +269,7 @@ export default function Inicio() {
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid items-center gap-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 ring-1 ring-amber-100 md:grid-cols-2 md:p-12">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">¿Eres reformista?</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">¿Eres reformista, estudio de arquitectura o arquitecto?</p>
             <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
             <p className="mt-3 text-stone-700">
               Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a la visita cuando ya te ha elegido; después metes la cifra acordada y la app genera el contrato.
@@ -266,14 +278,17 @@ export default function Inicio() {
           <ul className="space-y-3 text-sm">
             {[
               "Sin pagar por cada contacto: solo pagas por las obras que firmas",
-              "Homologación automática en minutos: REA, Hacienda y seguro",
-              "Más visibilidad cuantas más obras haces con la app",
-              "Contrato estándar y encargo firmados en la app",
+              "Menos impagos: pagos por hitos solicitados y confirmados en la app",
+              "Tus avances de obra, visibles para tu cliente",
+              "Financiación para tus clientes: «Reforma en tu hipoteca»",
             ].map((x) => (
               <li key={x} className="flex gap-2 rounded-xl bg-white/70 p-3"><span className="text-amber-700">✓</span>{x}</li>
             ))}
             <li>
-              <Link href="/reformistas" className="mt-2 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Homologar mi empresa</Link>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Link href="/reformistas" className="inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Soy reformista</Link>
+                <Link href="/arquitectos" className="inline-block rounded-xl border border-stone-900 px-5 py-3 font-semibold text-stone-900 hover:bg-white">Soy arquitecto o estudio</Link>
+              </div>
             </li>
           </ul>
         </div>
@@ -321,6 +336,7 @@ export default function Inicio() {
           <Link href="/comunidad" className="hover:underline">Comunidad</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
+          <Link href="/arquitectos" className="hover:underline">Arquitectos</Link>
           <Link href="/empresa" className="hover:underline">Acceso empresa</Link>
         </p>
       </footer>

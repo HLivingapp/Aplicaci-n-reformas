@@ -75,7 +75,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Garantía.</b> La legal sobre los trabajos ejecutados y la del fabricante en materiales y equipos.
         </li>
         <li>
-          <b>Seguro de promotor.</b> Al contratar por la app, la propiedad recibe gratis un seguro como promotor de la obra, con responsabilidad civil y defensa jurídica, durante la obra. Condiciones de la póliza pendientes de cerrar con la aseguradora.
+          <b>Seguro de promotor.</b> Al contratar por la app, la propiedad recibe gratis un seguro de promotor de MAPFRE, con responsabilidad civil y defensa jurídica, durante la obra. Condiciones de la póliza pendientes de cerrar con la aseguradora.
         </li>
         <li>
           <b>Anulación.</b> La propiedad puede anular el contrato en la app. Se pagará lo ejecutado hasta ese momento.

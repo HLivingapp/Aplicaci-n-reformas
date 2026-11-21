@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
@@ -70,6 +71,7 @@ export default function AltaReformista() {
           ["💶", "Solo pagas si firmas", `Sin cuotas por contacto. Solo pagas cuando el cliente firma en la app: el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}) y se descuenta de lo que cobras.`],
           ["📋", "Tus tarifas trabajan por ti", "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido."],
           ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en la comunidad te dan más visibilidad."],
+          ...BENEFICIOS_PROFESIONAL.filter((b) => !b.t.startsWith("Clientes que")).map((b) => [b.i, b.t, b.d]),
         ].map(([i, t, d]) => (
           <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>
         ))}

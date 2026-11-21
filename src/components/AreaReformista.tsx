@@ -7,6 +7,7 @@ import {
 } from "@/lib/encargos";
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
+import { SeguimientoEncargo } from "./SeguimientoEncargo";
 import { useEncargos } from "./ComparativaRed";
 import { EditorTarifas } from "./TarifasReformista";
 import { Boton, inputCls, Tarjeta } from "./ui";
@@ -82,6 +83,7 @@ function EncargoReformista({ e, reformistaId }: { e: Encargo; reformistaId: stri
         <PresupuestoFinal e={e} reformistaId={reformistaId} alEnviar={() => setEditando(false)} />
       )}
 
+      {e.estado === "firmado" && <div className="mt-3"><SeguimientoEncargo e={e} parte="reformista" /></div>}
       {e.final && e.estado !== "descartado" && (
         <div className="mt-3">
           <ContratoEncargo e={e} parte="reformista" alFirmar={() => firmarReformista(e.id)} />
