@@ -3,7 +3,7 @@ import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
 import { AntesDespues } from "@/components/portada/AntesDespues";
 import { Calculadora } from "@/components/portada/Calculadora";
-import { SalonReformado } from "@/components/portada/Escenas";
+import { GaleriaObra } from "@/components/portada/GaleriaObra";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
 
@@ -94,7 +94,8 @@ export default function Inicio() {
 
           <div className="relative min-w-0 aparecer [animation-delay:200ms]">
             <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
-              <SalonReformado className="block h-auto w-full" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={publico("/fotos/obra/cocina-salon.webp")} alt="Cocina abierta al salón en una reforma integral terminada" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
             </div>
             <div className="flotar absolute -left-4 top-8 w-60 rounded-2xl bg-white p-4 text-stone-900 shadow-2xl sm:-left-10">
               <div className="text-xs text-stone-500">Piso de 80 m² · calidad media</div>
@@ -164,6 +165,8 @@ export default function Inicio() {
           ))}
         </ol>
       </section>
+
+      <GaleriaObra empezar={empezar} />
 
       {/* Antes y después */}
       <section className="bg-stone-950 text-white">
