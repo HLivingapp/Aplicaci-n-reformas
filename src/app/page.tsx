@@ -4,6 +4,7 @@ import { conBaseDeDatos } from "@/lib/modo";
 import { AntesDespues } from "@/components/portada/AntesDespues";
 import { Calculadora } from "@/components/portada/Calculadora";
 import { GaleriaObra } from "@/components/portada/GaleriaObra";
+import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
 
 const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
 
@@ -45,25 +46,7 @@ export default function Inicio() {
   const empezar = "/nuevo";
   return (
     <div className="min-h-dvh bg-white text-stone-900">
-      {/* Cabecera */}
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-stone-950/80 text-white backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
-            <span className="font-display text-base font-semibold leading-tight tracking-tight sm:text-lg">{NOMBRE}</span>
-          </Link>
-          <nav className="flex items-center gap-1 whitespace-nowrap text-sm">
-                        <Link href="/sobre-nosotros" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Quiénes somos</Link>
-            <Link href="/disena" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Diseña</Link>
-            <Link href="/comunidad" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Comunidad</Link>
-            <Link href="/suscripcion" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white md:inline">Planes</Link>
-            <Link href="/reformistas" className="hidden rounded-full px-3 py-1.5 text-stone-300 hover:bg-white/10 hover:text-white lg:inline">Soy reformista</Link>
-            <Link href="/cliente" className="hidden rounded-full px-3 py-1.5 text-stone-300 sm:inline hover:bg-white/10 hover:text-white">Mi reforma</Link>
-            <Link href={empezar} className="whitespace-nowrap rounded-full bg-amber-400 px-4 py-1.5 font-semibold text-stone-900 hover:bg-amber-300">Calcular precio</Link>
-          </nav>
-        </div>
-      </header>
+      <CabeceraSitio />
 
       {/* Portada */}
       <section className="relative overflow-hidden bg-stone-950 text-white">
@@ -72,7 +55,7 @@ export default function Inicio() {
         <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-20 pt-12 md:pt-20 lg:grid-cols-[1.05fr_1fr]">
           <div className="aparecer min-w-0">
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-teal-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Reformas integrales y parciales en Madrid
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Más de 300 reformas ejecutadas en Madrid
             </p>
             <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
               Tu reforma, con precio claro <em className="font-medium text-amber-300">desde el primer día</em>
