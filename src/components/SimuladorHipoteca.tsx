@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { euros } from "@/lib/calc";
+import { BANCOS_REFORMA } from "@/lib/beneficios";
 import { inputCls } from "./ui";
 
 /** «Reforma en tu hipoteca»: cuota orientativa para financiar la reforma. Simulación, sin compromiso. */
@@ -22,7 +23,21 @@ export function SimuladorHipoteca({ importe }: { importe: number }) {
         <label className="text-xs text-stone-600">Interés de ejemplo (TIN %)<input type="number" step={0.1} min={0} className={`${inputCls} mt-1`} value={tin} onChange={(e) => setTin(Math.max(0, Number(e.target.value)))} /></label>
       </div>
       <div className="mt-3 text-lg">Cuota aproximada: <b>{euros(cuota)}/mes</b></div>
-      <p className="mt-1 text-xs text-stone-500">Simulación orientativa con el interés que indiques: no es una oferta. El tipo, los gastos y la concesión los decide el banco. Bancos colaboradores en preparación.</p>
+      <p className="mt-1 text-xs text-stone-500">Simulación orientativa con el interés que indiques: no es una oferta. El tipo, los gastos y la concesión los decide el banco.</p>
+      <div className="mt-4 font-medium">Bancos con financiación para reformas</div>
+      <ul className="mt-2 space-y-2">
+        {BANCOS_REFORMA.map((b) => (
+          <li key={b.banco} className="rounded-xl bg-white p-3 ring-1 ring-stone-200">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <span className="font-semibold">{b.banco} · {b.producto}</span>
+              <span className="text-xs text-stone-500">{b.tipo}</span>
+            </div>
+            <p className="mt-1 text-stone-600">{b.resumen}</p>
+            <a href={b.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-teal-700 underline">Ver en la web de {b.banco.split(" ")[0]}</a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs text-stone-500">Resumen orientativo de la información pública de cada banco, consultada el 21/11/2026. Las condiciones, el tipo de interés y la concesión los decide cada entidad. Human Living todavía no tiene acuerdo con estos bancos.</p>
     </div>
   );
 }
