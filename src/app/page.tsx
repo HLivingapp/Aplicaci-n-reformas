@@ -21,8 +21,8 @@ const PASOS = [
   },
   {
     n: "3",
-    t: "Te presentamos reformistas de tu zona",
-    d: "Con el plan Básico (5 €/mes) pides presupuesto a los reformistas homologados de tu zona que tú elijas, y los comparas con tu referencia. Tú decides con quién firmar.",
+    t: "Compara reformistas y quedad para una visita",
+    d: "Los reformistas homologados han cargado sus tarifas: con el plan Básico (5 €/mes) ves el precio de cada uno para tu casa, eliges los que más te interesan y quedáis para una visita. Después te envían el presupuesto final y firmas el contrato en la app.",
   },
 ];
 
@@ -30,13 +30,13 @@ const VENTAJAS = [
   { i: "📋", t: "Precio claro desde el principio", d: "Nada de «depende». Ves cada partida, qué incluye y qué no, antes de que nadie pise tu casa." },
   { i: "✅", t: "Reformistas homologados", d: "Comprobamos el registro de empresas acreditadas (REA), que estén al corriente con Hacienda y su seguro de responsabilidad civil." },
   { i: "🎨", t: "Tú eliges los acabados", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
-  { i: "✍️", t: "Contrato estándar en la app", d: "El encargo y el contrato se firman en la app, con plazos, hitos de pago y los acabados que elegiste." },
-  { i: "📆", t: "Sigues tu obra paso a paso", d: "Fases y plazos calculados para tu reforma, y todo el proyecto en un enlace privado." },
+  { i: "✍️", t: "Contrato y seguimiento en la app", d: "Tras la visita, el reformista mete la cifra acordada y firmáis el contrato estándar en la app, con plazos, hitos de pago y fases de obra." },
+  { i: "🛡️", t: "Seguro de promotor gratis", d: "Si contratas tu obra por la app, te regalamos un seguro como promotor: responsabilidad civil y defensa jurídica mientras dura la obra." },
   { i: "🔒", t: "Tus datos, protegidos", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
 ];
 
 const PREGUNTAS = [
-  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Solo si quieres pedir presupuestos a los reformistas homologados está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
+  { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Para ver el precio de cada reformista homologado para tu casa y quedar con ellos está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
   { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado de Hacienda al corriente y seguro de responsabilidad civil vigentes. El registro REA se vuelve a comprobar cada mes." },
   { q: "¿Y si cambio de opinión?", a: "Puedes cancelar el contrato desde la app. Se hace un acta con lo ejecutado hasta ese momento." },
@@ -61,7 +61,7 @@ export default function Inicio() {
               Tu reforma, con precio claro <em className="font-medium text-amber-300">desde el primer día</em>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-stone-300">
-              Únete gratis con tu email, escribe tu dirección y en 3 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Después, si quieres, lo pides a reformistas homologados de tu zona.
+              Únete gratis con tu email, escribe tu dirección y en 3 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Y con el plan Básico ves lo que te costaría con cada reformista homologado de tu zona.
             </p>
             <Link href={empezar} className="group mt-8 flex max-w-xl items-center gap-3 rounded-2xl bg-white p-2 pl-4 text-stone-500 shadow-2xl shadow-teal-900/40 ring-4 ring-white/10 transition hover:ring-amber-300/40">
               <span className="text-xl">📍</span>
@@ -239,7 +239,7 @@ export default function Inicio() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
             { n: "Gratis", p: "0 €", d: "Te unes con tu email y ves tu presupuesto partida a partida en la app, al momento. Y la comunidad.", cls: "border-stone-200" },
-            { n: "Básico", p: "5 €/mes", d: "Suscríbete y accede a nuestra red de profesionales homologados. Pide presupuestos y compáralos con tu referencia.", cls: "border-teal-600 ring-2 ring-teal-100" },
+            { n: "Básico", p: "5 €/mes", d: "Accede a nuestra red de profesionales homologados: ves el presupuesto de cada uno para tu casa, calculado con sus tarifas, quedas con los que te interesen y firmas en la app.", cls: "border-teal-600 ring-2 ring-teal-100" },
             { n: "Pro", p: "30 €/mes", d: "Todo lo del Básico y un asistente IA especializado en obra: presupuestos, licencias en Madrid y dudas técnicas.", cls: "border-indigo-300" },
           ].map((x) => (
             <Link key={x.n} href="/suscripcion" className={`rounded-2xl border bg-white p-5 hover:shadow-sm ${x.cls}`}>
@@ -258,12 +258,12 @@ export default function Inicio() {
             <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">¿Eres reformista?</p>
             <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
             <p className="mt-3 text-stone-700">
-              Recibe solicitudes de tu zona con el presupuesto orientativo, las medidas y los acabados elegidos. Menos visitas perdidas y más obras firmadas.
+              Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a la visita cuando ya te ha elegido; después metes la cifra acordada y la app genera el contrato.
             </p>
           </div>
           <ul className="space-y-3 text-sm">
             {[
-              "Sin pagar por cada contacto: comisión solo sobre las obras que firmas",
+              "Sin pagar por cada contacto: fee solo sobre las obras que firmas",
               "Homologación automática en minutos: REA, Hacienda y seguro",
               "Más visibilidad cuantas más obras haces con la app",
               "Contrato estándar y encargo firmados en la app",

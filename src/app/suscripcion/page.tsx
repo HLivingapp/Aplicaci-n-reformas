@@ -44,7 +44,7 @@ function VistaPlanes() {
       <section className="bg-gradient-to-b from-amber-50 to-stone-50">
         <div className="mx-auto max-w-5xl px-4 pb-4 pt-10 text-center">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Reforma con los mejores, sin sorpresas</h1>
-          <p className="mx-auto mt-3 max-w-2xl text-stone-600">Tu presupuesto es gratis y lo ves al momento en la app. Suscríbete solo cuando quieras pedir presupuestos: accede a nuestra red de profesionales homologados, compara sus ofertas con tu precio de referencia y, si quieres, consulta a nuestro asistente IA especializado en obra.</p>
+          <p className="mx-auto mt-3 max-w-2xl text-stone-600">Tu presupuesto es gratis y lo ves al momento en la app. Suscríbete para acceder a nuestra red de profesionales homologados: ves lo que te costaría con cada uno, porque ya han cargado sus tarifas, quedas con los que te interesen para una visita y firmas el contrato en la app. Y, si quieres, consulta a nuestro asistente IA especializado en obra.</p>
           <p className="mt-2 text-sm text-stone-500">Sin permanencia · Cancela cuando quieras · IVA incluido</p>
         </div>
       </section>

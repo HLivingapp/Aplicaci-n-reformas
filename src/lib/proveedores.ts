@@ -14,6 +14,10 @@ export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
 export const TEXTO_DECLARACION_RESPONSABLE =
   "Declaro bajo mi responsabilidad que todos los datos y documentos que aporto son verdaderos, están en vigor y corresponden a la empresa o autónomo que represento, y que tengo capacidad para firmar en su nombre. Me comprometo a mantenerlos en vigor y a actualizarlos en cuanto cambien (baja en el REA, fin del seguro, deudas con Hacienda o la Seguridad Social). Acepto que la empresa haga comprobaciones aleatorias y me pida los originales. Sé que cualquier falsedad u omisión supone la baja inmediata en la plataforma y la pérdida de mis valoraciones, sin perjuicio de las acciones legales que correspondan.";
 
+/** Compromiso de declarar en la app las ventas que llegan por la app. Pendiente de revisión por el abogado. */
+export const TEXTO_COMPROMISO_VENTAS =
+  "Me comprometo a declarar íntegramente en la app todas las ventas, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, la plataforma podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.";
+
 const LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
 
 /** Comprueba el dígito o letra de control de un DNI, NIE o CIF español. */
@@ -277,7 +281,7 @@ export function registrarProveedor(d: Datos, a: AltaProveedor, reaVerificado?: R
     notasInternas: "",
     creado: hoy(),
     consentimiento: { fecha: new Date().toISOString(), texto: TEXTO_CONSENTIMIENTO_PROVEEDOR },
-    declaracion: { fecha: new Date().toISOString(), texto: TEXTO_DECLARACION_RESPONSABLE },
+    declaracion: { fecha: new Date().toISOString(), texto: `${TEXTO_DECLARACION_RESPONSABLE}\n\n${TEXTO_COMPROMISO_VENTAS}` },
   });
   return token;
 }

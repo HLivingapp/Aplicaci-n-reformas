@@ -9,6 +9,7 @@ import { CON_CSV, csvValido, docActual, DOCUMENTOS, documentosExigidos, requisit
 import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import { recordarProfesional } from "@/lib/foro-cliente";
 import Link from "next/link";
+import { MisEncargos, MisTarifas } from "@/components/AreaReformista";
 import type { TipoDocProveedor } from "@/lib/types";
 
 const ESTADOS: Record<VistaProveedor["estado"], { texto: string; cls: string }> = {
@@ -120,6 +121,9 @@ export default function PortalReformista() {
         </ul>
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
+
+      {p.estado === "aprobado" && !pendientes && <MisEncargos reformistaId={p.id} />}
+      <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />
 
       {p.estado === "aprobado" && !pendientes && (
         <Tarjeta>

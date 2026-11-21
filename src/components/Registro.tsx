@@ -18,7 +18,7 @@ const VENTAJAS = [
   ["🧾", "Tu presupuesto partida a partida, al momento en la app"],
   ["💬", "La comunidad: experiencias reales y respuestas de profesionales"],
   ["🎨", "Diseña tu baño o cocina y compara acabados"],
-  ["✅", "Pide presupuesto a reformistas homologados (plan Básico)"],
+  ["✅", "El precio de cada reformista homologado para tu casa (plan Básico)"],
 ];
 
 export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerrar?: () => void }) {

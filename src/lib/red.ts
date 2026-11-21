@@ -1,3 +1,4 @@
+import type { TarifaReformista } from "./types";
 import { ESPECIALIDADES, homologado, type ProveedorBase } from "./proveedores";
 
 /**
@@ -19,6 +20,8 @@ export interface FichaRed {
   /** Valoración media por fase de obra (1 a 5) y número de valoraciones */
   valoraciones?: { fase: string; media: number; n: number }[];
   obrasEnApp: number;
+  /** Tarifas que ha cargado, para calcular su presupuesto a cada cliente */
+  tarifa?: TarifaReformista;
 }
 
 const texto = (e: string) => ESPECIALIDADES.find((x) => x.valor === e)?.texto ?? e;
@@ -42,6 +45,7 @@ export function fichaRed(p: ProveedorBase & { id: string }): FichaRed {
     comprobado: p.reaVerificado?.fecha ?? p.revisado ?? p.creado,
     capitalRC: p.rc.capital,
     obrasEnApp: 0,
+    tarifa: p.tarifa,
   };
 }
 

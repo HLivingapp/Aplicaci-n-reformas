@@ -14,6 +14,7 @@ import type { Obra, Presupuesto } from "@/lib/types";
 import type { DatosPortal } from "@/lib/publico";
 import { Cronograma } from "@/components/Cronograma";
 import { VistaEstimacion } from "@/components/Estimacion";
+import { ComparativaRed } from "@/components/ComparativaRed";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
 import { PlanoBase } from "@/components/PlanoBase";
@@ -74,7 +75,7 @@ export default function PortalCliente() {
         <div className="mb-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
           <div className="font-semibold">Tu presupuesto está guardado aquí.</div>
           No te lo enviamos por email: lo tienes siempre en esta página. <b>Guárdala en favoritos</b>, es tu enlace privado. Cuando quieras,{" "}
-          <Link href="/red" className="font-semibold underline">pide presupuesto a reformistas homologados de tu zona</Link> con el plan Básico.
+          <button onClick={() => document.getElementById("reformistas")?.scrollIntoView({ behavior: "smooth" })} className="font-semibold underline">mira más abajo el presupuesto de cada reformista homologado</button>, calculado con sus tarifas.
         </div>
       )}
 
@@ -173,6 +174,11 @@ export default function PortalCliente() {
               {p.estimacion && <FasesYParecidas e={p.estimacion} v={p.vivienda} r={p.reforma} plegado />}
               <PlanoBase m2={p.vivienda.m2} dormitorios={p.reforma.dormitoriosDeseados} banos={p.reforma.banosDeseados} cocinaAbierta={p.vivienda.cocinaAbierta} terrazas={p.vivienda.terrazas} />
             </Tarjeta>
+            {p.estimacion && (
+              <Tarjeta className="mt-4">
+                <ComparativaRed proyectoId={p.id} token={token} cliente={c.nombre} vivienda={p.vivienda} reforma={p.reforma} />
+              </Tarjeta>
+            )}
           </section>
         );
       })}
@@ -181,7 +187,7 @@ export default function PortalCliente() {
         <section className="mb-6 grid gap-3 sm:grid-cols-2">
           <Link href="/red" className="rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm hover:border-teal-600">
             <div className="font-semibold text-teal-900">👷 Compara con otros reformistas homologados</div>
-            <div className="mt-1 text-teal-900/80">Pide más presupuestos en tu zona y compáralos con tu precio de referencia. Plan Básico, 5 €/mes.</div>
+            <div className="mt-1 text-teal-900/80">Mira lo que te costaría con cada reformista de tu zona, calculado con sus tarifas, y queda con los que te interesen. Plan Básico, 5 €/mes.</div>
           </Link>
           <Link href="/asistente" className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm hover:border-indigo-600">
             <div className="font-semibold text-indigo-900">🤖 Pregunta al asistente IA de obra</div>
