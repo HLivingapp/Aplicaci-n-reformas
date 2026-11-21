@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BANCOS_REFORMA, type ProductoBanco } from "@/lib/beneficios";
+import { BANCOS_REFORMA, type DetalleProducto, type ProductoBanco } from "@/lib/beneficios";
 import { miles } from "@/lib/comercializacion";
 
 type Orden = "importe" | "plazo" | "tipo" | "entidad";
@@ -58,6 +58,7 @@ export function ComparativaBancos() {
               <div className="rounded-lg bg-stone-50 p-1.5"><dt className="text-stone-500">{b.tipo === "Préstamo hipotecario" ? "Hipoteca" : "Personal"}</dt><dd className="font-semibold">{b.interes ? `tipo ${b.interes}` : "—"}</dd></div>
             </dl>
             <p className="mt-2 text-stone-600">{b.resumen}</p>
+            {b.detalle && <Detalle b={b} />}
             <a href={b.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-teal-700 underline">Ver en la web de {b.banco}</a>
           </li>
         ))}
@@ -66,5 +67,37 @@ export function ComparativaBancos() {
         Resumen orientativo de la información pública de cada entidad, consultada el 21/11/2026. «—» significa que la web no lo indica. Las condiciones, el tipo de interés y la concesión los decide cada entidad. Human Living todavía no tiene acuerdo con estas entidades.
       </p>
     </div>
+  );
+}
+
+const FILAS: [keyof DetalleProducto, string][] = [
+  ["paraQue", "Para qué sirve"],
+  ["paraQuien", "Quién puede pedirlo"],
+  ["importe", "Importe"],
+  ["plazo", "Plazo"],
+  ["tin", "TIN"],
+  ["tae", "TAE"],
+  ["ejemplo", "Ejemplo publicado"],
+  ["comisiones", "Comisiones"],
+  ["vinculaciones", "Bonificaciones y vinculación"],
+  ["documentacion", "Documentación"],
+  ["comoSeContrata", "Cómo se contrata"],
+];
+
+function Detalle({ b }: { b: ProductoBanco }) {
+  const d = b.detalle!;
+  return (
+    <details className="group mt-2 rounded-lg bg-stone-50 p-2 text-xs">
+      <summary className="cursor-pointer font-medium text-teal-800">Ver detalles del producto</summary>
+      <dl className="mt-2 space-y-1.5">
+        {FILAS.filter(([k]) => d[k]).map(([k, t]) => (
+          <div key={k}>
+            <dt className="font-semibold text-stone-700">{t}</dt>
+            <dd className="text-stone-600">{d[k]}</dd>
+          </div>
+        ))}
+      </dl>
+      {(d.tin || d.tae) && <p className="mt-2 text-stone-400">Tipos publicados por {b.banco} el 21/11/2026; pueden cambiar y dependen de tu perfil.</p>}
+    </details>
   );
 }
