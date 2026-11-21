@@ -1,5 +1,6 @@
 "use client";
 
+import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -22,7 +23,7 @@ const GRUPOS: Record<Estancia, string[]> = { bano: ["revest_bano", "equip_bano"]
  * Diseña tu baño o cocina desde una foto: eliges el nivel y ves los materiales del catálogo y el precio.
  * La foto se queda en tu navegador (no se sube) y se le quita la ubicación.
  */
-export default function Disena() {
+function DisenaContenido() {
   const [estancia, setEstancia] = useState<Estancia>("bano");
   const [nivel, setNivel] = useState<NivelMaterial>("medio");
   const [m2, setM2] = useState(80);
@@ -124,5 +125,13 @@ export default function Disena() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function Disena() {
+  return (
+    <RequiereRegistro motivo="Únete gratis para diseñar tu baño o tu cocina. Solo te pedimos tu email.">
+      <DisenaContenido />
+    </RequiereRegistro>
   );
 }

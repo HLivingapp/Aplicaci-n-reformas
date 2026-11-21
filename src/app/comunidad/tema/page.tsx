@@ -1,5 +1,6 @@
 "use client";
 
+import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -11,7 +12,7 @@ import { AsistenteIA } from "@/components/foro/AsistenteIA";
 import { Boton } from "@/components/ui";
 import { conBaseDeDatos } from "@/lib/modo";
 
-export default function PaginaTema() {
+function PaginaTemaContenido() {
   return (
     <Suspense fallback={<main className="p-6 text-stone-500">Cargando…</main>}>
       <VistaTema />
@@ -119,5 +120,13 @@ function Responder({ alResponder, esProfesional }: { alResponder: (m: { alias: s
         {enviando ? "Publicando…" : "Publicar respuesta"}
       </Boton>
     </div>
+  );
+}
+
+export default function PaginaTema() {
+  return (
+    <RequiereRegistro motivo="Únete gratis para leer este tema y responder. Solo te pedimos tu email.">
+      <PaginaTemaContenido />
+    </RequiereRegistro>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { RequiereRegistro } from "@/components/Registro";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -20,7 +21,7 @@ const leerPedidos = (): string[] => {
   }
 };
 
-export default function RedProfesionales() {
+function RedProfesionalesContenido() {
   const s = useSuscripcion();
   const [fichas, setFichas] = useState<FichaRed[] | null>(null);
   const [zona, setZona] = useState("");
@@ -136,5 +137,13 @@ export default function RedProfesionales() {
         {!conServidor && <p className="mt-6 text-center text-xs text-stone-400">Demostración: los reformistas que aparecen son ficticios.</p>}
       </main>
     </div>
+  );
+}
+
+export default function RedProfesionales() {
+  return (
+    <RequiereRegistro>
+      <RedProfesionalesContenido />
+    </RequiereRegistro>
   );
 }

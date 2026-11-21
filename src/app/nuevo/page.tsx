@@ -1,4 +1,5 @@
 "use client";
+import { RequiereRegistro } from "@/components/Registro";
 import { buscarCatastro } from "@/lib/catastro/cliente";
 
 import Link from "next/link";
@@ -31,7 +32,7 @@ const BORRADOR = "app-reformas:borrador-proyecto";
 
 interface Contacto { nombre: string; telefono: string; email: string; acepto: boolean }
 
-export default function NuevoProyecto() {
+function NuevoProyectoContenido() {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
   const [v, setV] = useState<Vivienda>(viviendaVacia);
@@ -533,5 +534,13 @@ function ResultadoCatastro({ res, vivienda, onElegir, buscando }: { res: Resulta
     <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
       {res.mensaje}. No pasa nada: sigue adelante, rellena los datos a mano y nosotros revisaremos la ficha catastral.
     </div>
+  );
+}
+
+export default function NuevoProyecto() {
+  return (
+    <RequiereRegistro motivo="Únete gratis para calcular el presupuesto de tu reforma. Solo te pedimos tu email.">
+      <NuevoProyectoContenido />
+    </RequiereRegistro>
   );
 }
