@@ -1,6 +1,7 @@
 "use client";
 
 import { AvisoMemoriaTecnica } from "./Beneficios";
+import { InvitaClientes } from "./InvitaClientes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
@@ -53,9 +54,16 @@ export function ServiciosArquitectura({ proyectoId, token, cliente, zona, m2 }: 
       </div>
       <p className="text-xs text-stone-500">{SERVICIOS.find((x) => x.id === servicio)?.detalle} Precio calculado para {m2} m².</p>
       {!suscrito && <Muro plan="basico" volver={`/p/${token}`} titulo="Compara estudios de arquitectura">Con el plan Básico ves quién es cada estudio, su precio para tu casa, y le pides la propuesta.</Muro>}
+      {mios.filter((x) => x.origen === "invitado").map((enc) => (
+        <div key={enc.id} className="space-y-2 rounded-2xl border border-violet-200 bg-violet-50/60 p-4 text-sm">
+          <div className="font-semibold">Tu arquitecto {enc.codigo} · {SERVICIOS.find((x) => x.id === enc.servicio)?.texto}</div>
+          <p className="text-xs text-stone-600">Te ha invitado él a la app: sin reserva. <span className={`ml-1 rounded-full px-2 py-0.5 font-medium ${ESTADO_ESTUDIO[enc.estado].cls}`}>{ESTADO_ESTUDIO[enc.estado].texto}</span></p>
+          {enc.propuesta && <PropuestaEstudio e={enc} parte="cliente" />}
+        </div>
+      ))}
       <ul className="space-y-2">
         {lista.map(({ e, precio }) => {
-          const enc = mios.find((x) => x.estudioId === e.id && x.servicio === servicio && x.estado !== "descartado");
+          const enc = mios.find((x) => x.estudioId === e.id && x.servicio === servicio && x.estado !== "descartado" && x.origen !== "invitado");
           return (
             <li key={e.id} className="rounded-2xl border border-stone-200 bg-white p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
@@ -91,8 +99,9 @@ export function ServiciosArquitectura({ proyectoId, token, cliente, zona, m2 }: 
 /** Propuesta del estudio con las condiciones del contrato y la firma de cada parte. */
 function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | "estudio" }) {
   const p = e.propuesta!;
-  const reserva = reservaApp(p.importe);
-  const minimo = reserva > (p.importe * COMERCIALIZACION.pct) / 100;
+  const invitado = e.origen === "invitado";
+  const reserva = invitado ? 0 : reservaApp(p.importe);
+  const minimo = !invitado && reserva > (p.importe * COMERCIALIZACION.pct) / 100;
   const servicio = SERVICIOS.find((x) => x.id === e.servicio)!;
   const puedeFirmar = parte === "cliente" ? !e.firmas?.cliente && e.estado === "propuesta" : !!e.firmas?.cliente && !e.firmas?.estudio;
   return (
@@ -102,9 +111,10 @@ function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | 
         <li><b>Honorarios:</b> {euros(p.importe)} + IVA ({IVA} %) = {euros(conIva(p.importe))}</li>
         <li><b>Plazo:</b> {p.plazoSemanas} semanas</li>
         <li><b>Alcance:</b> {p.alcance || servicio.detalle}</li>
-        <li><b>Pagos:</b> al firmar, reserva en la app de {euros(reserva)} ({TEXTO_RESERVA}), que se descuenta de los honorarios; el resto, directamente al arquitecto a la entrega.</li>
+        <li><b>Pagos:</b> {invitado ? "cliente invitado por el arquitecto: sin reserva en la app; los honorarios se pagan directamente al arquitecto." : <>al firmar, reserva en la app de {euros(reserva)} ({TEXTO_RESERVA}), que se descuenta de los honorarios; el resto, directamente al arquitecto a la entrega.</>}</li>
       </ul>
-      {parte === "estudio" && (
+      {parte === "estudio" && invitado && <p className="rounded-lg bg-violet-50 p-2 text-xs text-violet-900">Cliente tuyo: le invitaste tú, así que en este encargo no pagas fee.</p>}
+      {parte === "estudio" && !invitado && (
         <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
           Fee de comercialización: la reserva del cliente, {euros(reserva)}. Se descuenta de lo que cobras.
           {minimo && <b> Ojo: en este encargo se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(p.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % de los honorarios.</b>}
@@ -140,6 +150,7 @@ export function AreaEstudio({ estudioId }: { estudioId: string }) {
   };
   return (
     <div className="space-y-4">
+      <InvitaClientes tipo="estudio" id={est.id} codigo={est.codigo} />
       <Tarjeta className="space-y-3">
         <h2 className="font-semibold">Encargos de clientes</h2>
         {!mios.length && <p className="text-sm text-stone-500">Todavía no te ha pedido propuesta nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu precio calculado.</p>}
@@ -179,7 +190,10 @@ function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
           <div className="text-xs text-stone-500">{e.m2} m² · tu precio calculado {euros(e.precioCalculado)} sin IVA</div>
           {e.nota && <div className="mt-1 text-xs text-stone-600">Nota: {e.nota}</div>}
         </div>
-        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ESTUDIO[e.estado].cls}`}>{ESTADO_ESTUDIO[e.estado].texto}</span>
+        <div className="flex flex-wrap gap-1">
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${e.origen === "invitado" ? "bg-violet-50 text-violet-800 ring-1 ring-violet-200" : "bg-teal-50 text-teal-800 ring-1 ring-teal-200"}`}>{e.origen === "invitado" ? "Cliente tuyo (le invitaste)" : "Cliente de la app"}</span>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ESTUDIO[e.estado].cls}`}>{ESTADO_ESTUDIO[e.estado].texto}</span>
+        </div>
       </div>
       {(e.estado === "solicitado" || (e.estado === "propuesta" && !e.firmas?.cliente)) && (
         <div className="mt-3 space-y-2">
@@ -188,7 +202,7 @@ function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
             <label className="text-xs text-stone-600">Plazo (semanas)<input type="number" min={1} className={`${inputCls} mt-1`} value={plazo} onChange={(x) => setPlazo(Math.max(1, Number(x.target.value)))} /></label>
           </div>
           <textarea rows={2} className={inputCls} placeholder={`Alcance (por defecto: ${servicio.detalle})`} value={alcance} onChange={(x) => setAlcance(x.target.value)} />
-          {cifra > 0 && reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
+          {e.origen !== "invitado" && cifra > 0 && reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
             <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">⚠ Encargo pequeño: el fee mínimo es de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(cifra).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % de los honorarios. Puedes enviar la propuesta igualmente.</p>
           )}
           <div className="flex gap-2">

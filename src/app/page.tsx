@@ -77,6 +77,9 @@ export default function Inicio() {
                 <li key={x} className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span>{x}</li>
               ))}
             </ul>
+            <Link href="/#profesionales" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-amber-200 ring-1 ring-white/15 hover:bg-white/15">
+              ¿Eres reformista o arquitecto? Invita a tus clientes sin coste →
+            </Link>
           </div>
 
           <div className="relative min-w-0 aparecer [animation-delay:200ms]">
@@ -265,32 +268,34 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* Reformistas */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid items-center gap-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 ring-1 ring-amber-100 md:grid-cols-2 md:p-12">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">¿Eres reformista, estudio de arquitectura o arquitecto?</p>
-            <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
-            <p className="mt-3 text-stone-700">
-              Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a la visita cuando ya te ha elegido; después metes la cifra acordada y la app genera el contrato.
+      {/* Profesionales */}
+      <section id="profesionales" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16">
+        <div className="rounded-3xl bg-stone-950 p-8 text-white md:p-12">
+          <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">Para reformistas, proveedores, estudios de arquitectura y arquitectos</p>
+          <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
+          <p className="mt-3 max-w-3xl text-stone-300">
+            Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Solo vas a la visita cuando ya te ha elegido; después metes la cifra acordada y la app genera el contrato.
+          </p>
+          <div className="mt-6 rounded-2xl bg-violet-500/15 p-5 ring-1 ring-violet-300/40">
+            <div className="font-display text-2xl font-semibold text-violet-100">🤝 Invita a tus clientes: no te costará ni un euro</div>
+            <p className="mt-2 text-stone-200">
+              Desde tu área te damos un enlace para tus propios clientes. Calculan su presupuesto, firmáis el contrato en la app y llevas los pagos por hitos y los avances, y en esas obras no pagas fee ni comisión (ni tu cliente reserva). Solo pagas el fee en los clientes que te llegan por la app.
             </p>
           </div>
-          <ul className="space-y-3 text-sm">
+          <ul className="mt-6 grid gap-2 text-sm sm:grid-cols-2">
             {[
-              "Sin pagar por cada contacto: solo pagas por las obras que firmas",
+              "Clientes de la app: solo pagas cuando firman, sin pagar por cada contacto",
               "Menos impagos: pagos por hitos solicitados y confirmados en la app",
               "Tus avances de obra, visibles para tu cliente",
-              "Financiación para tus clientes: «Reforma en tu hipoteca»",
+              "Financiación para tus clientes y ayuda con la memoria técnica",
             ].map((x) => (
-              <li key={x} className="flex gap-2 rounded-xl bg-white/70 p-3"><span className="text-amber-700">✓</span>{x}</li>
+              <li key={x} className="flex gap-2 rounded-xl bg-white/5 p-3 text-stone-200 ring-1 ring-white/10"><span className="text-amber-300">✓</span>{x}</li>
             ))}
-            <li>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Link href="/reformistas" className="inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Soy reformista</Link>
-                <Link href="/arquitectos" className="inline-block rounded-xl border border-stone-900 px-5 py-3 font-semibold text-stone-900 hover:bg-white">Soy arquitecto o estudio</Link>
-              </div>
-            </li>
           </ul>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/reformistas" className="inline-block rounded-xl bg-amber-400 px-5 py-3 font-semibold text-stone-900 hover:bg-amber-300">Soy reformista o proveedor</Link>
+            <Link href="/arquitectos" className="inline-block rounded-xl border border-white/40 px-5 py-3 font-semibold text-white hover:bg-white/10">Soy arquitecto o estudio</Link>
+          </div>
         </div>
       </section>
 

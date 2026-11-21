@@ -92,8 +92,8 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
   },
   {
     i: "🤝",
-    t: "Tus clientes, sin coste",
-    d: "Invita a tus propios clientes a llevar su obra con la app: no pagas fee. Solo pagas el fee (la reserva del cliente) en los clientes que te llegan por la app.",
+    t: "Invita a tus clientes: no te costará ni un euro",
+    d: "Desde tu área mandas un enlace a tus propios clientes y lleváis la obra con la app: en esas obras no pagas fee ni comisión, ni tu cliente reserva. Solo pagas el fee (la reserva del cliente) en los clientes que te llegan por la app.",
   },
   {
     i: "📋",

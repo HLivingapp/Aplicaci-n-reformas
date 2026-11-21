@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MisEncargos, MisTarifas } from "@/components/AreaReformista";
+import { InvitaClientes } from "@/components/InvitaClientes";
 import { FICHAS_EJEMPLO } from "@/lib/red";
 
 /** Demostración: el área de uno de los reformistas ficticios, para probar el recorrido completo. */
@@ -23,6 +24,7 @@ export default function AreaReformistaDemo() {
         ))}
       </div>
       <h1 className="text-xl font-semibold">Área del reformista {f?.codigo}</h1>
+      {f && <InvitaClientes tipo="reformista" id={f.id} codigo={f.codigo} />}
       <MisEncargos reformistaId={id} />
       <MisTarifas reformistaId={id} />
     </main>

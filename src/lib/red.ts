@@ -26,7 +26,7 @@ export interface FichaRed {
 
 const texto = (e: string) => ESPECIALIDADES.find((x) => x.valor === e)?.texto ?? e;
 
-function codigo(id: string) {
+export function codigo(id: string) {
   let h = 0;
   for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return `R-${(h % 9000) + 1000}`;
