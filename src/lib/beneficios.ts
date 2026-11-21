@@ -39,7 +39,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🏦",
     t: "Reforma en tu hipoteca",
-    d: "Financia la reforma con un préstamo o con tu hipoteca: te enseñamos las opciones de Unicaja, Kutxabank y Caja Rural, y simulas la cuota desde tu presupuesto.",
+    d: "Financia la reforma con un préstamo o con tu hipoteca: te enseñamos las opciones de Unicaja, Kutxabank y Caja Rural de Soria, y simulas la cuota desde tu presupuesto.",
     pendiente: "Sujeto a la aprobación del banco.",
   },
   {
@@ -122,10 +122,10 @@ export const BANCOS_REFORMA = [
     url: "https://portal.kutxabank.es/cs/Satellite/kb/en/private-customers/productos/prestamos-consumo/prestamo-reforma-hogar/pys",
   },
   {
-    banco: "Caja Rural (Globalcaja)",
-    producto: "Hipoteca Inversión y Reforma",
-    tipo: "Préstamo hipotecario",
-    resumen: "Hipoteca para comprar una vivienda o reformarla. Financia hasta el 70 % del valor de tasación y hasta 30 años, con la vivienda como garantía.",
-    url: "https://www.globalcaja.es/sites/default/files/2026-05/720_fipre_hip_inversion_reforma.pdf",
+    banco: "Caja Rural de Soria",
+    producto: "Préstamo Personal",
+    tipo: "Préstamo personal",
+    resumen: "Préstamo para lo que necesites, también reformar tu casa: hasta 60.000 € y hasta 8 años, a tipo fijo, con rebajas si domicilias la nómina. Para obras de ahorro energético (aislamiento, placas solares, reformas eco) tiene además un préstamo de mejora energética.",
+    url: "https://www.cajaruraldesoria.com/es/particulares/prestamos/prestamo-personal",
   },
 ];
