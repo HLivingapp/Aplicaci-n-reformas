@@ -30,7 +30,7 @@ const PASOS = [
 
 const NECESARIO = [
   ["Acta de la junta", "Que apruebe la obra, el presupuesto elegido y cómo se reparte (derrama)."],
-  ["Informe o proyecto técnico", "Según la obra, una memoria o proyecto firmado por arquitecto. Os ayudamos con nuestros estudios de arquitectura."],
+  ["Informe o proyecto técnico", "Según la obra, una memoria o proyecto firmado por arquitecto. Podéis encargarlo a un estudio de arquitectura de la app."],
   ["Licencia y andamio", "Licencia o declaración responsable del ayuntamiento y, si el andamio ocupa la acera, permiso de ocupación de vía pública. Lo gestiona la empresa."],
   ["Ayudas de rehabilitación", "Si la obra mejora el aislamiento o la accesibilidad, puede haber subvenciones y deducciones para los vecinos."],
 ];

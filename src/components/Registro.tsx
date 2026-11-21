@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { APP } from "@/lib/marca";
 import { useEffect, useState } from "react";
 import { publico } from "@/lib/base";
 import { TEXTO_CONTACTO_MIEMBRO } from "@/lib/miembro";
@@ -41,10 +42,10 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
           <Link href="/" className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={publico("/icon.svg")} alt="" className="h-9 w-9" />
-            <span className="font-display text-lg font-semibold">Human Living Reformas</span>
+            <span className="font-display text-lg font-semibold">{APP.nombre}</span>
           </Link>
           <h1 className="mt-6 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:mt-8">
-            Únete a la comunidad <em className="font-medium text-amber-300">Human Living</em>
+            Únete a la comunidad <em className="font-medium text-amber-300">{APP.nombre}</em>
           </h1>
           <p className="mt-4 text-lg text-stone-300">{motivo ?? "Solo te pedimos tu email. Sin contraseñas y gratis."}</p>
           <ul className="mt-6 hidden space-y-3 lg:block">
@@ -79,7 +80,7 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
           {aceptaContacto && !telefono.trim() && <p className="ml-7 mt-1 text-xs text-amber-700">Escribe tu teléfono para que podamos contactarte.</p>}
           <label className="mt-3 flex gap-3 text-sm text-stone-700">
             <input type="checkbox" required checked={aceptaPrivacidad} onChange={(e) => setAceptaPrivacidad(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-teal-700" />
-            <span>He leído la <Link href="/privacidad" className="underline">política de privacidad</Link> y acepto unirme a la comunidad Human Living con mi email.</span>
+            <span>He leído la <Link href="/privacidad" className="underline">política de privacidad</Link> y acepto unirme a la comunidad {APP.nombre} con mi email.</span>
           </label>
           {error && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
           <button disabled={enviando || !aceptaPrivacidad || !email.trim() || (aceptaContacto && !telefono.trim())} className="mt-5 w-full rounded-2xl bg-teal-700 py-3.5 font-semibold text-white transition hover:bg-teal-800 disabled:opacity-50">
@@ -87,7 +88,7 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
           </button>
           <p className="mt-3 text-center text-xs text-stone-500">Tus datos se guardan en la Unión Europea. Nunca los compartimos con reformistas sin tu permiso.</p>
           <p className="mt-4 border-t border-stone-100 pt-3 text-center text-xs text-stone-500">
-            ¿Ya tienes una reforma con nosotros? Entra con el enlace privado que te enviamos. · <Link href="/reformistas" className="underline">Soy reformista</Link>
+            ¿Ya tienes una reforma en la app? Entra con el enlace privado que te enviamos. · <Link href="/reformistas" className="underline">Soy reformista</Link>
           </p>
         </form>
       </div>

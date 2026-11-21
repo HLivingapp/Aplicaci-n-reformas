@@ -5,7 +5,7 @@ import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { MaterialesMedia } from "@/components/MaterialesMedia";
 import { GuiaAudio } from "@/components/SeleccionProductos";
 
-/** Materiales de gama media: lo que ponemos en nuestras obras, con foto y catálogo. */
+/** Materiales de gama media recomendados, con foto y catálogo. */
 export default function Materiales() {
   return (
     <div className="min-h-dvh bg-stone-50">
@@ -13,7 +13,7 @@ export default function Materiales() {
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-8">
         <h1 className="text-3xl font-semibold tracking-tight">Materiales de gama media</h1>
         <p className="mt-2 max-w-2xl text-stone-600">
-          Lo que ponemos en nuestras obras en la gama media, la más elegida. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
+          Materiales recomendados en la gama media, la más elegida. La selección inicial es de Human Living, empresa destacada de la app. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
         </p>
         <div className="mt-6">
           <MaterialesMedia />

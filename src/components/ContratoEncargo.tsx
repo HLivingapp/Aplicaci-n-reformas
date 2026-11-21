@@ -105,7 +105,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
       )}
       {parte === "reformista" && !invitado && (
         <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
-          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). Se la queda Human Living y se descuenta de lo que cobras de la obra.{" "}
+          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). Se la queda la plataforma y se descuenta de lo que cobras de la obra.{" "}
           {reserva > (f.importe * COMERCIALIZACION.pct) / 100 && <b>Ojo: en esta obra se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(f.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe. </b>}
           Recuerda que firmaste declarar en la app todas las ventas con este cliente, incluidas ampliaciones. Si el cliente anula el contrato en la app, se te devuelve la parte del fee que corresponda a lo que quede por ejecutar. En esta demostración no se cobra nada.
         </p>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { APP } from "@/lib/marca";
 import { RESPONSABLE as R } from "@/lib/legal";
 
 export const metadata: Metadata = { title: "Política de privacidad" };
@@ -54,7 +55,7 @@ export default function Privacidad() {
         <p>Los datos se guardan en servidores ubicados en la Unión Europea.</p>
       </Seccion>
 
-      <Seccion titulo="Comunidad Human Living">
+      <Seccion titulo={`Comunidad ${APP.nombre}`}>
         <p>Para usar la aplicación te unes a la comunidad con tu <b>email</b>, sin contraseña. Lo usamos para darte acceso y enviarte avisos sobre tu cuenta (art. 6.1.b RGPD).</p>
         <p>Si además nos das tu <b>teléfono</b> y marcas la casilla, te escribiremos por WhatsApp o te llamaremos sobre tu reforma y la comunidad, con tu consentimiento (art. 6.1.a RGPD). Es opcional, no es necesario para entrar y puedes retirarlo cuando quieras escribiéndonos. Guardamos el texto que aceptaste y la fecha.</p>
         <p>Si dejas de usar la comunidad, borramos tus datos a los 24 meses de tu última actividad, o antes si nos lo pides.</p>

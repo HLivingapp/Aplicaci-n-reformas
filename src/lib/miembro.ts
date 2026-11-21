@@ -1,12 +1,13 @@
+import { APP } from "./marca";
 /**
- * Comunidad Human Living: para usar la app basta con unirse con el email (sin contraseña).
+ * Comunidad de la app: para usar la app basta con unirse con el email (sin contraseña).
  * El teléfono y el permiso para escribir por WhatsApp o llamar son opcionales y van aparte (RGPD:
  * el consentimiento comercial no puede ser condición para entrar).
  */
 export const TEXTO_PRIVACIDAD_MIEMBRO =
-  "He leído la política de privacidad y acepto unirme a la comunidad Human Living con mi email.";
+  `He leído la política de privacidad y acepto unirme a la comunidad ${APP.nombre} con mi email.`;
 export const TEXTO_CONTACTO_MIEMBRO =
-  "Autorizo a Human Living a escribirme por WhatsApp o llamarme a este teléfono sobre mi reforma y la comunidad. Puedo retirarlo cuando quiera.";
+  `Autorizo a ${APP.nombre} a escribirme por WhatsApp o llamarme a este teléfono sobre mi reforma y la comunidad. Puedo retirarlo cuando quiera.`;
 
 export interface Miembro {
   email: string;

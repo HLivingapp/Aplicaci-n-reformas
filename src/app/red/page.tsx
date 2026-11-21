@@ -41,7 +41,7 @@ export default function RedProfesionales() {
         <div className="mx-auto max-w-5xl px-4 pb-6 pt-10">
           <h1 className="text-3xl font-semibold tracking-tight">Red de reformistas homologados</h1>
           <p className="mt-2 max-w-2xl text-stone-600">
-            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, con certificado al corriente de pago y con seguro RSC (responsabilidad civil). Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho con nosotros.
+            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, con certificado al corriente de pago y con seguro RSC (responsabilidad civil). Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho en la app.
           </p>
           <p className="mt-2 max-w-2xl text-stone-600">Cada uno ha cargado sus tarifas, así que no tienes que pedir presupuestos uno a uno: calcula el tuyo y verás lo que te costaría con cada reformista.</p>
           <BotonLink href="/nuevo" className="mt-4">Calcular mi presupuesto gratis</BotonLink>

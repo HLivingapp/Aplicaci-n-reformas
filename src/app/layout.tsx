@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { publico } from "@/lib/base";
+import { APP } from "@/lib/marca";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -7,7 +8,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["opsz"] });
 
 export const metadata: Metadata = {
-  title: "Human Living Reformas · Tu reforma con precio claro",
+  title: `${APP.nombre} · ${APP.lema}`,
   description: "Únete gratis con tu email y ve al momento, en la app, el presupuesto de tu reforma partida a partida. Después compara el precio de cada reformista homologado de tu zona.",
   appleWebApp: { capable: true, title: "Reformas", statusBarStyle: "default" },
   icons: { icon: publico("/icon.svg"), apple: publico("/icon-192.png") },

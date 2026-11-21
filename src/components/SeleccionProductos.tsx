@@ -17,7 +17,7 @@ function Video({ c }: { c: CategoriaSeleccion }) {
       >
         <source src={publico(c.video.src)} type="video/mp4" />
       </video>
-      <figcaption className="mt-1 text-[11px] leading-tight text-stone-500">▶ {c.video.titulo} · {c.video.duracion}</figcaption>
+      <figcaption className="mt-1 text-[11px] leading-tight text-stone-500">▶ {c.video.titulo} · {c.video.duracion} · Human Living</figcaption>
     </figure>
   );
 }
@@ -54,14 +54,14 @@ export function GuiaAudio() {
   return (
     <div className="rounded-2xl bg-stone-900 p-4 text-white">
       <div className="text-sm font-semibold">🎧 {GUIA_AUDIO.titulo}</div>
-      <p className="mt-1 text-xs text-stone-300">Te contamos paso a paso cómo es una reforma con nosotros. Escúchala cuando quieras ({GUIA_AUDIO.duracion}).</p>
+      <p className="mt-1 text-xs text-stone-300">El equipo de Human Living, empresa destacada, cuenta paso a paso cómo es una reforma. Escúchala cuando quieras ({GUIA_AUDIO.duracion}).</p>
       <audio controls preload="none" src={publico(GUIA_AUDIO.src)} className="mt-3 w-full" />
     </div>
   );
 }
 
 /**
- * Nuestra selección de productos: vídeos del equipo y catálogos de las marcas que usamos.
+ * Selección de productos recomendada (de Human Living, empresa destacada): vídeos de su equipo y catálogos de las marcas que usamos.
  * `grupos` filtra por acabados (p. ej. los de baño); sin él, se muestran todas las categorías.
  */
 export function SeleccionProductos({ grupos, excluir, conGuia = false }: { grupos?: string[]; excluir?: string[]; conGuia?: boolean }) {
@@ -85,7 +85,7 @@ export function SeleccionPlegable({ grupos }: { grupos?: string[] }) {
   return (
     <details className="group mt-4 rounded-2xl border border-teal-200 bg-teal-50/50 p-4">
       <summary className="cursor-pointer list-none font-semibold text-teal-900">
-        🎬 Nuestra selección de productos: vídeos y catálogos <span className="text-sm font-normal text-teal-700 group-open:hidden">· ver</span>
+        🎬 Selección de productos recomendada: vídeos y catálogos <span className="text-sm font-normal text-teal-700 group-open:hidden">· ver</span>
       </summary>
       <div className="mt-3">
         <SeleccionProductos grupos={grupos} conGuia />

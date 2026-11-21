@@ -134,7 +134,7 @@ export interface DetalleProducto {
 
 /**
  * Productos de financiación de reformas de bancos y cajas (resumen propio de su información pública,
- * consultada el 21/11/2026). Human Living no tiene acuerdo con estas entidades por ahora.
+ * consultada el 21/11/2026). La app no tiene acuerdo con estas entidades por ahora.
  */
 export const BANCOS_REFORMA: ProductoBanco[] = [
   {

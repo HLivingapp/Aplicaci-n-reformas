@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { APP } from "@/lib/marca";
 import { BENEFICIOS_CLIENTE } from "@/lib/beneficios";
 import { ListaBeneficios } from "@/components/Beneficios";
 import { publico } from "@/lib/base";
@@ -9,7 +10,7 @@ import { Calculadora } from "@/components/portada/Calculadora";
 import { GaleriaObra } from "@/components/portada/GaleriaObra";
 import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
 
-const NOMBRE = process.env.NEXT_PUBLIC_NOMBRE_EMPRESA ?? "Human Living Reformas";
+const NOMBRE = APP.nombre;
 
 const PASOS = [
   {
@@ -187,7 +188,7 @@ export default function Inicio() {
       {/* Ventajas */}
       <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-20">
-          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Por qué con nosotros</p>
+          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Por qué con {NOMBRE}</p>
           <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Una reforma sin sorpresas</h2>
           <p className="mt-3 max-w-2xl text-lg text-stone-600">Todo lo que normalmente se descubre a mitad de obra, lo ves antes de empezar.</p>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -231,7 +232,7 @@ export default function Inicio() {
             <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Comunidad de reformas</p>
             <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
             <p className="mt-3 text-stone-600">
-              Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y nuestro asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
+              Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y el asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
             </p>
             <Link href="/comunidad" className="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en la comunidad</Link>
           </div>
@@ -339,7 +340,7 @@ export default function Inicio() {
         )}
         <p className="flex flex-wrap justify-center gap-4">
           <span>© {NOMBRE}</span>
-          <Link href="/sobre-nosotros" className="hover:underline">Quiénes somos</Link>
+          <Link href="/human-living" className="hover:underline">★ Empresa destacada: Human Living</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/comunidad" className="hover:underline">Comunidad</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>

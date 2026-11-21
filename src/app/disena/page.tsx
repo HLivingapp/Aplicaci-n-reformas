@@ -59,7 +59,7 @@ export default function Disena() {
       <CabeceraPublica />
       <main className="mx-auto max-w-5xl px-4 pb-16 pt-8">
         <h1 className="text-3xl font-semibold tracking-tight">Diseña tu {estancia === "bano" ? "baño" : "cocina"} desde una foto</h1>
-        <p className="mt-2 max-w-2xl text-stone-600">Sube una foto de cómo está ahora, elige el nivel de acabados y te enseñamos los materiales de nuestro catálogo y lo que cuesta, con las medidas estándar de tu vivienda.</p>
+        <p className="mt-2 max-w-2xl text-stone-600">Sube una foto de cómo está ahora, elige el nivel de acabados y te enseñamos los materiales del catálogo y lo que cuesta, con las medidas estándar de tu vivienda.</p>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_22rem]">
           <section className="space-y-4">
@@ -125,8 +125,8 @@ export default function Disena() {
         </div>
 
         <section id="seleccion" className="mt-12">
-          <h2 className="text-2xl font-semibold tracking-tight">Nuestra selección de productos</h2>
-          <p className="mt-1 max-w-2xl text-stone-600">Lo que ponemos en nuestras obras, explicado por el equipo en vídeos cortos, con el catálogo de cada marca.</p>
+          <h2 className="text-2xl font-semibold tracking-tight">Selección de productos recomendada</h2>
+          <p className="mt-1 max-w-2xl text-stone-600">Lo que pone en sus obras Human Living, empresa destacada de la app, explicado por su equipo en vídeos cortos, con el catálogo de cada marca.</p>
           <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_22rem]">
             <SeleccionProductos grupos={GRUPOS[estancia]} />
             <div className="lg:sticky lg:top-20 lg:self-start"><GuiaAudio /></div>

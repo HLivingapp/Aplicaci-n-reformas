@@ -557,7 +557,7 @@ function ResultadoCatastro({ res, vivienda, onElegir, buscando }: { res: Resulta
   }
   return (
     <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-      {res.mensaje}. No pasa nada: sigue adelante, rellena los datos a mano y nosotros revisaremos la ficha catastral.
+      {res.mensaje}. No pasa nada: sigue adelante, rellena los datos a mano y el profesional revisará la ficha catastral.
     </div>
   );
 }

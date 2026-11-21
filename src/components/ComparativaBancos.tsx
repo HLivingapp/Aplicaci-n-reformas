@@ -64,7 +64,7 @@ export function ComparativaBancos() {
         ))}
       </ul>
       <p className="mt-2 text-xs text-stone-500">
-        Resumen orientativo de la información pública de cada entidad, consultada el 21/11/2026. «—» significa que la web no lo indica. Las condiciones, el tipo de interés y la concesión los decide cada entidad. Human Living todavía no tiene acuerdo con estas entidades.
+        Resumen orientativo de la información pública de cada entidad, consultada el 21/11/2026. «—» significa que la web no lo indica. Las condiciones, el tipo de interés y la concesión los decide cada entidad. La app todavía no tiene acuerdo con estas entidades.
       </p>
     </div>
   );
