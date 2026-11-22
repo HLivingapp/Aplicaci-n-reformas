@@ -63,8 +63,8 @@ export const materialesPorDefecto = (): GrupoMaterial[] => [
     tarifaIds: ["cocina"],
     opciones: [
       o("co_basico", "basico", "Muebles laminados", "Frentes laminados y encimera laminada", 0.75),
-      o("co_medio", "medio", "Muebles lacados", "Frentes Alvic (Luxe, Zenit o Syncron) y encimera de cuarzo Compac", 1),
-      o("co_premium", "premium", "Cocina a medida de gama alta", "Frentes a medida, herrajes con cierre suave y encimera porcelánica sinterizada", 1.6),
+      o("co_medio", "medio", "Muebles lacados", "Frentes Alvic (Luxe, Zenit o Syncron) y encimera porcelánica Ascale", 1),
+      o("co_premium", "premium", "Cocina a medida de gama alta", "Frentes a medida, herrajes con cierre suave y encimera porcelánica Dekton o Laminam", 1.6),
     ],
   },
   {

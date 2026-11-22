@@ -7,7 +7,7 @@ import type { NivelMaterial } from "./types";
  */
 const PRODUCTOS_MEDIA: Record<string, string[]> = {
   equip_bano: ["salgar-noja", "roca-gap", "imex-bano", "kassandra-delta"],
-  cocina: ["alvic-luxe", "compac", "imex-cocina"],
+  cocina: ["alvic-luxe", "ascale", "imex-cocina"],
   electrodomesticos: ["balay"],
   suelo_laminado: ["meister-lc150"],
   ventana: ["cortizo"],
