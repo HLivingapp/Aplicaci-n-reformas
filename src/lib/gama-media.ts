@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * Los enlaces son a catálogos o fichas públicas del fabricante, nunca a tarifas de proveedor.
  * En la demo se guardan en el navegador; en producción irán a la base de datos (Supabase).
  */
-export type CategoriaMedia = "cocina" | "electrodomesticos" | "encimeras" | "bano" | "sanitarios" | "griferia" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
+export type CategoriaMedia = "cocina" | "electrodomesticos" | "encimeras" | "bano" | "sanitarios" | "griferia" | "suelos" | "azulejos" | "ventanas" | "puertas-entrada" | "puertas" | "cerramientos" | "armarios" | "aislamientos" | "molduras" | "electricidad" | "climatizacion";
 
 export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: string }[] = [
   { id: "cocina", texto: "Muebles de cocina", icono: "🍳" },
@@ -19,8 +19,12 @@ export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: strin
   { id: "suelos", texto: "Suelos y tarimas", icono: "🪵" },
   { id: "azulejos", texto: "Azulejos y revestimientos", icono: "🧱" },
   { id: "ventanas", texto: "Ventanas", icono: "🪟" },
-  { id: "puertas", texto: "Puertas", icono: "🚪" },
+  { id: "puertas-entrada", texto: "Puertas de entrada: blindadas y acorazadas", icono: "🔐" },
+  { id: "puertas", texto: "Puertas de paso", icono: "🚪" },
+  { id: "cerramientos", texto: "Cerramientos de cristal y correderas", icono: "🔲" },
   { id: "armarios", texto: "Armarios", icono: "🗄️" },
+  { id: "aislamientos", texto: "Aislamientos", icono: "🧶" },
+  { id: "molduras", texto: "Molduras decorativas de techo", icono: "🏛️" },
   { id: "electricidad", texto: "Mecanismos e iluminación", icono: "💡" },
   { id: "climatizacion", texto: "Climatización y agua caliente", icono: "🌡️" },
 ];

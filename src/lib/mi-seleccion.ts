@@ -26,8 +26,12 @@ export const CAPITULO_DE: Record<CategoriaMedia, string> = {
   azulejos: "Revestimientos y suelos",
   suelos: "Revestimientos y suelos",
   ventanas: "Carpintería exterior",
+  "puertas-entrada": "Carpintería interior",
   puertas: "Carpintería interior",
+  cerramientos: "Carpintería interior",
   armarios: "Carpintería interior",
+  aislamientos: "Pladur",
+  molduras: "Pintura",
   electricidad: "Electricidad",
   climatizacion: "Climatización",
 };
