@@ -82,6 +82,10 @@ const bestile = (serie: string, nombre: string, detalle: string, foto: string): 
 const salgar = (serie: string, nombre: string, detalle: string): MaterialMedia =>
   ({ ...marca(`salgar-${serie}-cat`, "bano", "Salgar", nombre, detalle, "https://www.salgar.net/salgar-catalogues-uk", `/materiales/salgar-${serie}.jpg`), credito: "Foto: catálogo de Salgar", encajar: false });
 
+const RIJOR = "https://rijor.es/";
+const rijor = (serie: string, nombre: string, detalle: string, foto: string): MaterialMedia =>
+  ({ ...marca(`rijor-${serie}`, "puertas", "Rijor", nombre, detalle, `${RIJOR}puertas-y-armarios/serie-${serie}/`, `${RIJOR}wp-content/uploads/2025/12/${foto}`), encajar: true });
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -124,6 +128,9 @@ export const CATALOGO_BASICO: MaterialMedia[] = [
   // Electrodomésticos: paquetes de ejemplo (PVP Leroy Merlin, 22-nov-2026)
   pack("pack-teka", "Teka", "Horno HSB 6150 (349 €), placa de inducción IBF 63210 (251 €), campana DLH 786 T (334 €), lavavajillas integrable DFI 46650 (397 €) y frigorífico combi integrable RBF 73355 FI (617 €)", "1.947", "Leroy Merlin", LMQ + "teka", "https://www.teka.com/es-es/", "https://media.adeo.com/media/4830054/media.png"),
   pack("pack-beko", "Beko", "Horno BBIE12300XD (216 €), placa de inducción HIIS63206M (253 €), campana HCP61310I (93 €), lavavajillas integrable BDIN14320 (336 €) y frigorífico combi integrable BCHA275E4SN (610 €)", "1.508", "Leroy Merlin", LMQ + "beko", "https://www.beko.com/es-es", "https://media.adeo.com/media/4087131/media.png"),
+  // Calderas y aerotermia de uso habitual (PVP Leroy Merlin, 22-nov-2026)
+  lm("lm-baxi-neodens", "climatizacion", "Baxi (antes Roca)", "Caldera de condensación Neodens Lite 24/24F", "24 kW, gas natural, calefacción y agua caliente", "1.049,90 € (sin instalar)", "caldera-de-gas-natural-neodens-lite-24-24f-85795577.html", "https://media.adeo.com/mkp/817e642089c3c21bfbdd5ee43d5ba2b6/media.jpg"),
+  lm("lm-thelia-condens", "climatizacion", "Saunier Duval", "Caldera de condensación Thelia Condens 25", "25 kW, gas natural, calefacción y agua caliente", "1.549,90 € (sin instalar)", "caldera-de-condensacion-gas-natural-saunier-duval-thelia-25-81865391.html", "https://media.adeo.com/media/2012826/media.png"),
 ];
 
 export const CATALOGO_PREMIUM: MaterialMedia[] = [
@@ -187,6 +194,13 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   // Electrodomésticos: paquetes de ejemplo (22-nov-2026)
   pack("pack-siemens", "Siemens", "Horno iQ500 HR538ABS1 (1.097 €), placa de inducción EX775LYE4E (1.129 €), campana iQ300 LC87KEM60 (796 €), lavavajillas integrable SN63HX03TE (848 €) y frigorífico combi iQ500 KG39EAWCA (903 €)", "4.772", "Leroy Merlin", LMQ + "siemens", "https://www.siemens-home.bsh-group.com/es/", "https://media.adeo.com/mkp/042a614221e7f68a5a8f703b4d88b5a8/media.jpg"),
   pack("pack-miele", "Miele", "Horno H 2467 B Active (949 €), placa de inducción KM 7360 FL (849 €), campana PUR 98 W (1.049 €), lavavajillas integrable G 5651 SCVi Active (1.099 €) y frigorífico integrable K 7737 D (1.749 €)", "5.695", "Miele", "https://www.miele.es/category/1022125/hornos-integrables", "https://www.miele.es/", "https://media.miele.com/dam/af19375f-1319-4f72-90d0-b3ba0173af02/20000199861_HighresDigitalRGB.png"),
+  lm("lm-panasonic-adc09", "climatizacion", "Panasonic", "Aerotermia Aquarea All in One WH-ADC0912K6E5AN", "9 kW con depósito de ACS integrado, calefacción y refrigeración", "5.521,10 € (sin instalar)", "panasonic-wh-adc0912k6e5an-ui-aquarea-all-in-one-73939922.html", "https://media.adeo.com/mkp/7ce2ad1fbdf1d3afac5685fb44d93664/media.jpg"),
+  // Rijor: puertas macizas lacadas (fabricante de Villacañas, Toledo)
+  rijor("lisa", "Puerta lacada maciza, serie Lisa", "Puerta lisa lacada, a medida", "mod-LISA-768x1086.jpg"),
+  rijor("fresada", "Puerta lacada maciza, serie Fresada", "Modelos con fresados horizontales o verticales (220, 230, 470…)", "mod-220-pico-gorrion-768x1086.jpg"),
+  rijor("refundida", "Puerta lacada maciza, serie Refundida", "Plafones refundidos de estilo clásico (250, 900, 910…)", "mod-925-refundido-1-recto-768x1086.jpg"),
+  rijor("ct", "Puerta lacada maciza, serie CT", "Molduras clásicas en media caña o pico de gorrión", "mod-CT-20_media-cana-20mm-768x1086.jpg"),
+  rijor("d", "Puerta lacada maciza, serie D", "Diseños con plafones planos o planificados (D-100 a D-112)", "mod-D-103_planificado-768x1086.jpg"),
 ];
 
 /** Medio: además de la selección de gama media de la app. */
@@ -218,9 +232,6 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   marca("roca-sanitarios", "sanitarios", "Roca", "Inodoros, lavabos y platos de ducha", "Gama completa de sanitarios Roca", "https://www.roca.es/"),
   marca("parador-laminado", "suelos", "Parador", "Suelo laminado Parador", "Laminado alemán con clic, efecto madera", "https://parador.de/es/servicios/descargas/laminado"),
   marca("legrand-mecanismos", "electricidad", "Legrand", "Mecanismos Legrand", "Interruptores y enchufes en varios acabados", "https://www.legrand.es/"),
-  marca("daikin-split", "climatizacion", "Daikin", "Aire acondicionado y aerotermia", "Splits con bomba de calor y aerotermia Altherma", "https://www.daikin.es/"),
-  marca("panasonic-aquarea", "climatizacion", "Panasonic", "Aquarea y splits", "Aerotermia Aquarea y aire acondicionado", "https://www.aircon.panasonic.eu/ES_es/downloads/catalogues-and-leaflets/"),
-  marca("saunier-calderas", "climatizacion", "Saunier Duval", "Calderas y aerotermia", "Calderas de condensación, aerotermia y agua caliente", "https://www.saunierduval.es/"),
   marca("ferroli-calderas", "climatizacion", "Ferroli", "Calderas y splits", "Calderas de condensación y aire acondicionado", "https://www.ferroli.com/es"),
   marca("ariston-termos", "climatizacion", "Ariston", "Termos eléctricos", "Termos Velis, Lydos y Andris", "https://www.ariston.com/es-es/"),
   // Roca Cerámica, colección Terre (selección del Excel de materiales generales)
@@ -269,6 +280,11 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   salgar("domus", "Mueble de baño Domus", "Encimera volada con cajón para lavabo sobre encimera, de 60 a 120 cm"),
   salgar("biba", "Mueble de baño Biba", "Suspendido con frente acanalado, de 60 u 80 cm, blanco o nogal"),
   salgar("inara", "Mueble de baño Inara", "Fondo reducido de 35 cm para baños estrechos, de 50 o 70 cm"),
+  // Aerotermia de uso habitual: Daikin, Panasonic y Mitsubishi (PVP Leroy Merlin, 22-nov-2026)
+  lm("lm-daikin-ebla04", "climatizacion", "Daikin", "Aerotermia Altherma 3 monobloc EBLA04E3V3", "4,6 kW, calefacción, refrigeración y ACS (depósito aparte)", "2.744,65 € (sin instalar)", "aerotermia-daikin-4-6kw-monobloc-altherma-3-ebla04e3v3-95973140.html", "https://media.adeo.com/mkp/013e6113828baea4b41588c28b7146a3/media.jpg"),
+  lm("lm-daikin-ebla06", "climatizacion", "Daikin", "Aerotermia Altherma 3 monobloc EBLA06E3V3", "5,9 kW, calefacción, refrigeración y ACS (depósito aparte)", "3.689,10 € (sin instalar)", "aerotermia-daikin-monobloc-5-9kw-altherma-3-ebla06e3v3-96149344.html", "https://media.adeo.com/mkp/013e6113828baea4b41588c28b7146a3/media.jpg"),
+  lm("lm-panasonic-sxc09", "climatizacion", "Panasonic", "Aerotermia Aquarea bibloc WH-SXC09H3E8", "9 kW, unidad interior y exterior, calefacción, refrigeración y ACS", "3.333,11 € (sin instalar)", "panasonic-wh-sxc09h3e8-u-i-aquarea-91983217.html", "https://media.adeo.com/mkp/760fb09cca5713517bd772e925a29cdc/media.jpg"),
+  lm("lm-mitsubishi-ecodan", "climatizacion", "Mitsubishi Electric", "Aerotermia Ecodan Hydrobox Duo ERST20D-VM2E", "Unidad interior con depósito de ACS de 170 l; con exterior SUZ-SWM40VA (4–5,6 kW) para un piso", "4.888,89 € la unidad interior (sin instalar)", "mitsubishi-erst20d-vm2e-ui-hidrokit-98695931.html", "https://media.adeo.com/mkp/143eccb397a0c0c56c1cbde26efd86f6/media.jpg"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */
