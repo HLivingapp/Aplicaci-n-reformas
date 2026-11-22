@@ -75,6 +75,10 @@ const pack = (id: string, m: string, modelos: string, total: string, fuente: str
   ({ ...otra(id, "electrodomesticos", m, `Paquete ${m}: horno, placa, campana, lavavajillas y frigorífico`, modelos, { texto: `Unos ${total} € los cinco`, fuente, url }, web, foto, `Foto: web de ${fuente}`), encajar: true });
 const LMQ = "https://www.leroymerlin.es/search?q=";
 
+const BEST = "https://www.bestile.es/";
+const bestile = (serie: string, nombre: string, detalle: string, foto: string): MaterialMedia =>
+  ({ ...marca(`bestile-${serie}`, "azulejos", "Bestile", nombre, detalle, `${BEST}series/${serie}/`, `${BEST}wp-content/uploads/${foto}`), encajar: false });
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -242,6 +246,19 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   // Electrodomésticos: paquetes de ejemplo (PVP Leroy Merlin, 22-nov-2026)
   pack("pack-balay", "Balay", "Horno 3HB5131N3 (451 €), placa de inducción 3EB865FR (306 €), campana 3BD866MX (374 €), lavavajillas integrable 3VF5012NP (536 €) y frigorífico combi integrable 3KID834F (1.330 €)", "2.998", "Leroy Merlin", LMQ + "balay", "https://www.balay.es/", "https://media.adeo.com/media/5256628/media.jpg"),
   pack("pack-bosch", "Bosch", "Horno HBG536EB4 (469 €), placa de inducción PVS61RBB5E (356 €), campana DWK65DK60 (489 €), lavavajillas integrable SPV4EMX17E (725 €) y frigorífico combi integrable KIV86VSE0 (792 €)", "2.832", "Leroy Merlin", LMQ + "bosch", "https://www.bosch-home.es/", "https://media.adeo.com/media/5287327/media.jpg"),
+  // Bestile (L'Alcora, Castellón): series de su web, sin precio público
+  bestile("alma", "Serie Alma", "Azulejo 10 x 30 para paredes de baño y cocina", "amb_alma_blanco_10x30_orinoco-taupe-15x90_hq-1024x1024.jpg"),
+  bestile("concept", "Serie Concept", "Porcelánico de gran formato 60 x 120 efecto cemento", "amb-concept-grey-60x120_hq-1024x819.jpg"),
+  bestile("elegance", "Serie Elegance", "Porcelánico efecto madera 20 x 120", "amb-elegance-nature_20x120-02_hq-1024x723.jpg"),
+  bestile("boiserie", "Serie Boiserie", "Revestimiento con molduras clásicas y zócalo", "amb-boiserie-tomillo_chair-rail_elegance-roble_hq-1024x717.jpg"),
+  bestile("casual", "Serie Casual", "Azulejo de pared en tonos suaves", "amb-casual-tomillo_galdar-tomillo_bresle-pearl_hq-1024x723.jpg"),
+  bestile("downtown", "Serie Downtown", "Azulejo brillo de inspiración artesanal", "amb-downtown-verde-glossy_st-1024x723.jpg"),
+  bestile("hanko", "Serie Hanko", "Revestimiento con relieve en color greige", "amb-hanko-greige_caliza-white-40x60_casual-tomillo_hq-1024x723.jpg"),
+  bestile("iconic", "Serie Iconic", "Baldosa 30 x 30 de estilo retro", "amb-iconic-red_cream-30x30-1-1024x723.jpg"),
+  bestile("makalu", "Serie Makalu", "Azulejo alargado 5 x 50 mate", "amb-makalu-cielo-matt-5x50-sinclair-100x100-isar-nuez-20x120_hq-1024x768.jpg"),
+  bestile("meraki", "Serie Meraki", "Azulejo de aspecto artesanal en colores intensos", "amb-meraki-aguamarina_hq-1024x768.jpg"),
+  bestile("pierre", "Serie Pierre", "Baldosa 20 x 20 y 20 x 30 efecto piedra", "amb_pierre_black_01_hq-1024x880.jpg"),
+  bestile("musa", "Serie Musa", "Azulejo decorativo en tonos naturales", "amb-musa-oliva_hq-1024x1024.jpg"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */

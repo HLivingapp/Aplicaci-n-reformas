@@ -16,6 +16,10 @@ export const ZONAS: { id: string; texto: string; icono: string; categorias: Cate
 ];
 
 /** Catálogo de materiales por zona, nivel y categoría, con foto, PVP público, tienda y fecha. */
+/** Marcas que se enseñan primero dentro de su categoría. */
+const DESTACADAS = ["Nais", "Vives", "Bestile"];
+const prioridad = (m: string) => { const i = DESTACADAS.indexOf(m); return i < 0 ? 99 : i; };
+
 type NivelFiltro = NivelCatalogo | "todas";
 const OPCIONES: { id: NivelFiltro; texto: string; detalle: string }[] = [{ id: "todas", texto: "Todas", detalle: "Las tres gamas juntas" }, ...NIVELES_CATALOGO];
 const ETIQUETA: Record<NivelCatalogo, string> = { basico: "Básico", medio: "Medio", premium: "Premium" };
@@ -47,7 +51,7 @@ export function CatalogoMateriales({ inicial = "todas" }: { inicial?: NivelFiltr
       </div>
       {lista.length === 0 && <p className="mt-6 text-center text-sm text-stone-500">Todavía no hay productos de este nivel en esta zona.</p>}
       {CATEGORIAS_MEDIA.filter((c) => cats.includes(c.id)).map((c) => {
-        const items = lista.filter(({ x }) => x.categoria === c.id);
+        const items = lista.filter(({ x }) => x.categoria === c.id).map((y, i) => ({ ...y, i })).sort((a, b) => prioridad(a.x.marca) - prioridad(b.x.marca) || a.i - b.i);
         if (!items.length) return null;
         return (
           <div key={c.id} className="mt-5">
