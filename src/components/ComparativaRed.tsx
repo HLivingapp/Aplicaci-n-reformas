@@ -18,6 +18,7 @@ import { inputCls } from "./ui";
 import { cercania, mejoresPara, PUNTOS, puntosVisibilidad } from "@/lib/visibilidad";
 import { CurriculumReformista } from "./CurriculumReformista";
 import { ChatEncargo } from "./ChatEncargo";
+import { NoHomologados } from "./NoHomologados";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
@@ -157,6 +158,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">{pagoVisitas ? "Pedir visita" : `Pagar ${VISITAS.cliente} € y pedir visita`}</button>
         </div>
       )}
+      {!firmado && <NoHomologados zona={datos.zona} datos={datos} />}
       <InvitaProveedor datos={datos} invitados={encargos.filter(esInvitado)} bloqueado={!!firmado} />
       {encargos.filter((e) => e.final && e.estado !== "descartado").map((e) => (
         <div key={e.id}>
