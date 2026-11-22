@@ -11,6 +11,7 @@ import { leerLocal } from "@/lib/store";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 import { tarifaDe } from "@/lib/encargos";
 import { BotonLink } from "@/components/ui";
+import { NoHomologados } from "@/components/NoHomologados";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
@@ -114,6 +115,9 @@ export default function RedProfesionales() {
             ))}
           </ul>
         )}
+        <div className="mt-8">
+          <NoHomologados zona={zona || undefined} />
+        </div>
         {!conServidor && <p className="mt-6 text-center text-xs text-stone-400">Demostración: los reformistas que aparecen son ficticios.</p>}
       </main>
     </div>

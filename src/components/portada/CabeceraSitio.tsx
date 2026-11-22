@@ -4,6 +4,7 @@ import Link from "next/link";
 import { APP } from "@/lib/marca";
 import { usePathname } from "next/navigation";
 import { publico } from "@/lib/base";
+import { FranjaHomologate } from "../FranjaHomologate";
 
 const NOMBRE = APP.nombre;
 
@@ -23,6 +24,8 @@ const MENU = [
 export function CabeceraSitio() {
   const ruta = usePathname() ?? "/";
   return (
+    <>
+    <FranjaHomologate oscura />
     <header className="sticky top-0 z-30 border-b border-white/10 bg-stone-950/80 text-white backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Link href="/" className="flex shrink-0 items-center gap-2">
@@ -60,5 +63,6 @@ export function CabeceraSitio() {
         </nav>
       </div>
     </header>
+    </>
   );
 }

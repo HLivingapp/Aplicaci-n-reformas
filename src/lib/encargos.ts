@@ -56,6 +56,8 @@ export interface Encargo {
   avances?: { fecha: string; texto: string }[];
   /** «app»: el cliente lo encontró en la app (reserva y fee). «invitado»: el cliente lo invitó (sin reserva ni fee, sin seguro gratis). */
   origen?: OrigenEncargo;
+  /** Invitado desde la lista de proveedores sin homologar: sin reserva ni fee en esta primera obra, pero el cliente paga el acceso a la red (150 €) y el proveedor la visita (150 €). */
+  desdeNoHomologado?: boolean;
   /** Chat antes de la firma (para preparar la primera visita). Los contactos se ocultan automáticamente. */
   chat?: MensajeChat[];
   /** Veces que cada parte intentó compartir datos de contacto en el chat */
@@ -220,7 +222,7 @@ export function firmarCliente(id: string) {
     ),
   );
   // Si pagó las visitas y al final firma en la app con un proveedor que trae él, se le devuelven los 150 € (simulado)
-  if (e.origen === "invitado" && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
+  if (e.origen === "invitado" && !e.desdeNoHomologado && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
     escribir(CLAVE_DEVOLUCION, { ...leer<Record<string, string>>(CLAVE_DEVOLUCION, {}), [e.proyectoId]: ahora });
   }
 }
@@ -253,13 +255,15 @@ export interface Invitacion {
   creado: string;
   /** Encargo creado cuando el proveedor acepta */
   encargoId?: string;
+  /** Si se invitó desde la lista de proveedores sin homologar: su ficha pública */
+  publicoId?: string;
 }
 
 export const leerInvitaciones = (): Invitacion[] => leer<Invitacion[]>(CLAVE_INVITACIONES, []);
 export const invitacionDe = (codigo: string) => leerInvitaciones().find((i) => i.codigo === codigo);
 
-export function invitarProveedor(datos: Invitacion["datos"], proveedor: string): Invitacion {
-  const inv: Invitacion = { codigo: nuevoId().replace(/-/g, "").slice(0, 10), datos, proveedor, creado: new Date().toISOString() };
+export function invitarProveedor(datos: Invitacion["datos"], proveedor: string, publicoId?: string): Invitacion {
+  const inv: Invitacion = { codigo: nuevoId().replace(/-/g, "").slice(0, 10), datos, proveedor, creado: new Date().toISOString(), ...(publicoId && { publicoId }) };
   escribir(CLAVE_INVITACIONES, [inv, ...leerInvitaciones()]);
   return inv;
 }
@@ -282,9 +286,10 @@ export function aceptarInvitacion(codigo: string, reformista: { id: string; codi
     codigo: reformista.codigo,
     baseInicial: referencia(inv.datos.vivienda, inv.datos.reforma).base,
     creado: new Date().toISOString(),
-    estado: "visita_fijada",
+    estado: inv.publicoId ? "visita_pedida" : "visita_fijada",
     visita: { preferencia: "Te ha invitado el cliente" },
     origen: "invitado",
+    ...(inv.publicoId && { desdeNoHomologado: true }),
   });
   escribir(CLAVE_INVITACIONES, leerInvitaciones().map((i) => (i.codigo === codigo ? { ...i, encargoId: id } : i)));
 }

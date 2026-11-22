@@ -5,6 +5,7 @@ import { APP } from "@/lib/marca";
 import { publico } from "@/lib/base";
 import { usePathname } from "next/navigation";
 import { useSuscripcion } from "@/lib/suscripcion";
+import { FranjaHomologate } from "./FranjaHomologate";
 
 const ENLACES = [
   { href: "/materiales", texto: "Materiales", corto: "Materiales" },
@@ -22,6 +23,8 @@ export function CabeceraPublica() {
   const ruta = usePathname();
   const s = useSuscripcion();
   return (
+    <>
+    <FranjaHomologate />
     <header className="sticky top-0 z-20 border-b border-stone-100 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3 text-sm">
         <Link href="/" aria-label={APP.nombre} className="shrink-0">
@@ -45,5 +48,6 @@ export function CabeceraPublica() {
         </nav>
       </div>
     </header>
+    </>
   );
 }
