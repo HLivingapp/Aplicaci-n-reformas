@@ -183,7 +183,7 @@ export default function SobreNosotros() {
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
           <h2 className="font-display text-4xl font-semibold tracking-tight">Empieza tu proyecto con ventaja</h2>
-          <p className="max-w-xl text-teal-50">Calcula tu reforma en 3 minutos, pregunta en el foro y conoce a los reformistas homologados de tu zona.</p>
+          <p className="max-w-xl text-teal-50">Calcula tu reforma en 2 minutos, pregunta en el foro y conoce a los reformistas homologados de tu zona.</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/nuevo" className="rounded-xl bg-white px-6 py-3.5 font-semibold text-teal-800 hover:bg-teal-50">Calcular mi presupuesto gratis</Link>
             <Link href="/comunidad" className="rounded-xl px-6 py-3.5 font-semibold text-white ring-1 ring-white/40 hover:bg-white/10">Ir al foro</Link>
