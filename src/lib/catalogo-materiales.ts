@@ -88,6 +88,9 @@ const rijor = (serie: string, nombre: string, detalle: string, foto: string): Ma
 
 const conely = (slug: string, nombre: string, detalle: string, euros: string, foto: number): MaterialMedia =>
   ({ ...otra(`conely-${slug}`, "puertas", "Conely", nombre, detalle, { texto: `Unos ${euros} € (precio orientativo)`, fuente: "Conely", url: `https://www.conely.es/puerta-interior-a-medida-${slug}` }, `https://www.conely.es/puerta-interior-a-medida-${slug}`, `https://www.conely.es/${foto}-thickbox_default/puerta-interior-a-medida-${slug}.jpg`, "Foto: web de Conely"), encajar: false });
+const KAP = "https://www.carpinteriakapitel.es/";
+const kapitel = (slug: string, foto: number, nombre: string, detalle: string, euros: string): MaterialMedia =>
+  ({ ...otra(`kapitel-${slug}`, "puertas", "Kapitel Decor", nombre, detalle, { texto: `Desde ${euros} € en su tienda online (según medida y acabado)`, fuente: "Kapitel Decor", url: KAP + slug }, KAP + slug, `${KAP}${foto}-thickbox_default/${slug}.jpg`, "Foto: web de Kapitel Decor"), encajar: false });
 const HAB_CRIS = "https://www.habitissimo.es/presupuestos/cerramiento-cristal";
 
 export const CATALOGO_BASICO: MaterialMedia[] = [
@@ -208,6 +211,11 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   lm("lm-lisboa-enrasada", "puertas", "Leroy Merlin", "Puerta enrasada Lisboa roble", "Acabado roble, cerco enrasado con el tabique, 62,5 cm", "492,72 € la puerta", "puerta-de-interior-abatible-enrasada-ciega-hueca-melamina-lisboa-roble-apertura-derecha-cerco-de-35-x-30-anchura-62-5cm-95009985.html", "4741186/media.jpg"),
   lm("lm-contramarco-oculta", "puertas", "Leroy Merlin (vendedor externo)", "Contramarco para puerta oculta", "Marco de chapa que queda dentro del tabique: la hoja se pinta como la pared y la puerta desaparece. 60 × 210 cm, tabique de 9 cm", "202,90 € el marco (sin hoja)", "contramarco-para-puertas-ocultas-de-chapa-de-9-cm-de-espesor-tamano-60x210-92457125.html", "https://media.adeo.com/mkp/c619ea4d0cdbb4c4451223410af65771/media.jpg?width=640"),
   otra("puerta-techo-medida", "puertas", "A medida (carpintero)", "Puerta de suelo a techo a medida", "Hoja lacada o en madera de la altura del techo, con bisagras ocultas y sin dintel. Se hace por encargo: mide tu reformista", { texto: "Puertas a medida: entre unos 400 y 2.000 € (precio medio orientativo 595 €)", fuente: "Habitissimo", url: "https://www.habitissimo.es/presupuestos/hacer-puertas-a-medida" }, "https://www.habitissimo.es/presupuestos/hacer-puertas-a-medida"),
+  // Kapitel Decor: puertas de suelo a techo a medida (Talavera de la Reina)
+  kapitel("puerta-suelo-a-techo-lacada-modelo-barcelona", 38777, "Puerta de suelo a techo lacada Barcelona", "Hoja lacada en el color RAL que elijas, fabricada a la altura del techo", "681,84"),
+  kapitel("puerta-suelo-a-techo-enrasada-a-tapeta-onix", 41564, "Puerta de suelo a techo enrasada a tapeta Onix", "En block con cerco, tapetas y herrajes; DM macizo lacado, hoja enrasada con la tapeta", "1.229,36"),
+  kapitel("puerta-oculta-hasta-el-techo-alice", 44838, "Puerta oculta hasta el techo Alice", "Se pinta o laca como la pared y desaparece; cerco de madera lacado a juego, a medida", "1.230"),
+  kapitel("puerta-corredera-hasta-el-techo-lacada-siloe", 35091, "Puerta corredera hasta el techo Siloé", "Corredera lacada en color RAL, de suelo a techo", "842,77"),
   // Puertas a medida grandes (carpintería artesana)
   conely("cristalera-vitoria", "Puerta cristalera a medida Vitoria", "Madera maciza con palillería y vidrio, estilo castellano; se fabrica a la medida y acabado que pidas", "960", 2281),
   conely("talavera-corredera", "Puerta corredera doble a medida Talavera", "Dos hojas de madera con cristalera para hueco grande (unos 150 × 210 cm), a medida", "1.598", 2275),
