@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
  * Los enlaces son a catálogos o fichas públicas del fabricante, nunca a tarifas de proveedor.
  * En la demo se guardan en el navegador; en producción irán a la base de datos (Supabase).
  */
-export type CategoriaMedia = "cocina" | "encimeras" | "bano" | "sanitarios" | "griferia" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
+export type CategoriaMedia = "cocina" | "electrodomesticos" | "encimeras" | "bano" | "sanitarios" | "griferia" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
 
 export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: string }[] = [
-  { id: "cocina", texto: "Cocinas y electrodomésticos", icono: "🍳" },
+  { id: "cocina", texto: "Muebles de cocina", icono: "🍳" },
+  { id: "electrodomesticos", texto: "Electrodomésticos: paquetes de ejemplo", icono: "🔌" },
   { id: "encimeras", texto: "Encimeras", icono: "🪨" },
   { id: "bano", texto: "Muebles de baño, platos y mamparas", icono: "🛁" },
   { id: "sanitarios", texto: "Inodoros y lavabos", icono: "🚽" },
@@ -129,7 +130,7 @@ export function leerMaterialesMedia(): MaterialMedia[] {
     const x = JSON.parse(localStorage.getItem(CLAVE) ?? "null");
     if (!Array.isArray(x)) return MATERIALES_MEDIA_INICIALES;
     // Fichas retiradas de la selección (p. ej. la encimera de cuarzo, sustituida por porcelánica)
-    const RETIRADAS = ["compac"];
+    const RETIRADAS = ["compac", "balay", "teka"];
     // Las fichas iniciales guardadas antes de tener foto y precio los toman de la selección actual
     return (x as MaterialMedia[]).filter((y) => !RETIRADAS.includes(y.id)).map((y) => {
       const s = MATERIALES_MEDIA_INICIALES.find((z) => z.id === y.id);
