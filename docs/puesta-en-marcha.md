@@ -2,11 +2,39 @@
 
 Pasos para pasar del modo demostración a la app con base de datos. Se hacen una sola vez.
 
+## 0. Lo más rápido: la web actual (GitHub Pages) guardando en Supabase
+
+Sin servidor: cada persona entra con un enlace a su email (sin contraseña) y sus datos se guardan en Supabase
+directamente desde el navegador. Lo que protege los datos son las políticas RLS de
+[`supabase/migrations/20261122000000_plataforma.sql`](../supabase/migrations/20261122000000_plataforma.sql):
+cada uno solo lee y escribe lo suyo; cliente y profesional ven el encargo que comparten; lo único público
+es el escaparate anónimo de los profesionales homologados y el foro.
+
+1. Crea la cuenta y el proyecto en **Central EU (Frankfurt)** (pasos 1.1 y 1.2 de abajo).
+2. *SQL Editor* → *New query*: pega y ejecuta [`supabase/esquema.sql`](../supabase/esquema.sql) y después
+   [`supabase/migrations/20261122000000_plataforma.sql`](../supabase/migrations/20261122000000_plataforma.sql).
+   Se pueden ejecutar más de una vez.
+3. *Authentication* → *URL Configuration*:
+   - **Site URL**: `https://hlivingapp.github.io/Aplicaci-n-reformas/` (o el dominio definitivo).
+   - **Redirect URLs**: `https://hlivingapp.github.io/Aplicaci-n-reformas/**` (y `https://reformamejor.es/**` cuando esté).
+4. *Authentication* → *Email Templates* → *Magic Link*: pon el asunto y el texto en español
+   (por ejemplo «Tu enlace para entrar en ReformaMejor»).
+5. *Project Settings* → *API*: copia **Project URL** y la clave **anon public**. En GitHub:
+   *Settings* → *Secrets and variables* → *Actions* → pestaña **Variables** → crea `SUPABASE_URL` y
+   `SUPABASE_ANON_KEY`. La próxima publicación de la demo ya guarda en Supabase.
+   **Nunca** pongas la clave `service_role` en GitHub ni en el código.
+
+Qué se guarda: perfil y consentimientos, borrador del presupuesto, proyectos y presupuestos del cliente,
+materiales elegidos (moodboard), suscripción, encargos (visitas, presupuesto final, contrato, avances),
+pagos simulados, foro y profesionales (tablas preparadas; el alta de profesionales se conecta en el siguiente paso).
+Sin las variables, la web sigue como hasta ahora, guardando en el navegador. En *Mi cuenta* (`/cuenta`)
+cada persona puede descargar sus datos o borrar su cuenta.
+
 ## 1. Base de datos (Supabase)
 
 1. Crea una cuenta gratuita en [supabase.com](https://supabase.com) con el email de la empresa.
 2. **New project**. En *Region* elige **Europe (Frankfurt o Ireland)**, para que los datos se queden en la UE.
-3. Cuando esté creado: *SQL Editor* → *New query* → pega el contenido de [`supabase/esquema.sql`](../supabase/esquema.sql) → *Run*.
+3. Cuando esté creado: *SQL Editor* → *New query* → pega el contenido de [`supabase/esquema.sql`](../supabase/esquema.sql) → *Run*. Repite con [`supabase/migrations/20261122000000_plataforma.sql`](../supabase/migrations/20261122000000_plataforma.sql).
 4. En la misma pantalla, da de alta a las personas del equipo (cambia los emails):
    ```sql
    insert into equipo (email, nombre) values

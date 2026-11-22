@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CATALOGO_BASICO, CATALOGO_MEDIO_EXTRA, CATALOGO_PREMIUM } from "./catalogo-materiales";
 import { MATERIALES_MEDIA_INICIALES, type CategoriaMedia, type MaterialMedia } from "./gama-media";
+import { avisarCambio } from "./nube";
 
 /**
  * Materiales que el cliente elige en el catálogo («Añadir a mi reforma»).
@@ -49,6 +50,7 @@ export const guardarSeleccion = (ids: string[]) => {
   try {
     localStorage.setItem(CLAVE, JSON.stringify([...new Set(ids)]));
   } catch {}
+  avisarCambio(CLAVE);
   window.dispatchEvent(new Event(EVENTO));
 };
 

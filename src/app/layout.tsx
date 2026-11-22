@@ -4,6 +4,7 @@ import { APP } from "@/lib/marca";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { DEMO_PRIVADA, PuertaClave, SCRIPT_PUERTA } from "@/components/PuertaClave";
+import { SincronizarNube } from "@/lib/nube";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["opsz"] });
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </head>
       )}
       <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
+        <SincronizarNube />
         {children}
         {DEMO_PRIVADA && <PuertaClave />}
       </body>

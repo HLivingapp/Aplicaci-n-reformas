@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { alCambiar } from "./encargos";
+import { avisarCambio } from "./nube";
 
 /**
  * Servicios que el cliente puede contratar online desde la app.
@@ -42,6 +43,7 @@ export function contratarServicio(proyectoId: string, s: ServicioCliente) {
   d[proyectoId] = { ...d[proyectoId], [s]: new Date().toISOString() };
   try {
     localStorage.setItem(CLAVE, JSON.stringify(d));
+    avisarCambio(CLAVE);
     window.dispatchEvent(new Event("encargos"));
   } catch {
     /* sin almacenamiento */

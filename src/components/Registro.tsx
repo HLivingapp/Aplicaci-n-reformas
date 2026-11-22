@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { publico } from "@/lib/base";
 import { TEXTO_CONTACTO_MIEMBRO } from "@/lib/miembro";
 import { unirse, useMiembro } from "@/lib/miembro-cliente";
+import { conNube } from "@/lib/modo";
 
 /** Muestra el contenido solo a quien se ha unido a la comunidad con su email. */
 export function RequiereRegistro({ children, motivo }: { children: React.ReactNode; motivo?: string }) {
@@ -86,6 +87,7 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
           <button disabled={enviando || !aceptaPrivacidad || !email.trim() || (aceptaContacto && !telefono.trim())} className="mt-5 w-full rounded-2xl bg-teal-700 py-3.5 font-semibold text-white transition hover:bg-teal-800 disabled:opacity-50">
             {enviando ? "Entrando…" : "Unirme y entrar"}
           </button>
+          {conNube && <p className="mt-3 text-center text-xs text-stone-500">Entras al momento. Te enviamos además un enlace al email: ábrelo en este dispositivo para guardar tu reforma en tu cuenta.</p>}
           <p className="mt-3 text-center text-xs text-stone-500">Tus datos se guardan en la Unión Europea. Nunca los compartimos con reformistas sin tu permiso.</p>
           <p className="mt-4 border-t border-stone-100 pt-3 text-center text-xs text-stone-500">
             ¿Ya tienes una reforma en la app? Entra con el enlace privado que te enviamos. · <Link href="/reformistas" className="underline">Soy reformista</Link>

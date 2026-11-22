@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { anotarMio, anotarUtil, aplicarAccion, esLegal, guardarForo, huella, leerForo, misMensajes, misUtiles, type Accion, type Autor, type RespuestaIA, type Tema } from "./foro";
-import { conBaseDeDatos } from "./modo";
+import { conBaseDeDatos, nubeSinServidor } from "./modo";
+import { accionForoNube, cargarForoNube } from "./foro-nube";
 
 /**
  * Capa de datos del foro en el navegador. Con servidor, todo pasa por /api/foro (los mensajes de todos);
@@ -60,6 +61,19 @@ export function useForo() {
   useEffect(() => {
     setMios(misMensajes());
     setUtiles(misUtiles());
+    if (nubeSinServidor) {
+      cargarForoNube()
+        .then((f) => {
+          setTemas(f.temas);
+          setMios(f.mios);
+          setUtiles(f.utiles);
+        })
+        .catch(() => {
+          setTemas(leerForo());
+          setError("No se ha podido cargar el foro. Prueba de nuevo en un momento.");
+        });
+      return;
+    }
     if (!conServidor) {
       setTemas(leerForo());
       return;
@@ -84,6 +98,20 @@ export function useForo() {
       try {
         if (a.tipo === "responder" && !a.tokenProfesional && tokenProfesional()) a = { ...a, tokenProfesional: tokenProfesional() };
         let nuevos: Tema[];
+        if (nubeSinServidor) {
+          if (a.tipo === "ia") {
+            const temaId = a.temaId;
+            await new Promise((res) => setTimeout(res, 900));
+            setTemas((ts) => (ts ?? []).map((t) => (t.id === temaId && !t.respuestaIA ? { ...t, respuestaIA: respuestaDemo(t) } : t)));
+            return true;
+          }
+          await accionForoNube(a);
+          const f = await cargarForoNube();
+          setMios(f.mios);
+          setUtiles(f.utiles);
+          setTemas(f.temas);
+          return true;
+        }
         if (conServidor) {
           const r = await fetch("/api/foro", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accion: a, clave }) });
           const j = await r.json();

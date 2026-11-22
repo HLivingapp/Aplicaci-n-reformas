@@ -2,6 +2,7 @@
 import { TITULAR } from "./legal";
 
 import { nuevoId } from "./id";
+import { avisarCambio } from "./nube";
 
 /**
  * Estudios de arquitectura y arquitectos autónomos: alta, tarifas por servicio, encargos de
@@ -108,6 +109,7 @@ function leer<T>(clave: string, vacio: T): T {
 function escribir(clave: string, valor: unknown) {
   try {
     localStorage.setItem(clave, JSON.stringify(valor));
+    avisarCambio(clave);
     window.dispatchEvent(new Event("encargos"));
   } catch {
     /* sin almacenamiento */
