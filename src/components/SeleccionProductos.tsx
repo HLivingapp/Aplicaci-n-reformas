@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { publico } from "@/lib/base";
-import { GUIA_AUDIO, seleccionPara, type CategoriaSeleccion } from "@/lib/seleccion";
+import { seleccionPara, type CategoriaSeleccion } from "@/lib/seleccion";
 
 /** Vídeo vertical que no se descarga hasta que el cliente le da al play (no ralentiza el móvil). */
 function Video({ c }: { c: CategoriaSeleccion }) {
@@ -49,26 +49,14 @@ function Categoria({ c }: { c: CategoriaSeleccion }) {
   );
 }
 
-/** Audio de la guía para clientes (17 min); tampoco se descarga hasta darle al play. */
-export function GuiaAudio() {
-  return (
-    <div className="rounded-2xl bg-stone-900 p-4 text-white">
-      <div className="text-sm font-semibold">🎧 {GUIA_AUDIO.titulo}</div>
-      <p className="mt-1 text-xs text-stone-300">El equipo de Human Living, empresa destacada, cuenta paso a paso cómo es una reforma. Escúchala cuando quieras ({GUIA_AUDIO.duracion}).</p>
-      <audio controls preload="none" src={publico(GUIA_AUDIO.src)} className="mt-3 w-full" />
-    </div>
-  );
-}
-
 /**
  * Selección de productos recomendada (de Human Living, empresa destacada): vídeos de su equipo y catálogos de las marcas que usamos.
  * `grupos` filtra por acabados (p. ej. los de baño); sin él, se muestran todas las categorías.
  */
-export function SeleccionProductos({ grupos, excluir, conGuia = false }: { grupos?: string[]; excluir?: string[]; conGuia?: boolean }) {
+export function SeleccionProductos({ grupos, excluir }: { grupos?: string[]; excluir?: string[] }) {
   const lista = seleccionPara(grupos, excluir);
   return (
     <div className="space-y-3">
-      {conGuia && <GuiaAudio />}
       <div className="grid gap-3 xl:grid-cols-2">
         {lista.map((c) => (
           <Categoria key={c.id} c={c} />
@@ -88,7 +76,7 @@ export function SeleccionPlegable({ grupos }: { grupos?: string[] }) {
         🎬 Selección de productos recomendada: vídeos y catálogos <span className="text-sm font-normal text-teal-700 group-open:hidden">· ver</span>
       </summary>
       <div className="mt-3">
-        <SeleccionProductos grupos={grupos} conGuia />
+        <SeleccionProductos grupos={grupos} />
       </div>
     </details>
   );

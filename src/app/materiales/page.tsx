@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { MaterialesMedia } from "@/components/MaterialesMedia";
-import { GuiaAudio } from "@/components/SeleccionProductos";
 
 /** Materiales de gama media recomendados, con foto y catálogo. */
 export default function Materiales() {
@@ -19,7 +18,6 @@ export default function Materiales() {
           <MaterialesMedia />
         </div>
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          <GuiaAudio />
           <div className="rounded-2xl border border-stone-200 bg-white p-4">
             <div className="font-semibold">¿Quieres ver los vídeos del equipo?</div>
             <p className="mt-1 text-sm text-stone-600">Te explicamos cocina, ventanas, puertas, armarios, electricidad y climatización en vídeos cortos.</p>

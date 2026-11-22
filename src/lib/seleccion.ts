@@ -19,8 +19,6 @@ export type CategoriaSeleccion = {
 
 const video = (f: string, titulo: string, duracion: string): VideoSeleccion => ({ src: `/videos/${f}.mp4`, poster: `/videos/${f}.jpg`, titulo, duracion });
 
-export const GUIA_AUDIO = { src: "/videos/guia-reforma.m4a", titulo: "Guía de la reforma para clientes", duracion: "17 min" };
-
 export const SELECCION: CategoriaSeleccion[] = [
   {
     id: "cocina",

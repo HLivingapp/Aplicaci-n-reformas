@@ -267,7 +267,10 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   if (lineas.length) {
     add("limpieza", 1);
     add("tasas", 1);
-    add("direccion", 1);
+    // Reforma parcial de baños o cocina: jefatura por estancia; si no, la de reforma completa
+    const soloHumedas = !integral && !cambiaTabiques && !hazSuelos && !conductos && lineas.every((l) => !["puerta_paso", "luminarias", "suelo_laminado", "suelo_porcelanico"].includes(l.tarifaId));
+    if (soloHumedas && nBanos + (hazCocina ? 1 : 0) > 0) add("direccion_parcial", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
+    else add("direccion", 1);
   }
 
   // --- Accesos y avisos ---
