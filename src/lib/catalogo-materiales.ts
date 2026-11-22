@@ -30,6 +30,17 @@ const lm = (id: string, categoria: CategoriaMedia, marca: string, nombre: string
   fecha: FECHA,
 });
 
+const HAB_K = "https://www.habitissimo.es/presupuestos/instalar-ventanas-kommerling";
+const HAB_RPT = "https://www.habitissimo.es/presupuestos/ventanas-puente-termico";
+const FOTO_K = "https://www.kommerling.es/sites/default/files/styles/image_360_360/public/system/K%C3%96MMERLING76-md-xtrem_0.png.webp?itok=O7AANYA_";
+
+/** Ficha de otra tienda o guía de precios pública. */
+const otra = (id: string, categoria: CategoriaMedia, marca: string, nombre: string, detalle: string, precio: { texto: string; fuente: string; url: string } | undefined, url?: string, imagen?: string, credito?: string): MaterialMedia => ({
+  id, categoria, marca, nombre, detalle, url, imagen, encajar: true, credito, precio: precio && { ...precio, fecha: FECHA }, autor: "ReformaMejor", fecha: FECHA,
+});
+const ikea = (id: string, nombre: string, detalle: string, precio: string, ruta: string, img: string) =>
+  otra(id, "armarios", "IKEA", nombre, detalle, { texto: precio, fuente: "IKEA", url: `https://www.ikea.com/es/es/p/${ruta}/` }, undefined, `https://www.ikea.com/es/es/images/products/${img}`, "Foto: web de IKEA");
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-duo", "bano", "Leroy Merlin", "Mueble de baño Duo 60 cm", "Roble claro, fondo reducido, con lavabo y espejo", "210,14 €", "conjunto-de-bano-con-lavabo-y-espejo-duo-roble-claro-mate-60x46-cm-fondo-reducido-con-2-puertas-84435598.html", "1995810/media.jpg"),
@@ -40,6 +51,9 @@ export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-arcano", "suelos", "Artens", "Porcelánico Arcano 60 × 60", "Efecto cemento gris mate", "9,99 €/m²", "suelo-porcelanico-arcano-efecto-cemento-gris-mate-60x60-cm-artens-83020657.html", "1942527/media.jpg"),
   lm("lm-frosty", "suelos", "Artens", "Azulejo Frosty 30 × 60", "Cerámico blanco mate para paredes de baño y cocina", "8,99 €/m²", "azulejo-ceramico-frosty-blanco-mate-30x60-cm-artens-82213812.html", "520738/media.png"),
   lm("lm-promad", "puertas", "Leroy Merlin", "Puerta lacada Pro Mad", "Blanca, ciega y maciza, 72,5 cm", "90 € la hoja", "puerta-de-interior-abatible-ciega-maciza-lacada-pro-mad-blanco-apertura-izquierda-cerco-de-7x2-anchura-72-5cm-83542429.html", "1855032/media.jpg"),
+  otra("k-oscilo", "ventanas", "Kömmerling", "Ventana de PVC oscilobatiente", "1 × 1 m, con vidrio Climalit", { texto: "Unos 370 € la ventana (instalación aparte, 150–200 €)", fuente: "guía de precios de Habitissimo", url: HAB_K }, "https://www.kommerling.es/", FOTO_K, "Foto: web de Kömmerling"),
+  otra("c-4200", "ventanas", "Cortizo", "Corredera de aluminio RPT COR 4200", "Con rotura de puente térmico y vidrio Climalit", { texto: "Instalada, desde unos 230 €/m²", fuente: "guía de precios de Habitissimo", url: HAB_RPT }, "https://www.cortizo.com/"),
+  ikea("ikea-forsand-150", "Armario PAX / FORSAND 150 cm", "Blanco, 150 × 60 × 236 cm, con interior", "339 €", "pax-forsand-combinacion-armario-blanco-blanco-s69502768", "pax-forsand-combinacion-armario-blanco-blanco__1197032_pe903358_s5.jpg"),
   lm("lm-corbero", "climatizacion", "Corberó", "Termo eléctrico 80 l", "Multiposición", "149 €", "termo-electrico-corbero-80l-multiposicion-96461946.html", "4970774/media.jpg"),
   lm("lm-haier", "climatizacion", "Haier", "Split Perla 3000 fg", "Aire acondicionado con bomba de calor y wifi", "579 € (sin instalar)", "aire-acondicionado-split-1x1-haier-perla-a-wi-fi-3000-fg-90402654.html", "4684190/media.jpg"),
 ];
@@ -53,6 +67,9 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   lm("lm-startclova", "bano", "Grohe", "Grifo de lavabo Start Clova", "Monomando cromado, antical", "79,99 €", "grifo-de-lavabo-grohe-start-clova-monomando-cromo-brillo-antical-laton-82312202.html", "2016221/media.png"),
   lm("lm-pure", "suelos", "Leroy Merlin", "Parquet multicapa Pure roble", "Roble natural satinado, lamas de 228 cm", "40,23 €/m²", "parquet-multicapa-pure-roble-natural-satinado-228-1x19-4-cm-88759394.html", "3625983/media.jpg"),
   lm("lm-treviso", "suelos", "Artens", "Porcelánico Treviso 120 × 120", "Gran formato, efecto cemento natural", "33,99 €/m²", "suelo-porcelanico-treviso-efecto-cemento-natural-120x120-cm-artens-86215373.html", "3156846/media.jpg"),
+  otra("k-ad76", "ventanas", "Kömmerling", "Ventana de PVC 76 AD Xtrem", "La serie de más aislamiento; 126 × 115 cm, con vidrio Climalit", { texto: "Instalada, unos 1.310 € la ventana", fuente: "guía de precios de Habitissimo", url: HAB_K }, "https://www.kommerling.es/", FOTO_K, "Foto: web de Kömmerling"),
+  otra("c-vision", "ventanas", "Cortizo", "Corredera minimalista COR Vision Plus", "Perfil casi invisible y grandes vidrios Climalit, con RPT", undefined, "https://cortizoarch.cortizo.com/en/cor-vision-plus/"),
+  ikea("ikea-tonstad-200", "Armario PAX / TONSTAD 200 cm", "Chapa de roble y vidrio, 200 × 60 × 236 cm, con interior", "938 €", "pax-tonstad-combinacion-armario-blanco-chapa-roble-vidrio-s49551217", "pax-tonstad-combinacion-armario-blanco-chapa-roble-vidrio__1304220_pe938668_s5.jpg"),
   lm("lm-simon82", "electricidad", "Simon", "Enchufe Simon 82 con 2 USB", "Mecanismo de la serie 82", "36,99 €", "mecanismo-enchufe-schucko-2xusb-s82-75-85763496.html", "3956945/media.jpg"),
   lm("lm-warmium", "climatizacion", "Vaeron", "Aerotermia Warmium 8 kW", "Monobloc R32 para calefacción y agua caliente", "1.929 € (sin instalar)", "aerotermia-vaeron-warmium-p84-8-kw-monobloc-r32-98935770.html", "5326554/media.jpg"),
 ];
