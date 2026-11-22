@@ -22,7 +22,7 @@ export const IVA_REFORMA = 10;
 
 import { reservaApp } from "./comercializacion";
 import { anonimizar, type Identidad } from "./anonimizar";
-export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA } from "./comercializacion";
+export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA, AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS } from "./comercializacion";
 
 export type { TarifaReformista };
 

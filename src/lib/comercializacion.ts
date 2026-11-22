@@ -40,3 +40,7 @@ export const TEXTO_DESCUENTO_VISITA = VISITAS.descuentaDeReserva
   ? `Se te descuentan cuando hagas la obra: los restamos de la reserva al firmar en la app${VISITAS.descuentoPendiente ? " (pendiente de confirmar)" : ""}. Y si al final firmas en la app con un proveedor que traes tú, te los devolvemos.`
   : "";
 export const TEXTO_VISITA_REFORMISTA = `${eur(VISITAS.reformista)} por cada visita a la que vas`;
+
+/** Aviso al reformista donde carga sus tarifas y donde se explica lo que cobramos (texto del titular, 22/11/2026). */
+export const AVISO_TARIFAS = `Recuerda al darnos tus tarifas que cobramos el ${COMERCIALIZACION.pct} %`;
+export const LETRA_PEQUENA_TARIFAS = `Es la reserva que paga el cliente al firmar en la app (${TEXTO_RESERVA}). Si el cliente lo traes tú, no hay reserva.`;

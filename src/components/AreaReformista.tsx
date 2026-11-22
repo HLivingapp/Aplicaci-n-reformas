@@ -4,7 +4,7 @@ import { AvisoMemoriaTecnica } from "./Beneficios";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import {
-  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA, VISITAS, descartarEncargo, reservaApp, ORIGEN_ENCARGO, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
+  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS, TEXTO_VISITA_REFORMISTA, VISITAS, descartarEncargo, reservaApp, ORIGEN_ENCARGO, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
 } from "@/lib/encargos";
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
@@ -32,6 +32,7 @@ export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: str
         <p className="mt-1 text-sm text-stone-600">
           Con ellas la app calcula tu presupuesto para cada cliente de tu zona, partida a partida, y se lo enseña junto al de otros reformistas homologados. Tú no tienes que hacer nada más hasta que te pidan una visita.
         </p>
+        <p className="mt-2 rounded-lg bg-amber-100 p-2 text-sm font-semibold text-amber-950">💡 {AVISO_TARIFAS}.<span className="mt-0.5 block text-xs font-normal">{LETRA_PEQUENA_TARIFAS}</span></p>
       </div>
       <EditorTarifas valor={t} onChange={(n) => { setT({ ...t, ...n }); setGuardado(false); }} />
       <div className="flex items-center gap-3">
