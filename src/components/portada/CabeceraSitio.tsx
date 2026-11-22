@@ -10,12 +10,13 @@ const NOMBRE = APP.nombre;
 const MENU = [
   { href: "/human-living", texto: "★ Human Living", ver: "sm:inline" },
   { href: "/disena", texto: "Diseña", ver: "lg:inline" },
-  { href: "/materiales", texto: "Materiales", ver: "lg:inline" },
-  { href: "/comunidades", texto: "Comunidades de vecinos", ver: "xl:inline" },
-  { href: "/subvenciones", texto: "Subvenciones", ver: "2xl:inline" },
+  { href: "/materiales", texto: "Materiales", ver: "xl:inline" },
+  { href: "/comunidades", texto: "Comunidades de vecinos", ver: "2xl:inline" },
+  { href: "/subvenciones", texto: "Subvenciones", ver: "min-[1700px]:inline" },
   { href: "/comunidad", texto: "Foro", ver: "md:inline" },
+  { href: "/hipoteca", texto: "Hipoteca", ver: "md:inline" },
   { href: "/suscripcion", texto: "Planes", ver: "lg:inline" },
-  { href: "/cliente", texto: "Mi reforma", ver: "md:inline" },
+  { href: "/cliente", texto: "Mi reforma", ver: "lg:inline" },
 ];
 
 /** Cabecera oscura de la portada y de las páginas de la marca (empresas destacadas). Marca la sección en la que estás. */

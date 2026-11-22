@@ -17,7 +17,7 @@ export function SimuladorHipoteca({ importe }: { importe: number }) {
   return (
     <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm">
       <div className="font-semibold">🏦 Reforma en tu hipoteca</div>
-      <p className="mt-1 text-stone-600">Financia la reforma junto con la compra o ampliando tu hipoteca con un banco colaborador. Haz una simulación:</p>
+      <p className="mt-1 text-stone-600">Financia la reforma junto con la compra o ampliando tu hipoteca con tu banco. Haz una simulación:</p>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         <label className="text-xs text-stone-600">Importe<input type="number" step={1000} className={`${inputCls} mt-1`} value={cantidad} onChange={(e) => setCantidad(Math.max(0, Number(e.target.value)))} /></label>
         <label className="text-xs text-stone-600">Plazo (años)<input type="number" min={1} max={40} className={`${inputCls} mt-1`} value={anos} onChange={(e) => setAnos(Math.min(40, Math.max(1, Number(e.target.value))))} /></label>
