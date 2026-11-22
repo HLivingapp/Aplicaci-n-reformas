@@ -10,12 +10,12 @@ const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axe
 export const metadata: Metadata = {
   title: `${APP.nombre} · ${APP.lema}`,
   description: "Únete gratis con tu email y ve al momento, en la app, el presupuesto de tu reforma partida a partida. Después compara el precio de cada reformista homologado de tu zona.",
-  appleWebApp: { capable: true, title: "Reformas", statusBarStyle: "default" },
-  icons: { icon: publico("/icon.svg"), apple: publico("/icon-192.png") },
+  appleWebApp: { capable: true, title: APP.nombre, statusBarStyle: "default" },
+  icons: { icon: [{ url: publico("/icon.svg"), type: "image/svg+xml" }, { url: publico("/favicon.ico"), sizes: "48x48" }], apple: publico("/apple-icon.png") },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f766e",
+  themeColor: "#0E5A52",
   width: "device-width",
   initialScale: 1,
 };

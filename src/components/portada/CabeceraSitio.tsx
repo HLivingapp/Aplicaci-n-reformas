@@ -24,10 +24,10 @@ export function CabeceraSitio() {
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-stone-950/80 text-white backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={publico("/icon.svg")} alt="" className="h-8 w-8" />
-          <span className="font-display text-base font-semibold leading-tight tracking-tight sm:text-lg">{NOMBRE}</span>
+          <span className="font-display text-sm font-semibold leading-tight tracking-tight min-[400px]:text-base sm:text-lg">{NOMBRE}</span>
         </Link>
         <nav className="flex items-center gap-1 whitespace-nowrap text-sm">
           {MENU.map((m) => {

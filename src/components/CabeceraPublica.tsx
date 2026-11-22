@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { APP } from "@/lib/marca";
+import { publico } from "@/lib/base";
 import { usePathname } from "next/navigation";
 import { useSuscripcion } from "@/lib/suscripcion";
 
@@ -20,7 +21,12 @@ export function CabeceraPublica() {
   return (
     <header className="sticky top-0 z-20 border-b border-stone-100 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3 text-sm">
-        <Link href="/" className="shrink-0 font-semibold tracking-tight"><span className="hidden sm:inline">{APP.nombre}</span><span className="sm:hidden">{APP.corto}</span></Link>
+        <Link href="/" aria-label={APP.nombre} className="shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={publico("/logo.svg")} alt={APP.nombre} className="hidden h-7 w-auto sm:block" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={publico("/icon.svg")} alt={APP.nombre} className="h-8 w-8 sm:hidden" />
+        </Link>
         <nav className="flex items-center gap-0.5 overflow-x-auto">
           {ENLACES.map((e) => (
             <Link key={e.href} href={e.href} className={`whitespace-nowrap rounded-full px-2.5 py-1.5 ${ruta?.startsWith(e.href) ? "bg-stone-100 font-medium text-stone-900" : "text-stone-600 hover:bg-stone-100"}`}>
