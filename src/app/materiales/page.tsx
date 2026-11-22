@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GuiaEleccion } from "@/components/GuiaEleccion";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { MaterialesMedia } from "@/components/MaterialesMedia";
+import { CatalogoMateriales } from "@/components/CatalogoMateriales";
 import { VideosNormativa } from "@/components/foro/VideosNormativa";
 import { VIDEOS_DECISIONES } from "@/lib/videos-normativa";
 
@@ -13,10 +14,11 @@ export default function Materiales() {
     <div className="min-h-dvh bg-stone-50">
       <CabeceraPublica />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Materiales de gama media</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Materiales: catálogo con fotos y precios</h1>
         <p className="mt-2 max-w-2xl text-stone-600">
-          Materiales recomendados en la gama media, la más elegida. La selección inicial es de Human Living, empresa destacada de la app. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
+          Productos básicos, medios y premium con foto y precio público de tienda, y debajo la selección de gama media, la más elegida. La selección inicial es de Human Living, empresa destacada de la app. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
         </p>
+        <div className="mt-6"><CatalogoMateriales /></div>
         <div className="mt-6">
           <VideosNormativa videos={VIDEOS_DECISIONES} carpeta="decisiones" titulo="Vídeos: decide tus acabados a tiempo" texto="El orden de la obra y qué elegir en cada momento: grifería, cocina, baño, suelos, puertas y armarios. Contenido orientativo." />
           <MaterialesMedia />
