@@ -389,3 +389,10 @@ begin
 end $$;
 revoke all on function borrar_mi_cuenta() from public, anon;
 grant execute on function borrar_mi_cuenta() to authenticated;
+-- Endurecimiento (avisos de seguridad de Supabase)
+-- Las funciones de trigger no se pueden llamar por RPC (los triggers siguen funcionando sin este permiso)
+revoke execute on function crear_perfil(), perfil_email(), proteger_homologacion(), proteger_encargo(), limpiar_mensaje_foro(), contar_votos_foro() from public, anon, authenticated;
+alter function ocultar_contacto(text) set search_path = '';
+-- es_del_equipo() y es_mi_profesional() se quedan ejecutables por anon y authenticated: las usan las
+-- políticas RLS (también las de lectura pública), que se evalúan con el rol de quien pregunta.
+-- Solo responden sí/no sobre la propia persona que llama.
