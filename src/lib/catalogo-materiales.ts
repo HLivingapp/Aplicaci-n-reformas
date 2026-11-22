@@ -66,6 +66,11 @@ const banera = (id: string, nombre: string, detalle: string, euros: string, ruta
 const amazon = (id: string, nombre: string, detalle: string, euros: string, asin: string): MaterialMedia =>
   marca(id, "electricidad", "Amazon", nombre, `${detalle}. Unos ${euros} € en Amazon`, `https://www.amazon.es/dp/${asin}`);
 
+const NAIS = "https://nais.es/es/azulejos/coleccion_";
+const EQ = "https://pror2.equipeceramicas.com/cdn-cgi/image/width=600,height=450,fit=cover/";
+const nais = (col: string, nombre: string, detalle: string, euros: string, foto: string): MaterialMedia =>
+  ({ ...otra(`nais-${col}`, "azulejos", "Nais", nombre, detalle, { texto: `${euros} €/m²`, fuente: "Nais", url: `${NAIS}${col}/` }, `${NAIS}${col}/`, `${EQ}${foto}-mini.png`, "Foto: web de Nais"), encajar: false });
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -163,6 +168,10 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   banera("lm-stori", "Bañera isla Stori", "Exenta, 156 x 70 cm", "999", "19284783/banera-isla-stori-exenta-156x70-cm", "media/2037606/media.jpg"),
   banera("lm-oleron", "Bañera isla Oleron", "Exenta, 170 x 54 cm", "1.207", "83071791/banera-isla-oleron-170x54-cm", "mkp/487206e7737f9db0f6ecb38d8c9b8782/media.jpg"),
   banera("lm-carmel", "Bañera isla Carmel", "Exenta, 175 x 80 cm", "989", "81929224/banera-isla-carmel-blanco-175x80-cm"),
+  // Nais, colecciones decorativas
+  nais("bamboo", "Colección Bamboo", "Azulejo 5,6 x 22,4 con textura de bambú, estilo japandi", "65,87", "8579ce20e64080b70ae7b0a214544ee5f7abeaa74d08a8274a0ddef45f425b6b"),
+  nais("porto", "Colección Porto", "Piezas en cruz y estrella (12 x 12 y 16,8 x 16,8) en ocho colores", "65,87", "5084f078e48734676792fbba8628ec539e05c8a857c421c24959d6423417d830"),
+  nais("elda", "Colección Elda", "Piezas en cruz y estrella en cinco colores", "65,87", "cc95852709782298a0ed1734927603c5663f978186d7ad7911973173ea1d6349"),
 ];
 
 /** Medio: además de la selección de gama media de la app. */
@@ -188,8 +197,6 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   lm("lm-valena", "electricidad", "Legrand", "Enchufe Valena Next", "Blanco", "6,79 €", "enchufe-legrand-valena-next-blanco-82117933.html", "1873616/media.png"),
   lm("lm-sky", "electricidad", "Niessen", "Enchufe Sky plano", "9 mm, blanco", "5,99 €", "enchufe-plano-9mm-sky-82834277.html", "1881485/media.jpg"),
   // Marcas que más usamos en obra (catálogos oficiales, sin tarifas)
-  marca("nais-azulejos", "azulejos", "Nais", "Azulejos y porcelánico Nais", "Colecciones de revestimiento y suelo porcelánico para baño, cocina y salón", "https://nais.es/es/azulejos/"),
-  marca("nais-loft", "azulejos", "Nais", "Colección Loft", "Porcelánico de estilo industrial para suelo y pared", "https://nais.es/es/azulejos/coleccion_loft/"),
   marca("alvic-frentes", "cocina", "Alvic", "Frentes de cocina Luxe, Zenit y Syncron", "Frentes en alto brillo, mate antihuellas y texturas madera", "https://alvic.com/es/descargas/"),
   marca("teka-placas", "cocina", "Teka", "Placas, campanas y fregaderos", "Catálogo Teka de electrodomésticos de cocina", "https://www.teka.com/es-es/"),
   marca("balay-electro", "cocina", "Balay", "Electrodomésticos de cocina", "Hornos, placas, lavavajillas y frigoríficos integrables", "https://www.balay.es/"),
@@ -218,6 +225,14 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   amazon("amz-comely", "Lámpara de techo de 3 luces", "Comely, colgante", "45,88", "B096MHCBY5"),
   amazon("amz-lywins", "Colgante moderno negro y oro", "Lywins, E27", "35,22", "B08CJ2XLLS"),
   amazon("amz-lightess", "Colgante vintage negro y oro 40 W", "Lightess", "34,99", "B07518TNQW"),
+  // Nais (tienda de azulejos de Castellón), colecciones de Equipe
+  nais("earth", "Colección Earth", "Revestimiento 7,5 x 60 en tonos tierra, ideal para cocinas y baños", "42,35", "63dda364ed15623144f50610b18692890fc8a94437156d097251196f74e4edce"),
+  nais("stonella", "Colección Stonella", "Revestimiento 7,5 x 60 en seis colores", "42,35", "0f462990aad98bbbf7e560151888483f4b8ea78cbdaae41406a1f581ff13fa18"),
+  nais("bohemian", "Colección Bohemian", "Azulejo decorativo 10 x 10 y 6 x 18,6 de inspiración mediterránea", "39,52", "50231c4a411eb1bb615e57e8891a702e50247cc740ec34b423e52ccf7f825e8a"),
+  nais("hikari", "Colección Hikari", "Azulejo 10 x 10 y 6 x 18,6, con piezas decoradas", "39,52", "34b94d9dfee800b707a124d73941f6b300e224cd9f02eed100e09e7f0215b8ef"),
+  nais("isola", "Colección Isola", "Azulejo alargado 5 x 30 en ocho colores", "42,35", "07e5a5e7b2868eb209ad891db118255eb8f1debc67df8c44060ac76c044c224a"),
+  nais("lumina", "Colección Lumina", "Azulejo brillo 6 x 24,6 que refleja la luz, para baños y cocinas", "36,72", "c6564409d3d1bc1f032e5b67de7472b972a8bc2ac7a27d316d349e0227022e54"),
+  nais("miyako", "Colección Miyako", "Azulejo 10 x 15 de inspiración japonesa y textura artesanal", "42,35", "070119dfcc406e7d745eedce5b9d1c5001c2b613e522c2ac9d91d9930f34c0c0"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */
