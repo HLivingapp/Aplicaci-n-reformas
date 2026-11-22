@@ -1,5 +1,7 @@
 "use client";
 
+import { FotosCalidad } from "@/components/FotosCalidad";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -92,6 +94,7 @@ export default function Disena() {
                 </button>
               ))}
             </div>
+            <FotosCalidad nivel={nivel} />
 
             <div className="rounded-2xl border border-stone-200 bg-white p-4">
               <h2 className="font-semibold">Materiales para tu {estancia === "bano" ? "baño" : "cocina"}</h2>

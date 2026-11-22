@@ -101,7 +101,7 @@ export function planificarFases(e: Estimacion, v: Vivienda, r: DatosReforma, R =
       (cantidad(e, "dem_suelo_ceramico") + cantidad(e, "dem_suelo_terrazo")) / R.picadoSueloM2Dia +
       cantidad(e, "dem_falso_techo") / R.desmontajeTechoM2Dia +
       (sinAscensor ? 1 : 0)
-    : 2 * cantidad(e, "dem_estancia");
+    : 2 * cantidad(e, "demolicion_estancia");
   add({
     clave: "demolicion",
     nombre: "Protección y demolición",

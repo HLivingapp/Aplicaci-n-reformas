@@ -1,5 +1,6 @@
 import { especificacion } from "./equipos";
 import { productosDePartida } from "./productos-partida";
+import { subpartidasDe, type Subpartida } from "./subpartidas";
 import { grupoDePartida, NIVEL_POR_CALIDAD, opcionElegida } from "./materiales";
 import { recargoDe } from "./tarifas";
 import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
@@ -20,6 +21,8 @@ export interface LineaEstimacion {
   especificacion?: string;
   /** Productos concretos del catálogo (ids de gama-media) con los que se calcula la partida */
   productos?: string[];
+  /** Subpartidas con unidad y medición (unidades recomendadas); el importe se reparte al mostrarlas */
+  subpartidas?: Subpartida[];
 }
 
 export interface OpcionMaterialPublica {
@@ -190,18 +193,22 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   const estanciasHumedas = [nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""}` : "", hazCocina ? "cocina" : ""].filter(Boolean).join(" y ");
   const conductos = r.climaDeseado === "conductos" && r.climaDeseado !== r.climaActual && quiere("Calefacción / aire acondicionado");
 
-  // --- Demolición y albañilería ---
-  if (integral) add("albanileria_base", m2c, "Toda la vivienda");
-  else add("dem_estancia", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
-  if (cambiaTabiques) add("albanileria_redistribucion", m2c, `${cambios} cambio${cambios > 1 ? "s" : ""} de distribución (habitaciones, baños o cocina), en toda la vivienda`);
+  // --- Demoliciones ---
+  if (integral) add("demolicion_integral", m2c, "Toda la vivienda");
+  else add("demolicion_estancia", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
   if (hazSuelos && r.sueloActual === "porcelanico") add("dem_suelo_ceramico", util - m2Banos, sueloSinBanos);
   if (hazSuelos && r.sueloActual === "terrazo") add("dem_suelo_terrazo", util - m2Banos, sueloSinBanos);
+  if (r.techoActual === "falso_techo" && integral) add("dem_falso_techo", util, "Toda la superficie útil");
+
+  // --- Albañilería ---
+  if (integral) add("albanileria_integral", m2c, "Toda la vivienda");
+  else add("albanileria_estancia", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
+  if (cambiaTabiques) add("albanileria_redistribucion", m2c, `${cambios} cambio${cambios > 1 ? "s" : ""} de distribución (habitaciones, baños o cocina), en toda la vivienda`);
   if (r.moverCocina) add("traslado_cocina", 1);
 
   // --- Techos ---
   let m2FalsoTecho = (hazBanos ? m2Banos : 0) + (hazCocina ? cocina.m2 : 0);
   if (r.techoActual === "falso_techo" && integral) {
-    add("dem_falso_techo", util, "Toda la superficie útil");
     m2FalsoTecho = util;
     avisos.push("Tiene falso techo: se desmonta y se rehace en toda la vivienda.");
   }
@@ -294,6 +301,8 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
     if (esp) l.especificacion = esp;
     const prods = productosDePartida(l.tarifaId, nivel);
     if (prods) l.productos = prods;
+    const subs = subpartidasDe(l, { estancias, m2c, util, integral, nBanos, hazCocina, m2AlicatadoBano: t.m2AlicatadoBano, m2AlicatadoCocina: t.m2AlicatadoCocina, paramentosPorM2: t.paramentosPorM2, puntosAguaBano: t.puntosAguaBano, puntosAguaCocina: t.puntosAguaCocina, m2FalsoTecho, cambiosDistribucion: cambios });
+    if (subs.length) l.subpartidas = subs;
   }
 
   const coste = r2(lineas.reduce((s, l) => s + l.cantidad * l.coste, 0));

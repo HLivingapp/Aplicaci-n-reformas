@@ -36,14 +36,16 @@ export const tarifasPorDefecto = (): Tarifas => ({
   ],
   precios: [
     // MANO DE OBRA (m²c = metro cuadrado construido)
-    l("albanileria_base", "Mano de obra", "Demolición y albañilería", "Demolición y albañilería integral con contenedores", "m²c", 110),
-    l("albanileria_redistribucion", "Mano de obra", "Demolición y albañilería", "Suplemento por redistribución de tabiquería", "m²c", 25),
-    l("dem_suelo_ceramico", "Mano de obra", "Demolición y albañilería", "Suplemento picado de suelo cerámico o porcelánico", "m²", 8),
-    l("dem_suelo_terrazo", "Mano de obra", "Demolición y albañilería", "Suplemento picado de suelo de terrazo", "m²", 12),
-    l("dem_falso_techo", "Mano de obra", "Demolición y albañilería", "Desmontaje de falso techo existente", "m²", 8),
-    l("dem_estancia", "Mano de obra", "Demolición y albañilería", "Demolición y albañilería de baño o cocina (reforma parcial)", "ud", 2500),
-    l("traslado_cocina", "Mano de obra", "Demolición y albañilería", "Traslado de cocina: desagües, rozas y salida de humos", "pa", 1200),
-    l("sin_ascensor", "Mano de obra", "Demolición y albañilería", "Subida de material y bajada de escombros sin ascensor (por planta)", "ud", 120),
+    l("demolicion_integral", "Mano de obra", "Demoliciones", "Protección de zonas comunes, demolición integral y retirada de escombros con contenedores", "m²c", 35),
+    l("dem_suelo_ceramico", "Mano de obra", "Demoliciones", "Suplemento picado de suelo cerámico o porcelánico", "m²", 8),
+    l("dem_suelo_terrazo", "Mano de obra", "Demoliciones", "Suplemento picado de suelo de terrazo", "m²", 12),
+    l("dem_falso_techo", "Mano de obra", "Demoliciones", "Desmontaje de falso techo existente", "m²", 8),
+    l("demolicion_estancia", "Mano de obra", "Demoliciones", "Demolición de baño o cocina y retirada de escombros (reforma parcial)", "ud", 900),
+    l("sin_ascensor", "Mano de obra", "Demoliciones", "Subida de material y bajada de escombros sin ascensor (por planta)", "ud", 120),
+    l("albanileria_integral", "Mano de obra", "Albañilería", "Albañilería integral: recrecidos, rozas, ayudas a instalaciones y tabiquería de baños y cocina", "m²c", 75),
+    l("albanileria_redistribucion", "Mano de obra", "Albañilería", "Suplemento por redistribución de tabiquería", "m²c", 25),
+    l("albanileria_estancia", "Mano de obra", "Albañilería", "Albañilería de baño o cocina: regularización de paredes y suelo y ayudas a instalaciones (reforma parcial)", "ud", 1600),
+    l("traslado_cocina", "Mano de obra", "Albañilería", "Traslado de cocina: desagües, rozas y salida de humos", "pa", 1200),
     l("alicatado_mo", "Mano de obra", "Alicatado", "Alicatado de baños y frente de cocina (mano de obra)", "m²", 25),
     l("falso_techo", "Mano de obra", "Pladur", "Falso techo de placa de yeso laminado", "m²", 40),
     l("vigas", "Mano de obra", "Pladur", "Limpieza y tratamiento de vigas vistas", "m²", 12),
@@ -99,7 +101,14 @@ export function esTarifas(x: unknown): x is Tarifas {
 /** Completa un tarifario importado con las líneas o campos nuevos que falten. */
 export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   const base = tarifasPorDefecto();
-  const precios = [...(t.precios ?? [])];
+  // Partidas antiguas que mezclaban demolición y albañilería: se sustituyen por las separadas.
+  const OBSOLETAS = ["albanileria_base", "dem_estancia"];
+  const precios = (t.precios ?? [])
+    .filter((x) => !OBSOLETAS.includes(x.id))
+    .map((x) => {
+      const b = base.precios.find((y) => y.id === x.id);
+      return b ? { ...x, capitulo: b.capitulo } : x;
+    });
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
   return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, recargoPorCapitulo: { ...base.recargoPorCapitulo, ...t.recargoPorCapitulo }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }

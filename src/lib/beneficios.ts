@@ -104,6 +104,8 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
 
 export interface ProductoBanco {
   banco: string;
+  /** Logotipo oficial (Wikimedia Commons o la web de la entidad); se enlaza, no se copia. */
+  logo?: string;
   producto: string;
   tipo: "Préstamo personal" | "Préstamo hipotecario";
   /** Importe máximo en euros, si la web lo indica */
@@ -369,3 +371,19 @@ export const BANCOS_REFORMA: ProductoBanco[] = [
     },
   },
 ];
+
+const WM = (ruta: string) => `https://upload.wikimedia.org/wikipedia/commons/${ruta}`;
+/** Logotipos de cada entidad. Las marcas son de sus titulares; la app no tiene acuerdo con ellas. */
+export const LOGOS_BANCOS: Record<string, string> = {
+  Unicaja: WM("7/74/Unicaja_logo.svg"),
+  Kutxabank: WM("5/55/Kutxabank.svg"),
+  Globalcaja: "https://www.globalcaja.es/sites/default/files/Logotipo_Globalcaja.png",
+  "Caja Rural de Soria": "https://www.cajaruraldesoria.com/sites/default/files/logotipo_caja_rural_soria.png",
+  "Banco Santander": WM("6/60/Banco_santander_logo.svg"),
+  CaixaBank: WM("2/2f/Logo_CaixaBank.svg"),
+  BBVA: WM("9/98/BBVA_logo_2025.svg"),
+  Abanca: WM("9/95/Abanca_logo.svg"),
+  "Laboral Kutxa": WM("thumb/7/74/Logo_Laboral_Kutxa.JPG/330px-Logo_Laboral_Kutxa.JPG"),
+  Bankinter: WM("a/a5/Bankinter.svg"),
+};
+for (const b of BANCOS_REFORMA) b.logo ??= LOGOS_BANCOS[b.banco];
