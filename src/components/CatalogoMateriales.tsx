@@ -9,11 +9,11 @@ import { NIVELES_CATALOGO, catalogoDe, type NivelCatalogo } from "@/lib/catalogo
 /** Zonas de la vivienda y las categorías de material que lleva cada una. */
 export const ZONAS: { id: string; texto: string; icono: string; categorias: CategoriaMedia[] }[] = [
   { id: "todo", texto: "Toda la vivienda", icono: "🏠", categorias: CATEGORIAS_MEDIA.map((c) => c.id) },
-  { id: "cocina", texto: "Cocina", icono: "🍳", categorias: ["cocina", "electrodomesticos", "encimeras", "griferia", "azulejos", "suelos"] },
+  { id: "cocina", texto: "Cocina", icono: "🍳", categorias: ["cocina", "electrodomesticos", "encimeras", "griferia", "azulejos", "suelos", "cerramientos"] },
   { id: "bano", texto: "Baño", icono: "🛁", categorias: ["bano", "sanitarios", "griferia", "azulejos", "suelos"] },
-  { id: "salon", texto: "Salón y dormitorios", icono: "🛋️", categorias: ["suelos", "puertas", "armarios"] },
-  { id: "ventanas", texto: "Ventanas", icono: "🪟", categorias: ["ventanas"] },
-  { id: "instalaciones", texto: "Electricidad y clima", icono: "⚡", categorias: ["electricidad", "climatizacion"] },
+  { id: "salon", texto: "Salón y dormitorios", icono: "🛋️", categorias: ["suelos", "puertas", "cerramientos", "armarios", "molduras", "aislamientos"] },
+  { id: "ventanas", texto: "Ventanas y puerta de entrada", icono: "🪟", categorias: ["ventanas", "puertas-entrada"] },
+  { id: "instalaciones", texto: "Electricidad y clima", icono: "⚡", categorias: ["electricidad", "climatizacion", "aislamientos"] },
 ];
 
 /** Catálogo de materiales por zona, nivel y categoría, con foto, PVP público, tienda y fecha. */
