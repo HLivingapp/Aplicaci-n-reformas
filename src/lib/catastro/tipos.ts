@@ -10,7 +10,12 @@ export interface InmuebleCandidato {
 
 export interface DetalleInmueble {
   referencia: string;
+  /** m² construidos de vivienda, sin la parte de zonas comunes. */
   superficie?: number;
+  /** m² construidos totales del Catastro (incluye la parte proporcional de zonas comunes). */
+  superficieTotal?: number;
+  /** m² de zonas comunes atribuidos al inmueble. */
+  superficieComunes?: number;
   anoConstruccion?: number;
   uso?: string;
   direccion?: string;

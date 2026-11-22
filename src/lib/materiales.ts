@@ -53,7 +53,7 @@ export const materialesPorDefecto = (): GrupoMaterial[] => [
     tarifaIds: ["equip_bano"],
     opciones: [
       o("eb_basico", "basico", "Equipamiento estándar", "Plato de resina, mampara fija, inodoro de suelo, mueble de 60 cm y monomando", 0.75),
-      o("eb_medio", "medio", "Equipamiento de gama media", "Plato extraplano, mampara de vidrio templado, inodoro suspendido, mueble de 80 cm y grifo termostático", 1),
+      o("eb_medio", "medio", "Equipamiento de gama media", "Plato extraplano, mampara Kassandra de vidrio templado, inodoro Roca Gap, mueble Salgar con lavabo y grifería Imex", 1),
       o("eb_premium", "premium", "Equipamiento de gama alta", "Ducha a ras de suelo, grifería empotrada, mueble a medida y espejo con luz", 1.7),
     ],
   },
@@ -63,7 +63,7 @@ export const materialesPorDefecto = (): GrupoMaterial[] => [
     tarifaIds: ["cocina"],
     opciones: [
       o("co_basico", "basico", "Muebles laminados", "Frentes laminados y encimera laminada", 0.75),
-      o("co_medio", "medio", "Muebles lacados", "Frentes lacados mate y encimera de cuarzo o compacto", 1),
+      o("co_medio", "medio", "Muebles lacados", "Frentes Alvic (Luxe, Zenit o Syncron) y encimera de cuarzo Compac", 1),
       o("co_premium", "premium", "Cocina a medida de gama alta", "Frentes a medida, herrajes con cierre suave y encimera porcelánica sinterizada", 1.6),
     ],
   },
@@ -73,7 +73,7 @@ export const materialesPorDefecto = (): GrupoMaterial[] => [
     tarifaIds: ["electrodomesticos"],
     opciones: [
       o("el_basico", "basico", "Gama básica", "Vitrocerámica, horno, campana, frigorífico y lavavajillas de libre instalación", 0.7),
-      o("el_medio", "medio", "Gama media integrable", "Placa de inducción, horno multifunción y frigorífico y lavavajillas integrables", 1),
+      o("el_medio", "medio", "Gama media integrable", "Balay o Teka: placa de inducción, horno multifunción y frigorífico y lavavajillas integrables", 1),
       o("el_premium", "premium", "Gama alta integrable", "Inducción de zona libre, horno pirolítico y campana de techo o integrada", 1.6),
     ],
   },

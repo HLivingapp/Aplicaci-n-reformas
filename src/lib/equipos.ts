@@ -70,23 +70,23 @@ export function especificacion(tarifaId: string, c: ContextoEquipo): string | un
     case "suelo_radiante":
       return `${porNivel(n, "Orkli o Giacomini", "Uponor o Rehau", "Uponor o Rehau con control por estancia")} o similar. Tubo PEX de 16 mm sobre panel aislante, colectores con caudalímetros y un circuito por estancia.`;
     case "elec_completa":
-      return `Cuadro con protecciones Schneider o Hager o similar, electrificación elevada (9,2 kW), un circuito por uso. Mecanismos ${porNivel(n, "Simon 27 o BJC Iris", "Simon 82 o Niessen Zenit", "Jung LS990 o Simon 100")} o similar.`;
+      return `Cuadro con protecciones Schneider o Hager o similar, electrificación elevada (9,2 kW), un circuito por uso. Mecanismos ${porNivel(n, "BJC Iris o Simon 27", "Simon 27 o Simon 82", "Jung LS990 o Simon 100")} o similar.`;
     case "equip_bano":
       return porNivel(
         n,
         "Sanitarios Roca o Gala o similar, plato de resina, mampara fija de vidrio templado, grifería monomando.",
-        "Inodoro suspendido Roca o similar, plato extraplano, mampara de vidrio templado de 8 mm, grifería termostática Hansgrohe o Grohe o similar.",
+        "Mueble Salgar con lavabo (Noja, Attila o Uniq), inodoro Roca Gap, plato extraplano, mampara Kassandra de vidrio templado y grifería Imex, o similar.",
         "Sanitarios Duravit o Villeroy & Boch o similar, ducha a ras de suelo, grifería empotrada Hansgrohe o Grohe o similar.",
       );
     case "electrodomesticos":
       return porNivel(
         n,
         "Balay o Beko o similar: vitrocerámica, horno, campana, frigorífico y lavavajillas.",
-        "Bosch Serie 4 o Siemens iQ300 o similar: placa de inducción, horno multifunción, campana, frigorífico y lavavajillas integrables.",
+        "Balay o Teka o similar: placa de inducción, horno multifunción, campana, frigorífico y lavavajillas integrables.",
         "Siemens iQ700 o Neff o similar: inducción de zona libre, horno pirolítico, campana integrada, frigorífico y lavavajillas integrables.",
       );
     case "suelo_laminado":
-      return `${porNivel(n, "Laminado AC4 de 8 mm, Faus o similar", "Laminado AC5 hidrófugo, Quick-Step o Faus o similar", "Tarima multicapa de roble, Quick-Step o Kährs o similar")}, con rodapié a juego.`;
+      return `${porNivel(n, "Laminado AC4 de 8 mm, Faus o similar", "Laminado Meister LC150 o Finfloor Original o similar, AC5 hidrófugo", "Tarima multicapa de roble, Quick-Step o Kährs o similar")}, con rodapié a juego.`;
     case "suelo_porcelanico":
     case "revest_bano":
     case "revest_cocina":
