@@ -4,7 +4,7 @@ import Link from "next/link";
  * En la versión estática (GitHub Pages) las páginas con parámetros solo existen con «_».
  * Este script lleva /p/<token> a /p/_/#/p/<token> antes de que cargue la app.
  */
-const PLANTILLAS = ["p/_", "p/_/presupuesto/_", "reformista/_", "empresa/obras/_", "empresa/presupuestos/_", "empresa/proveedores/_", "empresa/solicitudes/_"];
+const PLANTILLAS = ["p/_", "p/_/presupuesto/_", "reformista/_", "obra/_", "empresa/obras/_", "empresa/presupuestos/_", "empresa/proveedores/_", "empresa/solicitudes/_"];
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const script = `(function(){var b=${JSON.stringify(base)};var P=${JSON.stringify(PLANTILLAS)};
 var r=location.pathname.slice(b.length).split("/").filter(Boolean);
