@@ -22,7 +22,7 @@ const lm = (id: string, categoria: CategoriaMedia, marca: string, nombre: string
   marca,
   nombre,
   detalle,
-  imagen: `https://media.adeo.com/media/${img}`,
+  imagen: `https://media.adeo.com/media/${img}?width=640`,
   encajar: true,
   credito: "Foto: web de Leroy Merlin",
   precio: { texto: precio, fuente: "Leroy Merlin", url: LM + ruta, fecha: FECHA },
