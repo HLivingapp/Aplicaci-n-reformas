@@ -6,6 +6,7 @@ import { publico } from "@/lib/base";
 import { usePathname } from "next/navigation";
 import { useSuscripcion } from "@/lib/suscripcion";
 import { FranjaHomologate } from "./FranjaHomologate";
+import { conNube } from "@/lib/modo";
 
 const ENLACES = [
   { href: "/materiales", texto: "Materiales", corto: "Materiales" },
@@ -40,6 +41,12 @@ export function CabeceraPublica() {
               <span className="sm:hidden">{e.corto}</span>
             </Link>
           ))}
+          {conNube && (
+            <Link href="/cuenta" aria-label="Mi cuenta" className={`whitespace-nowrap rounded-full px-2.5 py-1.5 ${ruta?.startsWith("/cuenta") ? "bg-stone-100 font-medium text-stone-900" : "text-stone-600 hover:bg-stone-100"}`}>
+              <span className="hidden sm:inline">Mi cuenta</span>
+              <span className="sm:hidden">👤</span>
+            </Link>
+          )}
           {s && s.plan !== "gratis" ? (
             <span className="ml-1 hidden whitespace-nowrap rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-900 sm:inline">Plan {s.plan === "pro" ? "Pro" : "Básico"}</span>
           ) : (

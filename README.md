@@ -42,5 +42,6 @@ Stack: Next.js (App Router) + TypeScript + Tailwind CSS.
 ## Limitaciones de esta versión
 
 - Sin las variables de Supabase la app funciona en **modo demostración** (datos en el navegador). Con ellas, los datos van a la base de datos: el equipo entra con un enlace por email y cada cliente con su enlace privado `/p/<token>`, sin contraseñas.
+- La web estática (GitHub Pages) también puede guardar en Supabase: cada persona entra en `/cuenta` con un enlace a su email y sus datos (presupuesto, materiales, encargos, pagos simulados, foro) se guardan con RLS. Ver [`docs/puesta-en-marcha.md`](docs/puesta-en-marcha.md#0-lo-más-rápido-la-web-actual-github-pages-guardando-en-supabase) y [`supabase/migrations`](supabase/migrations).
 - La consulta al Catastro usa los servicios públicos de la Sede Electrónica del Catastro desde el servidor (`/api/catastro`). País Vasco y Navarra tienen catastro foral y aún no están conectados.
 - El plano es esquemático, no a escala.

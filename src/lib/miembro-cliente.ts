@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { miembroLimpio, type Miembro } from "./miembro";
-import { conBaseDeDatos } from "./modo";
+import { conBaseDeDatos, conNube } from "./modo";
+import { anotarConsentimiento, enviarEnlace, salirDeLaNube } from "./nube";
 
 const CLAVE = "app-reformas:miembro";
 /** Lista de miembros de la demo (solo en este navegador), para verla en el panel de la empresa. */
@@ -41,6 +42,11 @@ export async function unirse(datos: { email: string; telefono: string; aceptaPri
     const r = await fetch("/api/registro", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) }).catch(() => null);
     if (!r?.ok) return (await r?.json().catch(() => null))?.error ?? "No se ha podido completar el registro. Prueba de nuevo.";
   } else {
+    if (conNube) {
+      // Se puede seguir usando la app al momento; el enlace del email guarda todo en su cuenta (Supabase, UE)
+      anotarConsentimiento({ telefono: m.telefono, privacidad: m.privacidad, contacto: m.contacto });
+      void enviarEnlace(m.email, window.location.pathname.replace(process.env.NEXT_PUBLIC_BASE_PATH ?? "", "") + window.location.search);
+    }
     try {
       const lista: Miembro[] = JSON.parse(localStorage.getItem(CLAVE_DEMO) ?? "[]");
       localStorage.setItem(CLAVE_DEMO, JSON.stringify([m, ...lista.filter((x) => x.email !== m.email)]));
@@ -59,6 +65,7 @@ export async function unirse(datos: { email: string; telefono: string; aceptaPri
 }
 
 export function salir() {
+  void salirDeLaNube();
   try {
     localStorage.removeItem(CLAVE);
   } catch {

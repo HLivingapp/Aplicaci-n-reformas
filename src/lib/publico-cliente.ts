@@ -8,6 +8,7 @@ import { conBaseDeDatos } from "./modo";
 import { elegirMateriales, estimacionPublica, registrarProyecto, responderPresupuesto, vistaPortal, type ContactoCliente, type DatosPortal } from "./publico";
 import { escribirLocal, leerLocal } from "./store";
 import type { DatosReforma, Vivienda } from "./types";
+import { anotarMiProyecto } from "./nube";
 
 async function api<T>(url: string, body?: unknown): Promise<T> {
   const r = await fetch(url, body === undefined ? { cache: "no-store" } : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -25,6 +26,7 @@ export async function enviarProyecto(v: Vivienda, r: DatosReforma, c: ContactoCl
     const d = leerLocal();
     const token = registrarProyecto(d, v, r, c);
     escribirLocal(d);
+    anotarMiProyecto(token);
     return token;
   }
   const res = await api<{ token: string }>("/api/proyectos", { vivienda: v, reforma: r, contacto: c, acepto });

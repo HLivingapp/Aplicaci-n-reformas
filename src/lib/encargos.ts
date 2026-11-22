@@ -1,6 +1,7 @@
 "use client";
 
 import { estimar } from "./estimacion";
+import { avisarCambio, registrarPago } from "./nube";
 import type { Estimacion, LineaEstimacion } from "./estimacion";
 import { nuevoId } from "./id";
 import type { FichaRed } from "./red";
@@ -20,7 +21,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 
 export const IVA_REFORMA = 10;
 
-import { reservaApp } from "./comercializacion";
+import { reservaApp, VISITAS } from "./comercializacion";
 import { anonimizar, type Identidad } from "./anonimizar";
 export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA, AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS } from "./comercializacion";
 
@@ -135,6 +136,7 @@ function escribir(clave: string, valor: unknown) {
   try {
     localStorage.setItem(clave, JSON.stringify(valor));
     window.dispatchEvent(new Event("encargos"));
+    avisarCambio(clave);
   } catch {
     /* sin almacenamiento */
   }
@@ -192,14 +194,18 @@ export function actualizarEncargo(id: string, cambio: (e: Encargo) => Encargo) {
 }
 
 /** El reformista confirma la visita y paga los 150 € de la visita (simulado en la demo). */
-export const fijarVisita = (id: string, fecha: string, nota: string) =>
+export const fijarVisita = (id: string, fecha: string, nota: string) => {
+  const e = leerEncargos().find((x) => x.id === id);
+  if (e && !e.visita.pagoReformista && !e.desdeNoHomologado && e.origen !== "invitado") registrarPago("visita_profesional", VISITAS.reformista, id);
   actualizarEncargo(id, (e) => ({ ...e, estado: "visita_fijada", visita: { ...e.visita, fecha, nota, pagoReformista: e.visita.pagoReformista ?? new Date().toISOString() } }));
+};
 
 const CLAVE_PAGO_VISITAS = "app-reformas:pago-visitas";
 /** Fecha en que el cliente pagó las visitas de este proyecto (150 €, una sola vez), o undefined. */
 export const visitasPagadas = (proyectoId: string) => leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {})[proyectoId];
 /** Pago simulado del cliente antes de pedir las visitas. */
 export function pagarVisitasCliente(proyectoId: string) {
+  if (!visitasPagadas(proyectoId)) registrarPago("visitas_cliente", VISITAS.cliente, proyectoId);
   escribir(CLAVE_PAGO_VISITAS, { ...leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {}), [proyectoId]: new Date().toISOString() });
 }
 
@@ -215,6 +221,8 @@ export function firmarCliente(id: string) {
   const ahora = new Date().toISOString();
   const e = leerEncargos().find((x) => x.id === id);
   if (!e) return;
+  const reserva = reservaEncargo(e, e.final?.importe ?? e.baseInicial);
+  if (reserva > 0 && !e.desdeNoHomologado) registrarPago("reserva", reserva, e.id);
   escribir(
     CLAVE_ENCARGOS,
     leerEncargos().map((x) =>
@@ -224,6 +232,7 @@ export function firmarCliente(id: string) {
   // Si pagó las visitas y al final firma en la app con un proveedor que trae él, se le devuelven los 150 € (simulado)
   if (e.origen === "invitado" && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
     escribir(CLAVE_DEVOLUCION, { ...leer<Record<string, string>>(CLAVE_DEVOLUCION, {}), [e.proyectoId]: ahora });
+    registrarPago("devolucion_visitas", VISITAS.cliente, e.proyectoId);
   }
 }
 

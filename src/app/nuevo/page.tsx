@@ -37,6 +37,7 @@ import { PlanoBase } from "@/components/PlanoBase";
 import { Resumen } from "@/components/ResumenProyecto";
 import { Ubicacion } from "@/components/Ubicacion";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
+import { avisarCambio } from "@/lib/nube";
 
 const PASOS = ["Dirección", "Tu vivienda", "Distribución", "Estado actual", "Instalaciones", "La reforma", "Tu presupuesto"];
 const BORRADOR = "app-reformas:borrador-proyecto";
@@ -88,7 +89,7 @@ function NuevoProyectoContenido() {
   }, []);
   useEffect(() => {
     if (!cargado) return;
-    try { localStorage.setItem(BORRADOR, JSON.stringify({ v, r, c, paso })); } catch { /* ignorar */ }
+    try { localStorage.setItem(BORRADOR, JSON.stringify({ v, r, c, paso })); avisarCambio(BORRADOR); } catch { /* ignorar */ }
   }, [v, r, c, paso, cargado]);
 
   useEffect(() => {
@@ -159,7 +160,7 @@ function NuevoProyectoContenido() {
     setErrorEnvio(null);
     try {
       const token = await enviarProyecto(v, r, { nombre: c.nombre, telefono: c.telefono, email: miembro?.email ?? c.email }, c.acepto);
-      try { localStorage.removeItem(BORRADOR); } catch { /* ignorar */ }
+      try { localStorage.removeItem(BORRADOR); avisarCambio(BORRADOR); } catch { /* ignorar */ }
       // Demostración: la obra queda unida al profesional que invitó al cliente, sin reserva ni fee
       if (invitacion && !conBaseDeDatos) {
         const d = leerLocal();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { avisarCambio, registrarPago } from "./nube";
 
 /**
  * Planes para clientes. El presupuesto orientativo y la comunidad son gratis; la red de profesionales
@@ -77,6 +78,9 @@ export function guardarSuscripcion(plan: Plan) {
   const s: Suscripcion = { plan, desde: plan === "gratis" ? undefined : new Date().toISOString() };
   try {
     localStorage.setItem(CLAVE, JSON.stringify(s));
+    avisarCambio(CLAVE);
+    const info = PLANES.find((p) => p.id === plan);
+    if (info?.precio) registrarPago("suscripcion", info.precio, plan);
   } catch {
     /* sin almacenamiento */
   }

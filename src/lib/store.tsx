@@ -9,6 +9,7 @@ import { datosDesdeFilas, diferencias, type Fila, type FilaAjuste } from "./sinc
 import { supabaseNavegador } from "./supabase/navegador";
 import { completarTarifas } from "./tarifas";
 import type { Datos, Proyecto } from "./types";
+import { avisarCambio } from "./nube";
 
 const CLAVE = "app-reformas:datos";
 
@@ -54,6 +55,7 @@ export function leerLocal(): Datos {
 export function escribirLocal(d: Datos) {
   try {
     localStorage.setItem(CLAVE, JSON.stringify(d));
+    avisarCambio(CLAVE);
   } catch {
     /* sin almacenamiento */
   }

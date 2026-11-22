@@ -3,6 +3,7 @@
 import { guardarEncargoInvitado, referencia } from "./encargos";
 import { leerEstudios, precioServicio, encargoInvitadoEstudio, SERVICIOS, type Servicio } from "./estudios";
 import type { DatosReforma, Vivienda } from "./types";
+import { avisarCambio } from "./nube";
 
 /**
  * «Invita a tus clientes»: el reformista o arquitecto comparte un enlace con sus propios clientes.
@@ -23,7 +24,10 @@ const CLAVE = "app-reformas:invitacion-pro";
 export function leerInvitacionPro(): InvitacionPro | null {
   let v = new URLSearchParams(window.location.search).get("pro");
   try {
-    if (v) localStorage.setItem(CLAVE, v);
+    if (v) {
+      localStorage.setItem(CLAVE, v);
+      avisarCambio(CLAVE);
+    }
     else v = localStorage.getItem(CLAVE);
   } catch {
     /* sin almacenamiento */
@@ -39,6 +43,7 @@ export function leerInvitacionPro(): InvitacionPro | null {
 export function olvidarInvitacionPro() {
   try {
     localStorage.removeItem(CLAVE);
+    avisarCambio(CLAVE);
   } catch {
     /* sin almacenamiento */
   }

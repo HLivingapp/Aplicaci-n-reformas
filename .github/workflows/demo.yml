@@ -29,6 +29,11 @@ jobs:
       - name: Subvenciones desde la BDNS (si no responde, se publican los datos anteriores)
         run: node scripts/actualizar-subvenciones.mjs || true
       - run: ./scripts/exportar-demo.sh "/${{ github.event.repository.name }}"
+        env:
+          # Variables del repositorio (Settings → Secrets and variables → Actions → Variables).
+          # Son públicas por diseño (URL y clave anon); la clave service_role nunca va aquí.
+          NUBE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          NUBE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: out
