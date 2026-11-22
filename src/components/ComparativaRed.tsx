@@ -15,6 +15,7 @@ import { SimuladorHipoteca } from "./SimuladorHipoteca";
 import { ServiciosContratables } from "./SeguroPromotor";
 import { Muro } from "./Muro";
 import { inputCls } from "./ui";
+import { cercania, mejoresPara, PUNTOS, puntosVisibilidad } from "@/lib/visibilidad";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
@@ -67,7 +68,16 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   useEffect(() => setPagoVisitas(visitasPagadas(proyectoId)), [proyectoId, encargos.length]);
   const suscrito = s ? incluye(s.plan, "basico") : false;
   const ref = useMemo(() => referencia(vivienda, reforma), [vivienda, reforma]);
-  const lista = useMemo(() => (fichas ? ofertas(vivienda, reforma, fichas) : []), [fichas, vivienda, reforma]);
+  const municipio = vivienda.direccion.municipio || "Madrid";
+  const cp = vivienda.direccion.codigoPostal ?? "";
+  // La app propone los 3 reformistas con mejor encaje (cercanía + puntos de visibilidad); se mantienen los que ya tienen encargo.
+  const lista = useMemo(() => {
+    if (!fichas) return [];
+    const todas = ofertas(vivienda, reforma, fichas);
+    const top = mejoresPara(todas, municipio, cp);
+    const conEncargo = todas.filter((o) => !top.includes(o) && encargos.some((e) => e.reformistaId === o.ficha.id));
+    return [...top, ...conEncargo].sort((a, b) => a.e.base - b.e.base);
+  }, [fichas, vivienda, reforma, municipio, cp, encargos]);
   const firmado = encargos.find((e) => e.estado === "firmado" || e.estado === "firmado_cliente");
 
   if (!fichas) return null;
@@ -92,9 +102,14 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita ({TEXTO_VISITA_CLIENTE}) y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y de ella se descuentan los {VISITAS.cliente} € de las visitas. Al pagarla te cotizamos y añadimos gratis un seguro de promotor con responsabilidad civil y defensa jurídica.
         </p>
       </div>
+      {lista.length > 0 && (
+        <p className="rounded-xl bg-teal-50 p-3 text-xs text-teal-900">
+          🎯 Te proponemos los {PUNTOS.propuestos} reformistas homologados con mejor encaje para tu casa: que trabajan en tu zona y tienen más puntos de visibilidad (obras facturadas en la app y valoraciones de otros clientes).
+        </p>
+      )}
       {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
       {!suscrito && lista.length > 0 && (
-        <Muro plan="basico" volver={`/p/${token}`} titulo={`${lista.length} reformistas homologados ya tienen precio para tu reforma`}>
+        <Muro plan="basico" volver={`/p/${token}`} titulo={`Los ${lista.length} reformistas homologados con mejor encaje ya tienen precio para tu reforma`}>
           Desde {eurosRedondo(conIva(lista[0].e.base))} hasta {eurosRedondo(conIva(lista[lista.length - 1].e.base))} con IVA. Suscríbete para ver quién es cada uno, comparar sus partidas y quedar para una visita.
         </Muro>
       )}
@@ -106,6 +121,8 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
             refBase={ref.base}
             suscrito={suscrito}
             encargo={encargoDe(o.ficha.id)}
+            municipio={municipio}
+            cp={cp}
             elegido={elegidos.includes(o.ficha.id)}
             bloqueado={!!firmado}
             alElegir={() => alternar(o.ficha.id)}
@@ -145,8 +162,8 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   );
 }
 
-function Oferta({ o, refBase, suscrito, encargo, elegido, bloqueado, alElegir, abierto, alAbrir }: {
-  o: OfertaRed; refBase: number; suscrito: boolean; encargo?: Encargo; elegido: boolean; bloqueado: boolean; alElegir: () => void; abierto: boolean; alAbrir: () => void;
+function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloqueado, alElegir, abierto, alAbrir }: {
+  o: OfertaRed; refBase: number; municipio: string; cp: string; suscrito: boolean; encargo?: Encargo; elegido: boolean; bloqueado: boolean; alElegir: () => void; abierto: boolean; alAbrir: () => void;
 }) {
   const f = o.ficha;
   const dif = refBase ? Math.round(((o.e.base - refBase) / refBase) * 100) : 0;
@@ -159,6 +176,10 @@ function Oferta({ o, refBase, suscrito, encargo, elegido, bloqueado, alElegir, a
           <div className="font-semibold">{suscrito ? `Reformista ${f.codigo}` : "Reformista homologado"}</div>
           <div className="text-xs text-stone-500">
             {suscrito ? `${f.zonas.slice(0, 2).join(", ")} · ` : ""}{f.obrasEnApp} obras en la app{m ? ` · ★ ${m.toLocaleString("es-ES", { maximumFractionDigits: 1 })}` : ""}
+          </div>
+          <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
+            <span className="rounded-full bg-teal-50 px-2 py-0.5 text-teal-800 ring-1 ring-teal-200">📍 {cercania(f, municipio, cp).texto}</span>
+            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-900 ring-1 ring-amber-200">⭐ {puntosVisibilidad(f).total.toLocaleString("es-ES")} puntos de visibilidad</span>
           </div>
         </div>
         <div className="sm:text-right">

@@ -12,6 +12,7 @@ import { leerLocal } from "@/lib/store";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA } from "@/lib/comercializacion";
+import { TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
 import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
@@ -92,7 +93,7 @@ export default function AltaReformista() {
         {[
           ["💶", "Pagas por visita y al firmar", `Sin cuotas por contacto: pagas ${TEXTO_VISITA_REFORMISTA}, solo con clientes que ya te han elegido y han pagado su parte para pedir visitas. Si firma en la app, el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}).`],
           ["📋", "Tus tarifas trabajan por ti", "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido."],
-          ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en el foro te dan más visibilidad."],
+          ["⭐", "Puntos de visibilidad", `${TEXTO_VISIBILIDAD} Los clientes que traes no pagan nada y te suman puntos.`],
           ...BENEFICIOS_PROFESIONAL.filter((b) => !b.t.startsWith("Clientes que")).map((b) => [b.i, b.t, b.d]),
         ].map(([i, t, d]) => (
           <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>

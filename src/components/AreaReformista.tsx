@@ -12,6 +12,8 @@ import { SeguimientoEncargo } from "./SeguimientoEncargo";
 import { useEncargos } from "./ComparativaRed";
 import { EditorTarifas } from "./TarifasReformista";
 import { Boton, inputCls, Tarjeta } from "./ui";
+import type { FichaRed } from "@/lib/red";
+import { PUNTOS, puntosVisibilidad, TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 
 /** Tarifas del reformista: con ellas la app calcula su presupuesto a cada cliente de su zona. */
 export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: string; tarifaGuardada?: TarifaReformista }) {
@@ -159,5 +161,36 @@ function PresupuestoFinal({ e, reformistaId, bloqueado, alEnviar }: { e: Encargo
         {e.final ? "Actualizar presupuesto y contrato" : "Generar el contrato y enviárselo al cliente"}
       </Boton>
     </div>
+  );
+}
+
+/** Puntos de visibilidad del reformista: los de su historial más lo que suma en la app (obras firmadas y clientes que trae). */
+export function MisPuntos({ reformistaId, ficha }: { reformistaId: string; ficha?: Pick<FichaRed, "facturacionApp" | "valoraciones" | "clientesTraidos"> }) {
+  const encargos = useEncargos().filter((e) => e.reformistaId === reformistaId);
+  const facturadoNuevo = encargos.filter((e) => e.estado === "firmado" && e.final).reduce((s, e) => s + (e.final?.importe ?? 0), 0);
+  const traidosNuevos = encargos.filter((e) => e.origen === "invitado").length;
+  const p = puntosVisibilidad({
+    facturacionApp: (ficha?.facturacionApp ?? 0) + facturadoNuevo,
+    valoraciones: ficha?.valoraciones,
+    clientesTraidos: (ficha?.clientesTraidos ?? 0) + traidosNuevos,
+  });
+  const filas: [string, string, number][] = [
+    ["💶", `Facturación en la app (${PUNTOS.porMilFacturado} por cada 1.000 € sin IVA)`, p.facturacion],
+    ["⭐", "Valoraciones de tus clientes", p.valoraciones],
+    ["🤝", `Clientes que traes o que te invitan (${PUNTOS.porClienteTraido} cada uno)`, p.clientes],
+  ];
+  return (
+    <Tarjeta className="space-y-3">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="font-semibold">Tus puntos de visibilidad</h2>
+        <span className="font-display text-2xl font-semibold text-amber-700">{p.total.toLocaleString("es-ES")}</span>
+      </div>
+      <ul className="space-y-1 text-sm">
+        {filas.map(([i, t, n]) => (
+          <li key={t} className="flex justify-between gap-2"><span>{i} {t}</span><span className="font-medium">{n.toLocaleString("es-ES")}</span></li>
+        ))}
+      </ul>
+      <p className="text-xs text-stone-500">{TEXTO_VISIBILIDAD} Las obras con clientes que traes tú o que te invitan no pagan visitas ni reserva.</p>
+    </Tarjeta>
   );
 }

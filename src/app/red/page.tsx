@@ -1,5 +1,6 @@
 "use client";
 
+import { puntosVisibilidad } from "@/lib/visibilidad";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -30,7 +31,7 @@ export default function RedProfesionales() {
   }, []);
 
   const zonas = useMemo(() => [...new Set((fichas ?? []).flatMap((f) => f.zonas))].sort(), [fichas]);
-  const lista = (fichas ?? []).filter((f) => !zona || f.zonas.includes(zona)).sort((a, b) => b.obrasEnApp - a.obrasEnApp);
+  const lista = (fichas ?? []).filter((f) => !zona || f.zonas.includes(zona)).sort((a, b) => puntosVisibilidad(b).total - puntosVisibilidad(a).total);
   const suscrito = s ? incluye(s.plan, "basico") : false;
 
 
