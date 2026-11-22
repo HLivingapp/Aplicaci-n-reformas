@@ -16,7 +16,7 @@ export const FOTOS_CALIDAD: Record<NivelMaterial, FotoCalidad[]> = {
   basico: [
     { src: "https://www.ikea.com/es/es/images/products/metod-cocina-blanco-veddinge-blanco__1457741_pe992796_s5.jpg", texto: "Cocina modular laminada", credito: "IKEA METOD", encajar: true },
     { src: "https://www.ikea.com/es/es/images/products/angsjon-orrsjon-mueble-lavabo-con-cajones-lavabo-efecto-roble__1550224_pe1022194_s5.jpg", texto: "Mueble de baño con lavabo", credito: "IKEA ÄNGSJÖN", encajar: true },
-    { src: "https://media3.bsh-group.com/Product_Shots/28980336_3HB2030X0_01_def.webp", texto: "Horno y electrodomésticos básicos", credito: "Balay", encajar: true },
+    { src: "https://d7rh5s3nxmpy4.cloudfront.net/CMP7091/Textur-BLANCOSv2.jpg", texto: "Azulejo blanco de baño y cocina", credito: "Argenta" },
     { src: "https://cdn.pimber.ly/public/asset/raw/61e53326b02781001c06e002/9e19aa0d/6482da79ace8bd0012b19ddb/aaf320d8/27472-65-main.jpg", texto: "Mecanismos eléctricos", credito: "Simon 27", encajar: true },
   ],
   medio: [
