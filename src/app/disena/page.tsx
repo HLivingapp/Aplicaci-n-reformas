@@ -1,13 +1,10 @@
 "use client";
 
-import { FotosCalidad } from "@/components/FotosCalidad";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { DesglosePresupuesto } from "@/components/DesglosePresupuesto";
-import { GuiaEleccion } from "@/components/GuiaEleccion";
-import { SeleccionProductos } from "@/components/SeleccionProductos";
 import { euros } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
 import { fotoSinUbicacion } from "@/lib/foto-segura";
@@ -94,8 +91,7 @@ export default function Disena() {
                 </button>
               ))}
             </div>
-            <FotosCalidad nivel={nivel} />
-            <Link href="/materiales#catalogo" className="block rounded-2xl border border-teal-200 bg-teal-50 p-3 text-sm font-medium text-teal-900 hover:bg-teal-100">🛒 Ver el catálogo de materiales con fotos y precios (básico, medio y premium) →</Link>
+            <Link href="/materiales" className="block rounded-2xl border border-teal-200 bg-teal-50 p-3 text-sm font-medium text-teal-900 hover:bg-teal-100">🛒 Ver fotos, precios y vídeos de los materiales en el área de Materiales →</Link>
 
             <div className="rounded-2xl border border-stone-200 bg-white p-4">
               <h2 className="font-semibold">Materiales para tu {estancia === "bano" ? "baño" : "cocina"}</h2>
@@ -133,15 +129,6 @@ export default function Disena() {
           </aside>
         </div>
 
-        <div id="guia" className="mt-12"><GuiaEleccion estancia={estancia} titulo={`Qué se elige en ${estancia === "bano" ? "un baño" : "una cocina"}, y en qué orden`} /></div>
-
-        <section id="seleccion" className="mt-12">
-          <h2 className="text-2xl font-semibold tracking-tight">Selección de productos recomendada</h2>
-          <p className="mt-1 max-w-2xl text-stone-600">Lo que pone en sus obras Human Living, empresa destacada de la app, explicado por su equipo en vídeos cortos, con el catálogo de cada marca.</p>
-          <div className="mt-4"><SeleccionProductos grupos={GRUPOS[estancia]} /></div>
-          <h3 className="mt-8 font-semibold text-stone-700">Y para el resto de la vivienda</h3>
-          <div className="mt-3"><SeleccionProductos excluir={GRUPOS[estancia]} /></div>
-        </section>
       </main>
     </div>
   );

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useSuscripcion } from "@/lib/suscripcion";
 
 const ENLACES = [
+  { href: "/materiales", texto: "Materiales", corto: "Materiales" },
   { href: "/disena", texto: "Diseña", corto: "Diseña" },
   { href: "/comunidad", texto: "Foro", corto: "Foro" },
   { href: "/hipoteca", texto: "Hipoteca", corto: "Hipoteca" },
