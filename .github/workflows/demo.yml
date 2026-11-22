@@ -28,8 +28,7 @@ jobs:
       - run: npm ci
       - name: Subvenciones desde la BDNS (si no responde, se publican los datos anteriores)
         run: node scripts/actualizar-subvenciones.mjs || true
-      # Dominio propio (public/CNAME = reformamejor.es): la web va en la raíz, sin subcarpeta
-      - run: ./scripts/exportar-demo.sh ""
+      - run: ./scripts/exportar-demo.sh "/${{ github.event.repository.name }}"
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: out

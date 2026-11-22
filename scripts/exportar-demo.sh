@@ -2,8 +2,7 @@
 # Genera la versión estática de demostración en ./out (sin API ni base de datos).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-# Sin argumento: subcarpeta de github.io. Con "" (dominio propio reformamejor.es): raíz.
-BASE="${1-/Aplicaci-n-reformas}"
+BASE="${1:-/Aplicaci-n-reformas}"
 apartado="$(mktemp -d)"
 mv src/app/api "$apartado/api"
 trap 'mv "$apartado/api" src/app/api' EXIT
