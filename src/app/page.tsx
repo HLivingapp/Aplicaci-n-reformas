@@ -128,6 +128,30 @@ export default function Inicio() {
         </div>
       </section>
 
+      {/* Vídeo de portada */}
+      <section className="bg-stone-950 text-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <p className="text-sm font-semibold uppercase tracking-widest text-teal-300">En 75 segundos</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Comprar y reformar: no es solo el presupuesto</h2>
+            <p className="mt-4 text-stone-300">
+              Lo que cuesta tu obra, qué saber de quien la hace y las 4 cosas que nadie te cuenta: la declaración responsable, la financiación, qué esperar de la empresa y las ayudas.
+            </p>
+          </div>
+          <div className="lg:col-span-3">
+            <video
+              className="aspect-video w-full rounded-2xl bg-black shadow-2xl ring-1 ring-white/10"
+              controls
+              playsInline
+              preload="none"
+              poster={publico("/videos/portada/comprar-y-reformar.jpg")}
+              src={publico("/videos/portada/comprar-y-reformar.mp4")}
+            />
+            <p className="mt-2 text-xs text-stone-400">Vídeo generado con inteligencia artificial. Contenido orientativo.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Calculadora */}
       <section className="bg-gradient-to-b from-stone-100 to-white">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-20 lg:grid-cols-2">
