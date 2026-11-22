@@ -77,7 +77,7 @@ const EXTRA: Record<string, Partial<MaterialMedia>> = {
   "kassandra-delta": { ...web("https://kassandra.net/637-superlarge_default/frente-de-ducha-delta-de102.jpg", "Kassandra"), precio: KASS },
   "kassandra-luna": { ...foto("kassandra-luna", OBRA), precio: KASS },
   "kassandra-sugar": { ...foto("kassandra-sugar", OBRA), precio: KASS },
-  "meister-lc150": web("https://www.meister.com/_Resources/Persistent/0/c/0/f/0c0f1443aafb0c7630c41bda6e07db7ea2f2488c/462_laminate_LC150_Perspektive.jpg", "Meister", false),
+  "meister-lc150": { ...web("https://www.meister.com/_Resources/Persistent/0/c/0/f/0c0f1443aafb0c7630c41bda6e07db7ea2f2488c/462_laminate_LC150_Perspektive.jpg", "Meister", false), precio: pvp("Unos 24,90 €/m²", "Leroy Merlin", "https://www.leroymerlin.es/productos/suelo-laminado-8mm-roble-muscat-efecto-madera-natural-ac4-lc-150-meister-72437885.html") },
   parador: web("https://parador.de/media/catalog/product/cache/2ab59e795355d47654a6e98d116935c7/p/a/parador_1748185_b_side_hkmjosncmjh8zizx.jpg", "Parador", false),
   cortizo: { ...web("https://www.cortizo.com/ficheros/sistemasinline/MTc4OTczMzA4M18xNjRfY29yXzcwX2V2b2x1dGlvbl9ycHRfZXM,/images/evolution.jpg", "Cortizo"), precio: pvp("Instalada, unos 230–370 €/m²", "guía de precios de Habitissimo", "https://www.habitissimo.es/presupuestos/ventanas-puente-termico") },
   kommerling: web("https://www.kommerling.es/sites/default/files/styles/image_360_360/public/system/K%C3%96MMERLING76-md-xtrem_0.png.webp?itok=O7AANYA_", "Kömmerling"),
