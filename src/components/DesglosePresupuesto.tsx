@@ -1,3 +1,4 @@
+import { ProductosPartida } from "./ProductosPartida";
 import { ALCANCE, cantidadLegible } from "@/lib/alcance";
 import { euros } from "@/lib/calc";
 import type { Estimacion, LineaEstimacion } from "@/lib/estimacion";
@@ -48,6 +49,7 @@ export function DesglosePresupuesto({ e, iva = 10, titulo = "Presupuesto desglos
                     </div>
                     {acabado && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Acabado:</span> {acabado}</p>}
                     {l.especificacion && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Equipo de referencia:</span> {l.especificacion}</p>}
+                    <ProductosPartida ids={l.productos} />
                     {(a?.incluye || a?.noIncluye) && (
                       <details className="mt-1 text-xs">
                         <summary className="cursor-pointer text-teal-800">Qué incluye y qué no</summary>

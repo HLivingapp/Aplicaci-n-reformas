@@ -1,4 +1,5 @@
 import { eurosRedondo as euros } from "@/lib/calc";
+import { ProductosPartida } from "./ProductosPartida";
 import { ALCANCE, cantidadLegible } from "@/lib/alcance";
 import type { Estimacion, LineaEstimacion } from "@/lib/estimacion";
 
@@ -65,6 +66,7 @@ export function VistaEstimacion({ e, detalle = false }: { e: Estimacion; detalle
                       {l.medicion ? ` · ${l.medicion}` : ""}
                     </div>
                     {l.especificacion && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Equipo de referencia:</span> {l.especificacion}</p>}
+                    <ProductosPartida ids={l.productos} />
                     {a && <p className="mt-1 text-xs text-stone-600"><span className="font-medium">Incluye:</span> {a.incluye}</p>}
                     {a?.noIncluye && <p className="mt-0.5 text-xs text-stone-500"><span className="font-medium">No incluye:</span> {a.noIncluye}</p>}
                   </li>

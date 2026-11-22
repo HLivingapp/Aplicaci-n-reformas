@@ -1,4 +1,5 @@
 import { especificacion } from "./equipos";
+import { productosDePartida } from "./productos-partida";
 import { grupoDePartida, NIVEL_POR_CALIDAD, opcionElegida } from "./materiales";
 import { recargoDe } from "./tarifas";
 import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
@@ -17,6 +18,8 @@ export interface LineaEstimacion {
   medicion?: string;
   /** Marca de referencia, modelo y potencia del equipo o material */
   especificacion?: string;
+  /** Productos concretos del catálogo (ids de gama-media) con los que se calcula la partida */
+  productos?: string[];
 }
 
 export interface OpcionMaterialPublica {
@@ -289,6 +292,8 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
     const nivel = (g && opcionElegida(g, r)?.nivel) || NIVEL_POR_CALIDAD[r.calidad];
     const esp = especificacion(l.tarifaId, { m2c, util, banos: banos.length, dormitorios: r.dormitoriosDeseados, nivel, salonM2: salon?.m2 });
     if (esp) l.especificacion = esp;
+    const prods = productosDePartida(l.tarifaId, nivel);
+    if (prods) l.productos = prods;
   }
 
   const coste = r2(lineas.reduce((s, l) => s + l.cantidad * l.coste, 0));

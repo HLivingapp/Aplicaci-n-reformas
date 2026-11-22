@@ -241,7 +241,7 @@ function NuevoProyectoContenido() {
             <Campo etiqueta="Metros cuadrados construidos *">
               <input className={inputCls} inputMode="decimal" value={v.m2 ?? ""} onChange={(e) => setV({ ...v, m2: e.target.value ? Number(e.target.value.replace(",", ".")) || null : null })} placeholder="85" />
               <span className="mt-1 block text-xs text-stone-500">
-                {v.catastro?.superficie ? "Dato del Catastro. Puedes corregirlo." : "Lo encuentras en el anuncio de Idealista, en la escritura o en el recibo del IBI."}
+                {v.catastro?.superficie ? "Dato del Catastro: superficie de tu vivienda sin zonas comunes del edificio. Puedes corregirlo." : "Lo encuentras en la escritura o en el recibo del IBI (sin contar zonas comunes)."}
               </span>
             </Campo>
             <Campo etiqueta="Año de construcción del edificio">
@@ -527,7 +527,7 @@ function ResultadoCatastro({ res, vivienda, onElegir, buscando }: { res: Resulta
         <div className="font-semibold">✓ Hemos encontrado tu vivienda en el Catastro</div>
         {d.direccion && <div className="mt-1">{d.direccion}</div>}
         <div className="mt-1 flex flex-wrap gap-x-4">
-          {d.superficie && <span>{d.superficie} m² construidos</span>}
+          {d.superficie && <span>{d.superficie} m² construidos de vivienda{d.superficieComunes ? ` (sin ${d.superficieComunes} m² de zonas comunes)` : ""}</span>}
           {d.anoConstruccion && <span>Año {d.anoConstruccion}</span>}
           {d.uso && <span>Uso: {d.uso}</span>}
         </div>

@@ -49,13 +49,39 @@ const numero = (v: unknown) => {
 };
 
 /** Convierte un "bico" (bien inmueble con datos) en nuestro formato. */
+/**
+ * Reparte la superficie construida del inmueble por usos. El total del Catastro (debi.sfc) incluye la parte
+ * proporcional de zonas comunes (portal, escaleras…); para la reforma nos interesa solo lo privativo de vivienda.
+ */
+export function superficiesPorUso(bico: J): { vivienda?: number; comunes?: number; otras?: number } {
+  const raw = bico?.lcons?.cons ?? bico?.lcons;
+  const cons = lista<J>(raw);
+  if (!cons.length) return {};
+  let vivienda = 0, comunes = 0, otras = 0;
+  for (const c of cons) {
+    const m2 = numero(c?.dfcons?.stl) ?? 0;
+    const uso = normalizar(String(c?.lcd ?? ""));
+    if (/COMUN/.test(uso)) comunes += m2;
+    else if (/VIVIENDA/.test(uso)) vivienda += m2;
+    else otras += m2;
+  }
+  const r = (n: number) => (n > 0 ? Math.round(n) : undefined);
+  return { vivienda: r(vivienda), comunes: r(comunes), otras: r(otras) };
+}
+
 export function parsearBico(bico: J): DetalleInmueble | null {
   const bi = bico?.bi;
   const referencia = refCatastral(bi?.idbi?.rc);
   if (!referencia) return null;
+  const total = numero(bi?.debi?.sfc);
+  const usos = superficiesPorUso(bico);
+  // Superficie útil para el presupuesto: la de vivienda sin zonas comunes; si no hay desglose, el total menos comunes.
+  const superficie = usos.vivienda ?? (total && usos.comunes ? Math.round(total - usos.comunes) : total);
   return {
     referencia,
-    superficie: numero(bi?.debi?.sfc),
+    superficie,
+    superficieTotal: total,
+    superficieComunes: usos.comunes,
     anoConstruccion: numero(bi?.debi?.ant),
     uso: bi?.debi?.luso ? String(bi.debi.luso) : undefined,
     direccion: bi?.ldt ? String(bi.ldt) : undefined,

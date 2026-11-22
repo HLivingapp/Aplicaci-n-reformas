@@ -6,7 +6,7 @@ import { useState } from "react";
 /** Precios de referencia de una reforma integral en Madrid (€/m² construido, sin IVA). */
 const NIVELES = [
   { id: "basica", texto: "Básica", precio: 950, detalle: "Laminado AC4, sanitarios Roca o similar, cocina laminada" },
-  { id: "media", texto: "Media", precio: 1100, detalle: "Laminado AC5 hidrófugo, inodoro suspendido, cocina con encimera compacta" },
+  { id: "media", texto: "Media", precio: 1100, detalle: "Laminado Meister, sanitarios Roca, muebles Salgar y cocina Alvic con encimera Compac" },
   { id: "alta", texto: "Premium", precio: 1450, detalle: "Tarima de roble, ducha a ras de suelo, cocina lacada con inducción" },
 ];
 
