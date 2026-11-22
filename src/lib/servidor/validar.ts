@@ -1,7 +1,7 @@
 import { limpiarMateriales } from "../materiales";
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
-import { ESPECIALIDADES, nifValido, ZONAS, type AltaProveedor } from "../proveedores";
+import { CERTIFICACIONES, CURSOS_PREVENCION, ESPECIALIDADES, INICIOS, nifValido, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ZONAS, type AltaProveedor } from "../proveedores";
 import type { DatosReforma, GrupoMaterial, Vivienda } from "../types";
 
 const texto = (x: unknown, max: number) => (typeof x === "string" ? x.slice(0, max) : "");
@@ -59,8 +59,27 @@ export function validarAlta(b: unknown): AltaProveedor | null {
       contacto: texto(o?.contacto, 200).trim(),
     })),
     presentacion: texto(a.presentacion, 2000).trim(),
+    perfil: validarPerfil(a.perfil),
   };
   if (!r.razonSocial || !nifValido(r.nif) || !r.contacto || (!r.telefono && !r.email)) return null;
   if (r.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) return null;
   return r;
+}
+
+function validarPerfil(x: unknown): AltaProveedor["perfil"] {
+  const p = (x ?? {}) as Partial<AltaProveedor["perfil"]>;
+  const valores = <T extends string>(ops: { valor: T }[]) => ops.map((o) => o.valor);
+  const sp = valores(SERVICIOS_PREVENCION).find((v) => v === p.servicioPrevencion) ?? "";
+  const inicio = valores(INICIOS).find((v) => v === p.disponibilidad?.inicio) ?? "";
+  return {
+    proyectosEjecutados: Math.round(numero(p.proyectosEjecutados, 0, 100_000)),
+    tiposProyecto: lista(p.tiposProyecto, 20, valores(TIPOS_PROYECTO)),
+    cuentas: { ejercicio: Math.round(numero(p.cuentas?.ejercicio, 2000, 2100)), presentadas: typeof p.cuentas?.presentadas === "boolean" ? p.cuentas.presentadas : null },
+    servicioPrevencion: sp,
+    entidadPrevencion: texto(p.entidadPrevencion, 160).trim(),
+    cursosPrevencion: lista(p.cursosPrevencion, 20, valores(CURSOS_PREVENCION)),
+    certificaciones: lista(p.certificaciones, 20, valores(CERTIFICACIONES)),
+    otrasCertificaciones: texto(p.otrasCertificaciones, 500).trim(),
+    disponibilidad: { inicio, obrasSimultaneas: Math.round(numero(p.disponibilidad?.obrasSimultaneas, 1, 100)), visitas: texto(p.disponibilidad?.visitas, 200).trim() },
+  };
 }

@@ -22,7 +22,7 @@ const ZONAS = ["Madrid", "Málaga"] as const;
 
 const PASOS = [
   ["🏢", "Contáis el edificio y la obra", "Viviendas, plantas, qué hay que arreglar y cómo salió la inspección técnica (ITE/IEE)."],
-  ["🤝", "Elegís especialistas homologados", "Empresas de fachadas y tejados con REA, certificado al corriente de pago y seguro RSC comprobados."],
+  ["🤝", "Elegís especialistas homologados", "Empresas de fachadas y tejados con certificado al corriente de pago, seguro RSC y prevención de riesgos comprobados."],
   ["📋", "Visita técnica y presupuesto para la junta", "Cada uno visita el edificio y mete su presupuesto en la app, listo para presentarlo a los vecinos."],
   ["✍️", "Acuerdo de junta, contrato y firma en la app", "Con el acta aprobada se genera el contrato estándar y se firma en la app. Los pagos de la obra van directos a la empresa."],
   ["📸", "Seguimiento para todos los vecinos", "Fotos y avances de cada fase, para el presidente, el administrador y quien quiera mirarlo."],

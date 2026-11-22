@@ -62,7 +62,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
         <li>
           <b>Pagos.</b>{" "}
           {invitado ? (
-            <>Contratista invitado por la propiedad: no hay reserva en la app. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
+            <>Contratista invitado por la propiedad: no hay reserva en la app. Si la propiedad pagó {euros(VISITAS.cliente)} por visitas en esta reforma, se le devuelven al firmar. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           ) : (
             <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}) a {RESPONSABLE.razonSocial}, titular de la app. La reserva forma parte del precio y se descuenta del primer pago. De ella ya se pagaron {euros(VISITAS.cliente)} al pedir las visitas, así que a la firma quedan <b>{euros(Math.max(0, reserva - VISITAS.cliente))}</b>. Con el pago de la reserva se cotiza y se añade gratis el seguro de promotor. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           )}

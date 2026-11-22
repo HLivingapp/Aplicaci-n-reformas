@@ -37,7 +37,7 @@ export default function AvisoLegal() {
       <section>
         <h2 className="mb-2 font-semibold">Pago por visitas</h2>
         <p>
-          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que cubren todas las visitas que pida. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No se cobra nada (ni visitas ni reserva) cuando el cliente invita a su propio profesional o el profesional trae a su cliente.
+          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que le dan de 1 a {VISITAS.maxVisitas} visitas de profesionales. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No se cobra nada (ni visitas ni reserva) cuando el cliente invita a su propio profesional o el profesional trae a su cliente.
         </p>
       </section>
       <section>

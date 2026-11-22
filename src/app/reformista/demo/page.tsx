@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { MisEncargos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
+import { MisEncargos, MisFotosTrabajos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
 import { InvitaClientes } from "@/components/InvitaClientes";
 import { FICHAS_EJEMPLO } from "@/lib/red";
 
@@ -27,6 +27,7 @@ export default function AreaReformistaDemo() {
       <MisPuntos reformistaId={id} ficha={f} />
       {f && <InvitaClientes tipo="reformista" id={f.id} codigo={f.codigo} />}
       <MisEncargos reformistaId={id} />
+      <MisFotosTrabajos reformistaId={id} />
       <MisTarifas reformistaId={id} />
     </main>
   );
