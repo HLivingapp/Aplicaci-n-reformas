@@ -95,6 +95,7 @@ export default function Disena() {
               ))}
             </div>
             <FotosCalidad nivel={nivel} />
+            <Link href="/materiales#catalogo" className="block rounded-2xl border border-teal-200 bg-teal-50 p-3 text-sm font-medium text-teal-900 hover:bg-teal-100">🛒 Ver el catálogo de materiales con fotos y precios (básico, medio y premium) →</Link>
 
             <div className="rounded-2xl border border-stone-200 bg-white p-4">
               <h2 className="font-semibold">Materiales para tu {estancia === "bano" ? "baño" : "cocina"}</h2>
