@@ -12,7 +12,7 @@ const aqui = dirname(fileURLToPath(import.meta.url));
 const salida = process.argv[2] || join(aqui, "dist");
 const SITE = (process.env.SITE_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/comparador-materiales").replace(/\/$/, "");
 const REGISTRO = process.env.REGISTRO_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/reformistas/";
-const NOMBRE = process.env.NOMBRE_WEB || "PrecioObra";
+const NOMBRE = process.env.NOMBRE_WEB || "Comparamaterial";
 // Solo se deja indexar en el dominio definitivo (INDEXAR=1), para no duplicar contenido con la vista previa.
 const INDEXAR = process.env.INDEXAR === "1";
 
