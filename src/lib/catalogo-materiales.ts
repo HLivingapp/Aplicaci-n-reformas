@@ -57,6 +57,15 @@ const ADC_URL = "https://almacendecocinas.com/producto/";
 const enc = (id: string, m: string, modelo: string, detalle: string, euros: number, slug: string, foto: string): MaterialMedia =>
   ({ ...otra(id, "encimeras", m, `Encimera porcelánica ${modelo}`, `${detalle}, 12 mm`, { texto: `Unos ${euros} € el metro lineal`, fuente: ADC, url: ADC_URL + slug }, undefined, `https://almacendecocinas.com/wp-content/uploads/${foto}`, "Foto: web de Almacén de Cocinas"), encajar: false });
 
+const ROCA_T = "https://www.rocatiles.com/";
+const rocaT = (id: string, nombre: string, detalle: string, euros: string, cod: string): MaterialMedia =>
+  ({ ...otra(id, "azulejos", "Roca Cerámica", nombre, detalle, { texto: `Unos ${euros} €/m² (precio de referencia)`, fuente: "Roca Cerámica", url: `${ROCA_T}es/colecciones/terre/` }, `${ROCA_T}es/colecciones/terre/`, `${ROCA_T}wp-content/uploads/2026/05/${cod}-1-600x424.jpg`, "Foto: web de Roca Cerámica"), encajar: false });
+const LMFP = "https://www.leroymerlin.es/fp/";
+const banera = (id: string, nombre: string, detalle: string, euros: string, ruta: string, img?: string): MaterialMedia =>
+  otra(id, "bano", "Leroy Merlin", nombre, detalle, { texto: `${euros} €`, fuente: "Leroy Merlin", url: LMFP + ruta }, undefined, img && `https://media.adeo.com/${img}`, img && "Foto: web de Leroy Merlin");
+const amazon = (id: string, nombre: string, detalle: string, euros: string, asin: string): MaterialMedia =>
+  marca(id, "electricidad", "Amazon", nombre, `${detalle}. Unos ${euros} € en Amazon`, `https://www.amazon.es/dp/${asin}`);
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -87,6 +96,15 @@ export const CATALOGO_BASICO: MaterialMedia[] = [
   ikea("ikea-forsand-150", "Armario PAX / FORSAND 150 cm", "Blanco, 150 × 60 × 236 cm, con interior", "339 €", "pax-forsand-combinacion-armario-blanco-blanco-s69502768", "pax-forsand-combinacion-armario-blanco-blanco__1197032_pe903358_s5.jpg"),
   lm("lm-corbero", "climatizacion", "Corberó", "Termo eléctrico 80 l", "Multiposición", "149 €", "termo-electrico-corbero-80l-multiposicion-96461946.html", "4970774/media.jpg"),
   lm("lm-haier", "climatizacion", "Haier", "Split Perla 3000 fg", "Aire acondicionado con bomba de calor y wifi", "579 € (sin instalar)", "aire-acondicionado-split-1x1-haier-perla-a-wi-fi-3000-fg-90402654.html", "4684190/media.jpg"),
+  // Selección del Excel de materiales generales
+  banera("lm-nerea", "Bañera rectangular Nerea", "Acrílica, 140 x 70 cm", "145", "14868343/banera-rectangular-nerea-70x140x40-cm", "media/2037405/media.png"),
+  banera("lm-roca-pluvia", "Bañera Roca Pluvia", "Acero, 100 x 70 cm, para baños pequeños", "115,70", "89168517/banera-rectangular-roca-roca-pluvia-100x70x37-4-cm", "media/1959013/media.jpg"),
+  banera("lm-roca-sunia", "Bañera Roca Sunia", "Acrílica, 170 x 70 cm", "271", "89168526/banera-rectangular-roca-roca-sunia-170x70x41-5-cm"),
+  amazon("amz-kyotech", "Focos LED de techo orientables", "Kyotech, superficie, blanco, negro o plateado", "19,99", "B088K5TX2P"),
+  amazon("amz-vintage", "Lámpara colgante vintage E27", "Lixada, varias alturas de cable", "15", "B01FMB0EMA"),
+  amazon("amz-starryol", "Colgante industrial doble", "Starryol, cuerda doble", "15", "B07BL3ZS9D"),
+  amazon("amz-canamo", "Colgante vintage de cuerda de cáñamo", "Casquillo E27", "28", "B07XY1LS5D"),
+  amazon("amz-led-madera", "Colgante LED metal y madera", "Varios colores", "21", "B09B1Y72LZ"),
 ];
 
 export const CATALOGO_PREMIUM: MaterialMedia[] = [
@@ -139,6 +157,12 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   lm("lm-simon82-metal", "electricidad", "Simon", "Enchufe Simon 82 Detail metal", "Tapa de aluminio frío", "9,31 €", "tapa-para-base-de-enchufe-schuko-aluminio-frio-simon-82-detail-82041-93-87084511.html", MKP + "9198aa2ee6f5104e122b546b8f953e59/media.jpg"),
   lm("lm-simon82", "electricidad", "Simon", "Enchufe Simon 82 con 2 USB", "Mecanismo de la serie 82", "36,99 €", "mecanismo-enchufe-schucko-2xusb-s82-75-85763496.html", "3956945/media.jpg"),
   lm("lm-warmium", "climatizacion", "Vaeron", "Aerotermia Warmium 8 kW", "Monobloc R32 para calefacción y agua caliente", "1.929 € (sin instalar)", "aerotermia-vaeron-warmium-p84-8-kw-monobloc-r32-98935770.html", "5326554/media.jpg"),
+  // Bañeras exentas (selección del Excel de materiales generales)
+  otra("eb-boston", "bano", "Entorno Baño", "Bañera exenta Boston", "Varias medidas, de 142 a 180 cm", { texto: "Desde 799 €", fuente: "Entorno Baño", url: "https://www.entornobano.com/products/banera-exenta-boston-142-cm-156-cm-166-cm-180-cm" }),
+  banera("lm-diane", "Bañera ovalada Sanycces Diane", "Exenta, 170 x 80 cm", "929", "81929312/banera-ovalada-sanycces-diane-80x58x170-cm", "media/2385713/media.jpg"),
+  banera("lm-stori", "Bañera isla Stori", "Exenta, 156 x 70 cm", "999", "19284783/banera-isla-stori-exenta-156x70-cm", "media/2037606/media.jpg"),
+  banera("lm-oleron", "Bañera isla Oleron", "Exenta, 170 x 54 cm", "1.207", "83071791/banera-isla-oleron-170x54-cm", "mkp/487206e7737f9db0f6ecb38d8c9b8782/media.jpg"),
+  banera("lm-carmel", "Bañera isla Carmel", "Exenta, 175 x 80 cm", "989", "81929224/banera-isla-carmel-blanco-175x80-cm"),
 ];
 
 /** Medio: además de la selección de gama media de la app. */
@@ -179,6 +203,21 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   marca("saunier-calderas", "climatizacion", "Saunier Duval", "Calderas y aerotermia", "Calderas de condensación, aerotermia y agua caliente", "https://www.saunierduval.es/"),
   marca("ferroli-calderas", "climatizacion", "Ferroli", "Calderas y splits", "Calderas de condensación y aire acondicionado", "https://www.ferroli.com/es"),
   marca("ariston-termos", "climatizacion", "Ariston", "Termos eléctricos", "Termos Velis, Lydos y Andris", "https://www.ariston.com/es-es/"),
+  // Roca Cerámica, colección Terre (selección del Excel de materiales generales)
+  rocaT("roca-terre-blanco-3090", "Terre Blanco 30 x 90", "Revestimiento mate efecto piedra para baño y cocina", "28,92", "FDDA0AW011"),
+  rocaT("roca-terre-beige-3090", "Terre Beige 30 x 90", "Revestimiento mate efecto piedra", "28,92", "FDDA0AW041"),
+  rocaT("roca-terre-gris-3090", "Terre Gris 30 x 90", "Revestimiento mate efecto piedra", "28,92", "FDDA0AW021"),
+  rocaT("roca-deko-terre-beige", "Deko Terre Beige 30 x 90", "Revestimiento decorado en relieve", "37,44", "FDDA2AW041"),
+  rocaT("roca-deko-terre-gris", "Deko Terre Gris 30 x 90", "Revestimiento decorado en relieve", "37,44", "FDDA2AW021"),
+  rocaT("roca-terre-beige-6060", "Terre Beige 60 x 60", "Suelo porcelánico efecto piedra", "33,88", "FDD0A60041"),
+  rocaT("roca-terre-gris-6060", "Terre Gris 60 x 60", "Suelo porcelánico efecto piedra", "33,88", "FDD0A60021"),
+  rocaT("roca-terre-grafito-6060", "Terre Grafito 60 x 60", "Suelo porcelánico efecto piedra", "33,88", "FDD7B60101"),
+  otra("kave-kuveni", "bano", "Kave Home", "Mueble de baño Kuveni", "Madera maciza de teca, 70 x 80 cm", { texto: "499 €", fuente: "Kave Home", url: "https://kavehome.com/es/es/p/mueble-de-bano-rectangular-kuveni-de-madera-maciza-de-teca-70-x-80-cm" }),
+  banera("lm-batz", "Bañera exenta Batz", "Isla de 170 x 56 cm", "905", "83730930/banera-isla-batz-170x56-cm", "mkp/3bda31a1c3619ce712c1b84a3b9cc2f1/media.jpg"),
+  amazon("amz-tommy", "Colgante Reality Tommy LED 28 W", "Negro mate", "55,89", "B07FNWQV2N"),
+  amazon("amz-comely", "Lámpara de techo de 3 luces", "Comely, colgante", "45,88", "B096MHCBY5"),
+  amazon("amz-lywins", "Colgante moderno negro y oro", "Lywins, E27", "35,22", "B08CJ2XLLS"),
+  amazon("amz-lightess", "Colgante vintage negro y oro 40 W", "Lightess", "34,99", "B07518TNQW"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */
