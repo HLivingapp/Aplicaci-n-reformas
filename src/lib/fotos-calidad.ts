@@ -22,7 +22,7 @@ export const FOTOS_CALIDAD: Record<NivelMaterial, FotoCalidad[]> = {
   medio: [
     { src: "/materiales/salgar-noja.jpg", texto: "Mueble de baño Noja", credito: "Salgar" },
     { src: "https://www.roca.es/RocaResourceServlet/resources/getTransformation?idObject=%7B040DF0D6-D27C-4DD0-9E80-C5FCA7BBE74F%7D&trName=TF_Web_Big", texto: "Inodoro Gap", credito: "Roca", encajar: true },
-    { src: "https://alvic.com/wp-content/uploads/2021/10/luxe-alvic.jpg", texto: "Frentes de cocina Luxe", credito: "Alvic" },
+    { src: "https://alvic.com/wp-content/uploads/2022/06/118-dsc0927-alvic-1200x1680.jpg", texto: "Frentes de cocina Luxe", credito: "Alvic" },
     { src: "https://www.meister.com/_Resources/Persistent/0/c/0/f/0c0f1443aafb0c7630c41bda6e07db7ea2f2488c/462_laminate_LC150_Perspektive.jpg", texto: "Suelo laminado LC150", credito: "Meister" },
   ],
   premium: [

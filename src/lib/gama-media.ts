@@ -58,10 +58,11 @@ const KASS = pvp("Frentes de ducha Kassandra desde unos 259 €", BANOIDEA, "htt
 
 /** Foto y precio orientativo de la selección inicial. Precios con IVA de tiendas públicas; fotos oficiales enlazadas desde la web de cada fabricante (o de su catálogo). */
 const EXTRA: Record<string, Partial<MaterialMedia>> = {
-  "alvic-luxe": web("https://alvic.com/wp-content/uploads/2021/10/luxe-alvic.jpg", "Alvic", false),
+  "alvic-luxe": web("https://alvic.com/wp-content/uploads/2022/06/118-dsc0927-alvic-1200x1680.jpg", "Alvic", false),
   "alvic-zenit": ALVIC_COCINA,
-  "alvic-syncron": ALVIC_COCINA,
-  compac: web("https://www.compac.es/wp-content/uploads/2020/03/TABLERO_MAX_PURE_SINREGLA-scaled.jpg", "Compac", false),
+  "alvic-syncron": web("https://alvic.com/wp-content/uploads/2021/11/syncron-laminates-alvic-1200x912.jpg", "Alvic", false),
+  // Compac: su web no deja enlazar sus fotos; sin foto hasta tener una propia
+  finfloor: web("https://finfloor.com/uploads/images/Portada-69f35ca047a946.43281349.jpg", "Finfloor", false),
   balay: { ...web("https://media3.bsh-group.com/Product_Shots/28980336_3HB2030X0_01_def.webp", "Balay"), precio: pvp("Horno multifunción desde unos 279 €", "Leroy Merlin", "https://www.leroymerlin.es/productos/horno-multifuncion-balay-3hb2030x0-66-litros-3-3kw-clase-a-84450875.html") },
   teka: web("https://teka.b-cdn.net/CMP1219/4/PR18549BI38886_111000005_HLB_8400_BK_SZ1.png", "Teka"),
   "imex-cocina": web("https://imexproducts.es/wp-content/uploads/2022/06/GCZ044-NG-scaled.jpg", "Imex"),
@@ -126,7 +127,9 @@ export function leerMaterialesMedia(): MaterialMedia[] {
     // Las fichas iniciales guardadas antes de tener foto y precio los toman de la selección actual
     return (x as MaterialMedia[]).map((y) => {
       const s = MATERIALES_MEDIA_INICIALES.find((z) => z.id === y.id);
-      return s ? { ...y, imagen: y.imagen ?? s.imagen, credito: y.credito ?? s.credito, encajar: y.encajar ?? s.encajar, precio: y.precio ?? s.precio } : y;
+      // Las fotos enlazadas de la selección inicial se toman siempre de la versión actual (las subidas por el equipo se respetan)
+      const subida = y.imagen?.startsWith("data:");
+      return s ? { ...y, imagen: subida ? y.imagen : s.imagen, credito: subida ? y.credito : s.credito, encajar: subida ? y.encajar : s.encajar, precio: y.precio ?? s.precio } : y;
     });
   } catch {
     return MATERIALES_MEDIA_INICIALES;
