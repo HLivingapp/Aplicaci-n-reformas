@@ -7,7 +7,7 @@ import { RESPONSABLE, TEXTO_DATOS_PROFESIONAL, TITULAR } from "./legal";
 import { hoy } from "./calc";
 import { nuevoId, nuevoToken } from "./id";
 import { mismoNombre, type ResultadoREA } from "./rea";
-import type { Datos, DocumentoProveedor, ObraReferencia, Proveedor, TipoDocProveedor } from "./types";
+import type { Datos, DocumentoProveedor, ObraReferencia, PerfilProfesional, Proveedor, TipoDocProveedor } from "./types";
 
 export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
   `Acepto que ${RESPONSABLE.razonSocial}, titular de la app, trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.`;
@@ -262,7 +262,41 @@ export interface AltaProveedor {
   especialidades: string[];
   obras: ObraReferencia[];
   presentacion: string;
+  perfil: PerfilProfesional;
 }
+
+export const TIPOS_PROYECTO = ["Reforma integral de vivienda", "Baños", "Cocinas", "Reforma parcial", "Locales y oficinas", "Comunidades y fachadas", "Instalaciones", "Obra nueva"].map((t) => ({ valor: t, texto: t }));
+export const SERVICIOS_PREVENCION: { valor: PerfilProfesional["servicioPrevencion"]; texto: string }[] = [
+  { valor: "ajeno", texto: "Servicio de prevención ajeno (SPA)" },
+  { valor: "propio", texto: "Servicio de prevención propio" },
+  { valor: "mancomunado", texto: "Servicio mancomunado" },
+  { valor: "asumido", texto: "Lo asumo yo (empresario)" },
+  { valor: "no", texto: "No tengo" },
+];
+export const CURSOS_PREVENCION = [
+  "PRL 20 h construcción (TPC, oficio)", "PRL 60 h nivel básico", "Recurso preventivo", "Trabajos en altura", "Plataformas elevadoras (PEMP)", "Andamios", "Amianto (RERA)", "Primeros auxilios", "Riesgo eléctrico",
+].map((t) => ({ valor: t, texto: t }));
+export const CERTIFICACIONES = [
+  "Instalador eléctrico habilitado (REBT)", "Instalador de gas", "Instalador térmico (RITE)", "Gases fluorados", "Fontanería (instalador autorizado)", "ISO 9001", "ISO 14001", "ISO 45001", "Passivhaus",
+].map((t) => ({ valor: t, texto: t }));
+export const INICIOS: { valor: PerfilProfesional["disponibilidad"]["inicio"]; texto: string }[] = [
+  { valor: "inmediata", texto: "Inmediata" },
+  { valor: "2-4 semanas", texto: "En 2-4 semanas" },
+  { valor: "1-2 meses", texto: "En 1-2 meses" },
+  { valor: "mas de 2 meses", texto: "Más de 2 meses" },
+];
+
+export const perfilVacio = (): PerfilProfesional => ({
+  proyectosEjecutados: 0,
+  tiposProyecto: [],
+  cuentas: { ejercicio: new Date().getFullYear() - 1, presentadas: null },
+  servicioPrevencion: "",
+  entidadPrevencion: "",
+  cursosPrevencion: [],
+  certificaciones: [],
+  otrasCertificaciones: "",
+  disponibilidad: { inicio: "", obrasSimultaneas: 1, visitas: "" },
+});
 
 export const altaVacia = (): AltaProveedor => ({
   tipo: "empresa",
@@ -279,6 +313,7 @@ export const altaVacia = (): AltaProveedor => ({
   especialidades: [],
   obras: [0, 1, 2].map(() => ({ descripcion: "", ano: new Date().getFullYear(), importe: 0, contacto: "" })),
   presentacion: "",
+  perfil: perfilVacio(),
 });
 
 export function registrarProveedor(d: Datos, a: AltaProveedor, reaVerificado?: ResultadoREA): string {

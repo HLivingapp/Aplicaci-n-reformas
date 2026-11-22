@@ -376,6 +376,28 @@ export interface Proveedor {
   aprobadoAutomatico?: boolean;
   /** Tarifas del reformista para que la app calcule su presupuesto a cada cliente */
   tarifa?: TarifaReformista;
+  /** Datos del formulario de alta: experiencia, cuentas, prevención, formación, certificaciones y disponibilidad */
+  perfil?: PerfilProfesional;
+}
+
+/** Lo que declara el reformista en el alta (22/11/2026). Parte se enseña al cliente en su ficha. */
+export interface PerfilProfesional {
+  /** Número de proyectos ejecutados y de qué tipo */
+  proyectosEjecutados: number;
+  tiposProyecto: string[];
+  /** Cuentas presentadas del último ejercicio (cuentas anuales si es empresa; renta o modelo 130/131 si es autónomo) */
+  cuentas: { ejercicio: number; presentadas: boolean | null };
+  /** Servicio de prevención de riesgos laborales */
+  servicioPrevencion: "ajeno" | "propio" | "mancomunado" | "asumido" | "no" | "";
+  /** Entidad del servicio de prevención (si es ajeno) */
+  entidadPrevencion: string;
+  /** Cursos de prevención que tiene su equipo */
+  cursosPrevencion: string[];
+  /** Certificaciones y habilitaciones profesionales */
+  certificaciones: string[];
+  otrasCertificaciones: string;
+  /** Disponibilidad habitual para empezar obra y para visitas */
+  disponibilidad: { inicio: "inmediata" | "2-4 semanas" | "1-2 meses" | "mas de 2 meses" | ""; obrasSimultaneas: number; visitas: string };
 }
 
 /** Tarifas del reformista: % sobre el precio de referencia, general y por capítulo. */

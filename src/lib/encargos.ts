@@ -21,6 +21,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 export const IVA_REFORMA = 10;
 
 import { reservaApp } from "./comercializacion";
+import { anonimizar, type Identidad } from "./anonimizar";
 export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA } from "./comercializacion";
 
 export type { TarifaReformista };
@@ -55,7 +56,13 @@ export interface Encargo {
   avances?: { fecha: string; texto: string }[];
   /** «app»: el cliente lo encontró en la app (reserva y fee). «invitado»: el cliente lo invitó (sin reserva ni fee, sin seguro gratis). */
   origen?: OrigenEncargo;
+  /** Chat antes de la firma (para preparar la primera visita). Los contactos se ocultan automáticamente. */
+  chat?: MensajeChat[];
+  /** Veces que cada parte intentó compartir datos de contacto en el chat */
+  intentosContacto?: { cliente: number; reformista: number };
 }
+
+export interface MensajeChat { de: "cliente" | "reformista"; texto: string; fecha: string; ocultos?: number }
 
 export type OrigenEncargo = "app" | "invitado";
 export const ORIGEN_ENCARGO: Record<OrigenEncargo, { texto: string; cls: string }> = {
@@ -212,7 +219,15 @@ export function firmarCliente(id: string) {
       x.id === id ? { ...x, estado: "firmado_cliente" as const, firmas: { cliente: ahora } } : x.proyectoId === e.proyectoId && x.estado !== "firmado" ? { ...x, estado: "descartado" as const } : x,
     ),
   );
+  // Si pagó las visitas y al final firma en la app con un proveedor que trae él, se le devuelven los 150 € (simulado)
+  if (e.origen === "invitado" && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
+    escribir(CLAVE_DEVOLUCION, { ...leer<Record<string, string>>(CLAVE_DEVOLUCION, {}), [e.proyectoId]: ahora });
+  }
 }
+
+const CLAVE_DEVOLUCION = "app-reformas:devolucion-visitas";
+/** Fecha en que se devolvieron al cliente los 150 € de las visitas (firmó con un proveedor que trajo él). */
+export const visitasDevueltas = (proyectoId: string) => leer<Record<string, string>>(CLAVE_DEVOLUCION, {})[proyectoId];
 
 export const firmarReformista = (id: string) =>
   actualizarEncargo(id, (e) => ({ ...e, estado: "firmado", firmas: { ...e.firmas, reformista: new Date().toISOString() } }));
@@ -294,3 +309,22 @@ export function alCambiar(fn: () => void) {
     window.removeEventListener("storage", fn);
   };
 }
+
+/** Envía un mensaje al chat del encargo ocultando contactos. Devuelve cuántos datos se han ocultado. */
+export function enviarMensaje(id: string, de: MensajeChat["de"], texto: string, identidad?: Identidad): number {
+  const { texto: limpio, ocultos } = anonimizar(texto, identidad);
+  if (!limpio) return 0;
+  actualizarEncargo(id, (e) => {
+    const intentos = e.intentosContacto ?? { cliente: 0, reformista: 0 };
+    return {
+      ...e,
+      chat: [...(e.chat ?? []), { de, texto: limpio, fecha: new Date().toISOString(), ocultos: ocultos || undefined }],
+      intentosContacto: ocultos ? { ...intentos, [de]: intentos[de] + 1 } : e.intentosContacto,
+    };
+  });
+  return ocultos;
+}
+
+/** Intentos del reformista de compartir contactos en todos sus chats (restan puntos de visibilidad). */
+export const intentosReformista = (reformistaId: string) =>
+  leerEncargos().filter((e) => e.reformistaId === reformistaId).reduce((s, e) => s + (e.intentosContacto?.reformista ?? 0), 0);

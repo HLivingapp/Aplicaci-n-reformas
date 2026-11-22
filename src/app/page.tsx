@@ -32,7 +32,7 @@ const PASOS = [
 
 const VENTAJAS = [
   { i: "📋", t: "Precio claro desde el principio", d: "Nada de «depende». Ves cada partida, qué incluye y qué no, antes de que nadie pise tu casa." },
-  { i: "✅", t: "Reformistas homologados", d: "Comprobamos el registro de empresas acreditadas (REA), su certificado al corriente de pago y su seguro RSC (responsabilidad civil)." },
+  { i: "✅", t: "Reformistas homologados", d: "Comprobamos su certificado al corriente de pago, su seguro RSC (responsabilidad civil) y su prevención de riesgos laborales. Ves su currículum, fotos de sus trabajos y si está inscrito en el REA." },
   { i: "🎨", t: "Tú eliges los acabados", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
   { i: "✍️", t: "Contrato y seguimiento en la app", d: "Tras la visita, el reformista mete la cifra acordada y firmáis el contrato estándar en la app, con plazos, hitos de pago y fases de obra." },
   { i: "📆", t: "Fases y plazos claros", d: "Sabes qué se hace cada semana y cuándo toca cada pago, antes de empezar." },
@@ -41,11 +41,11 @@ const VENTAJAS = [
 
 const PREGUNTAS = [
   { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Para ver el precio de cada reformista homologado para tu casa y quedar con ellos está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
-  { q: "¿Hay que pagar por las visitas?", a: `Sí: antes de que los reformistas vengan a ver tu casa pagas ${VISITAS.cliente} € una sola vez, y cubren todas las visitas que pidas para esa reforma. Cada reformista también paga por ir a verte, así que solo vienen los que van en serio. ${TEXTO_DESCUENTO_VISITA} Si invitas a tu propio reformista, no pagas visitas ni reserva.` },
+  { q: "¿Hay que pagar por las visitas?", a: `Sí: antes de que los reformistas vengan a ver tu casa pagas ${VISITAS.cliente} € una sola vez, que te dan de 1 a ${VISITAS.maxVisitas} visitas de reformistas. Cada reformista también paga por ir a verte, así que solo vienen los que van en serio. ${TEXTO_DESCUENTO_VISITA} Si invitas a tu propio reformista, no pagas visitas ni reserva.` },
   { q: "¿Qué reformistas me proponéis?", a: "Los 3 homologados con mejor encaje para tu casa: que trabajen en tu zona y con más puntos de visibilidad, que se ganan facturando obras en la app y con buenas valoraciones de otros clientes." },
   { q: "¿Qué pago al contratar la obra?", a: `Al firmar el contrato en la app pagas una reserva: ${TEXTO_RESERVA}. No es un coste extra: forma parte del precio y se descuenta de tu primer pago al reformista. El resto se lo pagas directamente a él, por fases.` },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
-  { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado al corriente de pago y seguro RSC (responsabilidad civil) vigentes. El registro REA se vuelve a comprobar cada mes." },
+  { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: certificado al corriente de pago, seguro RSC (responsabilidad civil) y prevención de riesgos laborales en vigor. El REA no es obligatorio para todos: verás en su currículum si está inscrito, junto con su experiencia, formación, certificaciones y fotos de sus trabajos. Su nombre y contactos no se muestran hasta que firmas." },
   { q: "¿Y si cambio de opinión?", a: "Puedes cancelar el contrato desde la app. Se hace un acta con lo ejecutado hasta ese momento." },
 ];
 
@@ -118,7 +118,7 @@ export default function Inicio() {
           <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6 text-sm md:grid-cols-4">
             {[
               ["Partida a partida", "qué incluye y qué no"],
-              ["REA + al corriente de pago + seguro RSC", "comprobados en cada reformista"],
+              ["Al corriente de pago + seguro RSC + PRL", "comprobados en cada reformista"],
               ["Contrato y pagos por hitos", "firmados en la app"],
               ["Datos en la UE", "conforme al RGPD"],
             ].map(([a, b]) => (

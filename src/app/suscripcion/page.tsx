@@ -20,7 +20,7 @@ export default function Planes() {
 const PREGUNTAS = [
   { q: "¿Tengo permanencia?", a: "No. Pagas mes a mes y cancelas cuando quieras desde la app, sin llamadas." },
   { q: "¿Pago algo a los reformistas por usar la app?", a: "No. Los pagos de la obra van directamente al reformista que elijas, según los hitos del contrato. La suscripción solo da acceso a la red y al asistente." },
-  { q: "¿Qué gano frente a buscar por mi cuenta?", a: "Reformistas comprobados (REA, certificado al corriente de pago y seguro RSC), un precio de referencia para comparar sus ofertas, contrato estándar y el seguimiento de la obra en un solo sitio." },
+  { q: "¿Qué gano frente a buscar por mi cuenta?", a: "Reformistas comprobados (certificado al corriente de pago, seguro RSC y prevención de riesgos; REA si lo tienen), un precio de referencia para comparar sus ofertas, contrato estándar y el seguimiento de la obra en un solo sitio." },
   { q: "¿El asistente IA sustituye a un técnico?", a: "No. Te orienta, te ayuda a preparar las preguntas y revisa presupuestos, pero las decisiones técnicas y los trámites los confirma un profesional o el Ayuntamiento." },
 ];
 

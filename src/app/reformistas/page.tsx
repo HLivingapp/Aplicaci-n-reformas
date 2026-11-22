@@ -13,9 +13,10 @@ import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA } from "@/lib/comercializacion";
 import { TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
+import { anonimizar } from "@/lib/anonimizar";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
-import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
+import { altaVacia, CERTIFICACIONES, CURSOS_PREVENCION, INICIOS, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = APP.nombre;
@@ -37,6 +38,8 @@ export default function AltaReformista() {
   const setObra = (i: number, campo: keyof AltaProveedor["obras"][number], v: string | number) =>
     setA((x) => ({ ...x, obras: x.obras.map((o, j) => (j === i ? { ...o, [campo]: v } : o)) }));
 
+  const setP = <K extends keyof AltaProveedor["perfil"]>(k: K, v: AltaProveedor["perfil"][K]) => setA((x) => ({ ...x, perfil: { ...x.perfil, [k]: v } }));
+  const pf = a.perfil;
   const obrasOk = a.obras.filter((o) => o.descripcion.trim() && o.contacto.trim()).length >= OBRAS_MINIMAS;
   const faltan = [
     !a.razonSocial.trim() && "nombre o razón social",
@@ -44,7 +47,12 @@ export default function AltaReformista() {
     !a.contacto.trim() && "persona de contacto",
     !a.telefono.trim() && !a.email.trim() && "teléfono o email",
     a.rea.inscrito && !a.rea.numero.trim() && "número de REA",
+    !pf.servicioPrevencion && "servicio de prevención",
     !a.rc.aseguradora.trim() && "aseguradora de RC",
+    !pf.proyectosEjecutados && "número de proyectos ejecutados",
+    !pf.tiposProyecto.length && "tipo de proyectos",
+    pf.cuentas.presentadas === null && "cuentas del último año",
+    !pf.disponibilidad.inicio && "disponibilidad",
     !obrasOk && !invitacion && `${OBRAS_MINIMAS} obras de referencia`,
     !a.zonas.length && "zonas",
     !a.especialidades.length && "especialidades",
@@ -85,8 +93,7 @@ export default function AltaReformista() {
         </div>
       )}
       <p className="text-sm text-stone-600">
-        Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: inscripción en el REA (o tu documentación de prevención de
-        riesgos laborales), seguro RSC (responsabilidad civil), certificado al corriente de pago, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
+        Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: prevención de riesgos laborales (inscripción en el REA si la tienes; no es obligatoria para todos), seguro RSC (responsabilidad civil), certificado al corriente de pago, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
         después te daremos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-3">
@@ -149,9 +156,22 @@ export default function AltaReformista() {
           <Campo etiqueta="Número de inscripción en el REA *"><input className={inputCls} value={a.rea.numero} onChange={(e) => set("rea", { ...a.rea, numero: e.target.value })} /></Campo>
         ) : (
           <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-950">
-            Sin REA te pediremos tu modalidad preventiva (por ejemplo, el contrato con tu servicio de prevención ajeno), la evaluación de riesgos y la formación en PRL de tus trabajadores.
+            El REA no es obligatorio para todos, así que puedes darte de alta sin él. Los clientes verán en tu ficha que no estás inscrito. Te pediremos tu modalidad preventiva, la evaluación de riesgos y la formación en PRL de tu equipo.
           </p>
         )}
+        <Campo etiqueta="¿Qué servicio de prevención tienes? *">
+          <select className={inputCls} value={pf.servicioPrevencion} onChange={(e) => setP("servicioPrevencion", e.target.value as AltaProveedor["perfil"]["servicioPrevencion"])}>
+            <option value="">Elige una opción</option>
+            {SERVICIOS_PREVENCION.map((s) => <option key={s.valor} value={s.valor}>{s.texto}</option>)}
+          </select>
+        </Campo>
+        {pf.servicioPrevencion === "ajeno" && (
+          <Campo etiqueta="Entidad del servicio de prevención (opcional)"><input className={inputCls} placeholder="p. ej. Quirón Prevención, Cualtis…" value={pf.entidadPrevencion} onChange={(e) => setP("entidadPrevencion", e.target.value)} /></Campo>
+        )}
+        <div>
+          <div className="mb-1.5 text-sm text-stone-700">Cursos de prevención que tiene tu equipo</div>
+          <Chips opciones={CURSOS_PREVENCION} valores={pf.cursosPrevencion} cambiar={(v) => setP("cursosPrevencion", v)} />
+        </div>
       </Tarjeta>
 
       <Tarjeta className="space-y-3">
@@ -165,6 +185,21 @@ export default function AltaReformista() {
 
       <Tarjeta className="space-y-3">
         <h2 className="font-semibold">4. Tu experiencia</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Campo etiqueta="Proyectos ejecutados en total *"><input type="number" min={0} className={inputCls} value={pf.proyectosEjecutados || ""} onChange={(e) => setP("proyectosEjecutados", Math.max(0, Number(e.target.value) || 0))} /></Campo>
+          <Campo etiqueta={`¿Presentaste las cuentas de ${pf.cuentas.ejercicio}? *`}>
+            <div className="flex gap-2 text-sm">
+              {[true, false].map((v) => (
+                <button key={String(v)} type="button" onClick={() => setP("cuentas", { ...pf.cuentas, presentadas: v })} className={`flex-1 rounded-lg py-2 ${pf.cuentas.presentadas === v ? "bg-stone-900 text-white" : "bg-stone-100"}`}>{v ? "Sí" : "No"}</button>
+              ))}
+            </div>
+          </Campo>
+        </div>
+        <p className="text-xs text-stone-500">{a.tipo === "empresa" ? "Cuentas anuales depositadas en el Registro Mercantil." : "Como autónomo: tu declaración de la renta y los pagos fraccionados (modelo 130 o 131)."} Te las pediremos en el siguiente paso.</p>
+        <div>
+          <div className="mb-1.5 text-sm text-stone-700">¿De qué tipo? *</div>
+          <Chips opciones={TIPOS_PROYECTO} valores={pf.tiposProyecto} cambiar={(v) => setP("tiposProyecto", v)} />
+        </div>
         <p className="text-sm text-stone-600">
           Cuéntanos {OBRAS_MINIMAS} obras recientes con una persona que podamos llamar para confirmarlas. Además te pediremos tus últimas cuentas anuales depositadas
           {a.tipo === "autonomo" ? " (o tu última declaración de la renta)" : ""}.
@@ -187,16 +222,36 @@ export default function AltaReformista() {
       </Tarjeta>
 
       <Tarjeta className="space-y-3">
-        <h2 className="font-semibold">5. Dónde trabajas</h2>
+        <h2 className="font-semibold">5. Dónde trabajas y cuándo puedes empezar</h2>
         <Chips opciones={OPCIONES_ZONA} valores={a.zonas} cambiar={(v) => set("zonas", v)} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Campo etiqueta="Disponibilidad habitual para empezar una obra *">
+            <select className={inputCls} value={pf.disponibilidad.inicio} onChange={(e) => setP("disponibilidad", { ...pf.disponibilidad, inicio: e.target.value as AltaProveedor["perfil"]["disponibilidad"]["inicio"] })}>
+              <option value="">Elige una opción</option>
+              {INICIOS.map((s) => <option key={s.valor} value={s.valor}>{s.texto}</option>)}
+            </select>
+          </Campo>
+          <Campo etiqueta="Obras que llevas a la vez"><input type="number" min={1} className={inputCls} value={pf.disponibilidad.obrasSimultaneas} onChange={(e) => setP("disponibilidad", { ...pf.disponibilidad, obrasSimultaneas: Math.max(1, Number(e.target.value) || 1) })} /></Campo>
+          <Campo etiqueta="Cuándo sueles hacer visitas (opcional)" className="sm:col-span-2"><input className={inputCls} placeholder="p. ej. mañanas de lunes a viernes y sábados" value={pf.disponibilidad.visitas} onChange={(e) => setP("disponibilidad", { ...pf.disponibilidad, visitas: e.target.value })} /></Campo>
+        </div>
       </Tarjeta>
 
       <Tarjeta className="space-y-3">
         <h2 className="font-semibold">6. En qué eres especialista</h2>
         <Chips opciones={ESPECIALIDADES} valores={a.especialidades} cambiar={(v) => set("especialidades", v)} />
+        <div>
+          <div className="mb-1.5 text-sm text-stone-700">Certificaciones y habilitaciones profesionales</div>
+          <Chips opciones={CERTIFICACIONES} valores={pf.certificaciones} cambiar={(v) => setP("certificaciones", v)} />
+          <input className={`${inputCls} mt-2`} placeholder="Otras (opcional)" value={pf.otrasCertificaciones} onChange={(e) => setP("otrasCertificaciones", e.target.value)} />
+        </div>
         <Campo etiqueta="Preséntate a los clientes (opcional)">
           <textarea rows={3} className={inputCls} value={a.presentacion} onChange={(e) => set("presentacion", e.target.value)} />
         </Campo>
+        {anonimizar(a.presentacion, a).ocultos > 0 ? (
+          <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ Tu presentación tiene datos que te identifican (nombre, teléfono, email, web o redes). Los clientes la verán así: «{anonimizar(a.presentacion, a).texto}». Tu nombre y contactos solo se comparten cuando el cliente firma.</p>
+        ) : (
+          <p className="text-xs text-stone-500">No pongas tu nombre ni contactos: tu ficha es anónima hasta que el cliente firma, y los ocultamos automáticamente.</p>
+        )}
       </Tarjeta>
 
       <Tarjeta className="space-y-3">

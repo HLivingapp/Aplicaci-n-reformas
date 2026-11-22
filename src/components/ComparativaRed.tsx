@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
-import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, TEXTO_VISITA_CLIENTE, TEXTO_DESCUENTO_VISITA, VISITAS, pagarVisitasCliente, visitasPagadas, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
+import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, intentosReformista, TEXTO_VISITA_CLIENTE, TEXTO_DESCUENTO_VISITA, VISITAS, pagarVisitasCliente, visitasPagadas, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, soloComunidades, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
@@ -16,6 +16,8 @@ import { ServiciosContratables } from "./SeguroPromotor";
 import { Muro } from "./Muro";
 import { inputCls } from "./ui";
 import { cercania, mejoresPara, PUNTOS, puntosVisibilidad } from "@/lib/visibilidad";
+import { CurriculumReformista } from "./CurriculumReformista";
+import { ChatEncargo } from "./ChatEncargo";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
@@ -64,6 +66,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   const [elegidos, setElegidos] = useState<string[]>([]);
   const [preferencia, setPreferencia] = useState("");
   const [abierto, setAbierto] = useState<string | null>(null);
+  const [verMas, setVerMas] = useState(false);
   const [pagoVisitas, setPagoVisitas] = useState<string | undefined>();
   useEffect(() => setPagoVisitas(visitasPagadas(proyectoId)), [proyectoId, encargos.length]);
   const suscrito = s ? incluye(s.plan, "basico") : false;
@@ -73,18 +76,20 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   // La app propone los 3 reformistas con mejor encaje (cercanía + puntos de visibilidad); se mantienen los que ya tienen encargo.
   const lista = useMemo(() => {
     if (!fichas) return [];
-    const todas = ofertas(vivienda, reforma, fichas);
-    const top = mejoresPara(todas, municipio, cp);
+    const todas = ofertas(vivienda, reforma, fichas.map((f) => ({ ...f, intentosContacto: intentosReformista(f.id) })));
+    const top = mejoresPara(todas, municipio, cp, verMas ? VISITAS.maxVisitas : PUNTOS.propuestos);
     const conEncargo = todas.filter((o) => !top.includes(o) && encargos.some((e) => e.reformistaId === o.ficha.id));
     return [...top, ...conEncargo].sort((a, b) => a.e.base - b.e.base);
-  }, [fichas, vivienda, reforma, municipio, cp, encargos]);
+  }, [fichas, vivienda, reforma, municipio, cp, encargos, verMas]);
   const firmado = encargos.find((e) => e.estado === "firmado" || e.estado === "firmado_cliente");
 
   if (!fichas) return null;
   const datos = { proyectoId, tokenCliente: token, cliente, zona: vivienda.direccion.municipio || "Madrid", vivienda, reforma };
 
   const encargoDe = (id: string) => encargos.find((e) => e.reformistaId === id);
-  const alternar = (id: string) => setElegidos((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= 3 ? x : [...x, id]));
+  const pedidas = encargos.filter((e) => e.origen !== "invitado").length;
+  const quedan = Math.max(0, VISITAS.maxVisitas - pedidas);
+  const alternar = (id: string) => setElegidos((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= quedan ? x : [...x, id]));
   const pedir = () => {
     if (!pagoVisitas) {
       pagarVisitasCliente(proyectoId);
@@ -99,12 +104,16 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
       <div>
         <h2 className="text-lg font-semibold">El presupuesto de cada reformista para tu casa</h2>
         <p className="text-sm text-stone-600">
-          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita ({TEXTO_VISITA_CLIENTE}) y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y de ella se descuentan los {VISITAS.cliente} € de las visitas. Al pagarla te cotizamos y añadimos gratis un seguro de promotor con responsabilidad civil y defensa jurídica.
+          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige con cuáles quieres quedar para una visita: pagas {TEXTO_VISITA_CLIENTE} y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y de ella se descuentan los {VISITAS.cliente} € de las visitas. Al pagarla te cotizamos y añadimos gratis un seguro de promotor con responsabilidad civil y defensa jurídica.
         </p>
       </div>
       {lista.length > 0 && (
         <p className="rounded-xl bg-teal-50 p-3 text-xs text-teal-900">
           🎯 Te proponemos los {PUNTOS.propuestos} reformistas homologados con mejor encaje para tu casa: que trabajan en tu zona y tienen más puntos de visibilidad (obras facturadas en la app y valoraciones de otros clientes).
+          {suscrito && !verMas && (
+            <> Puedes pedir hasta {VISITAS.maxVisitas} visitas. <button type="button" onClick={() => setVerMas(true)} className="font-semibold underline">Ver {VISITAS.maxVisitas - PUNTOS.propuestos} más</button></>
+          )}
+          {suscrito && pedidas > 0 && <> Te quedan {quedan} de {VISITAS.maxVisitas} visitas.</>}
         </p>
       )}
       {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
@@ -137,11 +146,11 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           <p className="text-xs text-stone-500">Vendrán a ver tu casa, medir y ajustar el presupuesto. Tu teléfono solo lo verán ellos.</p>
           <input className={`${inputCls} mt-2`} placeholder="¿Cuándo te viene bien? (p. ej. tardes entre semana)" value={preferencia} onChange={(e) => setPreferencia(e.target.value)} />
           {pagoVisitas ? (
-            <p className="mt-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">✓ Ya pagaste las visitas de esta reforma: puedes pedir más sin pagar de nuevo.</p>
+            <p className="mt-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">✓ Ya pagaste las visitas de esta reforma: puedes pedir hasta {VISITAS.maxVisitas} en total sin pagar de nuevo.</p>
           ) : (
             <div className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">
               <div className="font-semibold">Pago de visitas: {VISITAS.cliente} €</div>
-              Lo pagas una sola vez y cubre todas las visitas que pidas para esta reforma. Así los reformistas saben que vas en serio y vienen a verte. {TEXTO_DESCUENTO_VISITA}
+              Lo pagas una sola vez y te da de 1 a {VISITAS.maxVisitas} visitas de reformistas para esta reforma. Así los reformistas saben que vas en serio y vienen a verte. {TEXTO_DESCUENTO_VISITA}
               <div className="mt-1 text-amber-800">Demo: el pago es simulado, no se cobra nada.</div>
             </div>
           )}
@@ -166,6 +175,7 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
   o: OfertaRed; refBase: number; municipio: string; cp: string; suscrito: boolean; encargo?: Encargo; elegido: boolean; bloqueado: boolean; alElegir: () => void; abierto: boolean; alAbrir: () => void;
 }) {
   const f = o.ficha;
+  const [cv, setCv] = useState(false);
   const dif = refBase ? Math.round(((o.e.base - refBase) / refBase) * 100) : 0;
   const m = media(f);
   const capitulos = [...new Set(o.e.lineas.map((l) => l.capitulo))].map((c) => ({ c, importe: o.e.lineas.filter((l) => l.capitulo === c).reduce((s, l) => s + l.cantidad * l.precio, 0) }));
@@ -202,12 +212,15 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
               </button>
             )
           )}
+          <button onClick={() => setCv(!cv)} className="text-sm font-medium text-teal-700 underline">{cv ? "Ocultar currículum" : "Ver currículum y fotos"}</button>
           <button onClick={alAbrir} className="text-sm text-teal-700 underline">{abierto ? "Ocultar partidas" : "Ver por capítulos"}</button>
           {!f.id.startsWith("ej-") ? null : (
             <Link href={`/reformista/demo?r=${f.id}`} className="ml-auto text-xs text-stone-400 underline">Demo: verlo como el reformista</Link>
           )}
         </div>
       )}
+      {suscrito && cv && <CurriculumReformista f={f} />}
+      {suscrito && encargo && encargo.origen !== "invitado" && <ChatEncargo e={encargo} parte="cliente" />}
       {suscrito && abierto && (
         <table className="mt-3 w-full text-xs">
           <tbody>

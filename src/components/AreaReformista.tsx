@@ -11,6 +11,10 @@ import { ContratoEncargo } from "./ContratoEncargo";
 import { SeguimientoEncargo } from "./SeguimientoEncargo";
 import { useEncargos } from "./ComparativaRed";
 import { EditorTarifas } from "./TarifasReformista";
+import { ChatEncargo } from "./ChatEncargo";
+import { fotosSubidas, guardarFotos, MAX_FOTOS, reducirFoto, type FotoTrabajo } from "@/lib/fotos-trabajos";
+import { publico } from "@/lib/base";
+import { intentosReformista } from "@/lib/encargos";
 import { Boton, inputCls, Tarjeta } from "./ui";
 import type { FichaRed } from "@/lib/red";
 import { PUNTOS, puntosVisibilidad, TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
@@ -75,6 +79,8 @@ function EncargoReformista({ e, reformistaId, bloqueado }: { e: Encargo; reformi
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ENCARGO[e.estado].cls}`}>{ESTADO_ENCARGO[e.estado].texto}</span>
         </div>
       </div>
+
+      {e.origen !== "invitado" && <ChatEncargo e={e} parte="reformista" />}
 
       {e.estado === "visita_pedida" && (
         <div className="mt-3 flex flex-wrap items-end gap-2">
@@ -173,11 +179,13 @@ export function MisPuntos({ reformistaId, ficha }: { reformistaId: string; ficha
     facturacionApp: (ficha?.facturacionApp ?? 0) + facturadoNuevo,
     valoraciones: ficha?.valoraciones,
     clientesTraidos: (ficha?.clientesTraidos ?? 0) + traidosNuevos,
+    intentosContacto: encargos.length ? intentosReformista(reformistaId) : 0,
   });
   const filas: [string, string, number][] = [
     ["💶", `Facturación en la app (${PUNTOS.porMilFacturado} por cada 1.000 € sin IVA)`, p.facturacion],
     ["⭐", "Valoraciones de tus clientes", p.valoraciones],
     ["🤝", `Clientes que traes o que te invitan (${PUNTOS.porClienteTraido} cada uno)`, p.clientes],
+    ...(p.penalizacion ? [["🚫", `Intentos de compartir contactos antes de firmar (${PUNTOS.porIntentoContacto} cada uno)`, p.penalizacion] as [string, string, number]] : []),
   ];
   return (
     <Tarjeta className="space-y-3">
@@ -191,6 +199,60 @@ export function MisPuntos({ reformistaId, ficha }: { reformistaId: string; ficha
         ))}
       </ul>
       <p className="text-xs text-stone-500">{TEXTO_VISIBILIDAD} Las obras con clientes que traes tú o que te invitan no pagan visitas ni reserva.</p>
+    </Tarjeta>
+  );
+}
+
+/** Fotos de trabajos del reformista: las ve el cliente en su currículum, sin nombre ni contactos. */
+export function MisFotosTrabajos({ reformistaId }: { reformistaId: string }) {
+  const [fotos, setFotos] = useState<FotoTrabajo[]>([]);
+  const [confirmo, setConfirmo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => setFotos(fotosSubidas(reformistaId)), [reformistaId]);
+  const guardar = (n: FotoTrabajo[]) => {
+    if (guardarFotos(reformistaId, n)) { setFotos(n); setError(null); } else setError("No caben más fotos en esta demo: borra alguna.");
+  };
+  const subir = async (files: FileList | null) => {
+    if (!files) return;
+    const nuevas: FotoTrabajo[] = [];
+    for (const f of [...files].slice(0, MAX_FOTOS - fotos.length)) {
+      try { nuevas.push({ src: await reducirFoto(f), texto: "" }); } catch { setError("Alguna foto no se pudo leer."); }
+    }
+    guardar([...fotos, ...nuevas]);
+  };
+  return (
+    <Tarjeta className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Fotos de tus trabajos</h2>
+        <p className="mt-1 text-sm text-stone-600">Salen en tu currículum cuando la app te propone a un cliente. Hasta {MAX_FOTOS} fotos.</p>
+      </div>
+      <ul className="list-disc space-y-0.5 rounded-lg bg-amber-50 p-3 pl-7 text-xs text-amber-950">
+        <li>Solo interiores: nada donde se reconozca la dirección (fachadas, portales, números, vistas desde la ventana).</li>
+        <li>Sin tu nombre, logo, rótulos, furgonetas rotuladas, teléfonos ni webs: tu ficha es anónima hasta que el cliente firma.</li>
+        <li>Sin personas reconocibles ni datos de tus clientes.</li>
+      </ul>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={confirmo} onChange={(e) => setConfirmo(e.target.checked)} />
+        <span>Confirmo que mis fotos cumplen estas normas. Si alguna no las cumple, la app puede retirarla.</span>
+      </label>
+      {fotos.length > 0 && (
+        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+          {fotos.map((x, i) => (
+            <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={x.src.startsWith("/") ? publico(x.src) : x.src} alt={`Trabajo ${i + 1}`} className="h-full w-full object-cover" />
+              <button type="button" onClick={() => guardar(fotos.filter((_, j) => j !== i))} className="absolute right-1 top-1 rounded-full bg-black/60 px-2 text-xs text-white" aria-label="Quitar foto">✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {error && <p className="text-xs text-red-700">{error}</p>}
+      {fotos.length < MAX_FOTOS && (
+        <label className={`inline-block rounded-xl px-4 py-2 text-sm font-semibold ${confirmo ? "cursor-pointer bg-teal-700 text-white hover:bg-teal-800" : "cursor-not-allowed bg-stone-200 text-stone-400"}`}>
+          ＋ Subir fotos
+          <input type="file" accept="image/*" multiple disabled={!confirmo} className="sr-only" onChange={(e) => { subir(e.target.files); e.target.value = ""; }} />
+        </label>
+      )}
     </Tarjeta>
   );
 }

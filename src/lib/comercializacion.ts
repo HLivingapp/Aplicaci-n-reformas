@@ -34,9 +34,9 @@ export const pctReserva = (importeSinIva: number) => (importeSinIva > 0 ? (reser
  * - Confirmado (22/11/2026): los 150 € del cliente se descuentan de su reserva si firma en la app.
  * En la demo el pago es simulado. Si el cliente invita a su propio proveedor, no hay pago de visitas.
  */
-export const VISITAS = { cliente: 150, reformista: 150, descuentaDeReserva: true, descuentoPendiente: false };
-export const TEXTO_VISITA_CLIENTE = `${eur(VISITAS.cliente)} una sola vez, que cubren todas las visitas que pidas para esta reforma`;
+export const VISITAS = { cliente: 150, reformista: 150, maxVisitas: 5, descuentaDeReserva: true, descuentoPendiente: false };
+export const TEXTO_VISITA_CLIENTE = `${eur(VISITAS.cliente)} una sola vez, que te dan de 1 a ${VISITAS.maxVisitas} visitas de reformistas y se te descuentan cuando hagas la obra`;
 export const TEXTO_DESCUENTO_VISITA = VISITAS.descuentaDeReserva
-  ? `Si firmas en la app, se descuentan de tu reserva${VISITAS.descuentoPendiente ? " (pendiente de confirmar)" : ""}.`
+  ? `Se te descuentan cuando hagas la obra: los restamos de la reserva al firmar en la app${VISITAS.descuentoPendiente ? " (pendiente de confirmar)" : ""}. Y si al final firmas en la app con un proveedor que traes tú, te los devolvemos.`
   : "";
 export const TEXTO_VISITA_REFORMISTA = `${eur(VISITAS.reformista)} por cada visita a la que vas`;
