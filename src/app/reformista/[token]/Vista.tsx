@@ -9,7 +9,7 @@ import { CON_CSV, csvValido, docActual, DOCUMENTOS, documentosExigidos, requisit
 import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import { recordarProfesional } from "@/lib/foro-cliente";
 import Link from "next/link";
-import { MisEncargos, MisTarifas } from "@/components/AreaReformista";
+import { MisEncargos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
 import { useEncargos } from "@/components/ComparativaRed";
 import { InvitaClientes } from "@/components/InvitaClientes";
 import { codigo as codigoRed } from "@/lib/red";
@@ -128,6 +128,7 @@ export default function PortalReformista() {
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
 
+      <MisPuntos reformistaId={p.id} />
       <InvitaClientes tipo="reformista" id={p.id} codigo={codigoRed(p.id)} />
       {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} faltanDocs={reqs.filter((r) => (r.clave === "rc" || r.clave === "corriente") && !r.ok).map((r) => r.texto)} />}
       <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />

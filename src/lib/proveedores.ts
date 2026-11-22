@@ -21,7 +21,7 @@ export const TEXTO_COMPROMISO_VENTAS =
 
 /** Clientes propios (invitación) frente a clientes que llegan por la app. Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_INVITADOS =
-  `Los clientes que yo traiga a la app invitándome desde su cuenta no me generan fee ni reserva. Por cada visita a un cliente que conozca a través de la app pagaré 150 € al confirmarla. Si ese cliente firma, pagará al firmar la reserva habitual (el 3 % del presupuesto sin IVA, con un mínimo de 1.000 €), que es mi fee de comercialización y cobra ${TITULAR}.`;
+  `Los clientes que yo traiga a la app, o que me inviten desde su cuenta, no pagan visitas ni reserva y no me generan fee; además me suman puntos de visibilidad. Por cada visita a un cliente que conozca a través de la app pagaré 150 € al confirmarla. Si ese cliente firma, pagará al firmar la reserva habitual (el 3 % del presupuesto sin IVA, con un mínimo de 1.000 €), que es mi fee de comercialización y cobra ${TITULAR}.`;
 
 const LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
 

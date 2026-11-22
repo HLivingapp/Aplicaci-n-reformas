@@ -20,6 +20,10 @@ export interface FichaRed {
   /** Valoración media por fase de obra (1 a 5) y número de valoraciones */
   valoraciones?: { fase: string; media: number; n: number }[];
   obrasEnApp: number;
+  /** Facturación de obras firmadas en la app (sin IVA), para los puntos de visibilidad */
+  facturacionApp?: number;
+  /** Clientes que ha traído a la app o que le han invitado (sin reserva ni pago de visitas) */
+  clientesTraidos?: number;
   /** Tarifas que ha cargado, para calcular su presupuesto a cada cliente */
   tarifa?: TarifaReformista;
 }
@@ -57,18 +61,28 @@ const haceDias = (n: number) => new Date(Date.now() - n * 86400000).toISOString(
 export const FICHAS_EJEMPLO: FichaRed[] = [
   {
     id: "ej-r1", codigo: "R-2741", tipo: "empresa", zonas: ["Madrid capital", "Pozuelo"], especialidades: ["Reforma integral", "Pladur y falsos techos", "Climatización y aerotermia"], trabajadores: 14,
-    presentacion: "Reformas integrales de pisos con jefe de obra propio. Especialistas en aerotermia y suelo radiante.", obrasReferencia: 3, comprobado: haceDias(3), capitalRC: 600000, obrasEnApp: 12,
+    presentacion: "Reformas integrales de pisos con jefe de obra propio. Especialistas en aerotermia y suelo radiante.", obrasReferencia: 3, comprobado: haceDias(3), capitalRC: 600000, obrasEnApp: 12, facturacionApp: 410000, clientesTraidos: 2,
     valoraciones: [{ fase: "Demolición", media: 4.8, n: 11 }, { fase: "Instalaciones", media: 4.7, n: 11 }, { fase: "Acabados", media: 4.9, n: 10 }, { fase: "Limpieza y entrega", media: 4.6, n: 10 }],
   },
   {
     id: "ej-r2", codigo: "R-5180", tipo: "empresa", zonas: ["Madrid sur", "Getafe", "Leganés"], especialidades: ["Reforma integral", "Alicatado y solados", "Montaje de cocinas"], trabajadores: 6,
-    presentacion: "Baños y cocinas en 3 a 5 semanas. Trabajamos con presupuesto cerrado y plazos por fase.", obrasReferencia: 3, comprobado: haceDias(9), capitalRC: 300000, obrasEnApp: 7,
+    presentacion: "Baños y cocinas en 3 a 5 semanas. Trabajamos con presupuesto cerrado y plazos por fase.", obrasReferencia: 3, comprobado: haceDias(9), capitalRC: 300000, obrasEnApp: 7, facturacionApp: 165000, clientesTraidos: 4,
     valoraciones: [{ fase: "Demolición", media: 4.5, n: 7 }, { fase: "Instalaciones", media: 4.4, n: 7 }, { fase: "Acabados", media: 4.7, n: 6 }],
   },
   {
     id: "ej-r3", codigo: "R-8833", tipo: "autonomo", zonas: ["Madrid norte", "Alcobendas"], especialidades: ["Electricidad", "Fontanería"], trabajadores: 2,
-    presentacion: "Instalaciones eléctricas y de fontanería con boletín. Adaptación de cuadros y cambio de bajantes.", obrasReferencia: 2, comprobado: haceDias(15), capitalRC: 150000, obrasEnApp: 3,
+    presentacion: "Instalaciones eléctricas y de fontanería con boletín. Adaptación de cuadros y cambio de bajantes.", obrasReferencia: 2, comprobado: haceDias(15), capitalRC: 150000, obrasEnApp: 3, facturacionApp: 24000, clientesTraidos: 1,
     valoraciones: [{ fase: "Instalaciones", media: 4.9, n: 3 }],
+  },
+  {
+    id: "ej-r4", codigo: "R-6402", tipo: "empresa", zonas: ["Madrid capital", "Las Rozas", "Majadahonda"], especialidades: ["Reforma integral", "Carpintería y puertas", "Pintura"], trabajadores: 9,
+    presentacion: "Reformas de pisos en el centro de Madrid con equipo propio de albañilería, pintura y carpintería.", obrasReferencia: 3, comprobado: haceDias(5), capitalRC: 450000, obrasEnApp: 5, facturacionApp: 98000, clientesTraidos: 0,
+    valoraciones: [{ fase: "Demolición", media: 4.3, n: 5 }, { fase: "Acabados", media: 4.5, n: 5 }],
+  },
+  {
+    id: "ej-r5", codigo: "R-3915", tipo: "autonomo", zonas: ["Alcalá de Henares", "Torrejón de Ardoz"], especialidades: ["Reforma integral", "Alicatado y solados"], trabajadores: 3,
+    presentacion: "Reformas de baño y cocina en el Corredor del Henares.", obrasReferencia: 2, comprobado: haceDias(12), capitalRC: 300000, obrasEnApp: 2, facturacionApp: 31000, clientesTraidos: 1,
+    valoraciones: [{ fase: "Acabados", media: 4.6, n: 2 }],
   },
 ];
 

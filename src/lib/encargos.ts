@@ -136,6 +136,8 @@ const TARIFAS_EJEMPLO: Record<string, TarifaReformista> = {
   "ej-r1": { general: 4, capitulos: { "Climatización": -6, "Calefacción y agua caliente": -8, "Pladur": -3 }, actualizado: "2026-11-15" },
   "ej-r2": { general: -5, capitulos: { "Alicatado": -10, "Cocina": -8, "Carpintería exterior": 3 }, actualizado: "2026-11-12" },
   "ej-r3": { general: 2, capitulos: { "Electricidad": -12, "Fontanería": -10 }, actualizado: "2026-11-02" },
+  "ej-r4": { general: 1, capitulos: { "Pintura": -8, "Carpintería interior": -5 }, actualizado: "2026-11-18" },
+  "ej-r5": { general: -7, capitulos: { "Alicatado": -6 }, actualizado: "2026-11-10" },
 };
 
 export function tarifaDe(f: Pick<FichaRed, "id"> & { tarifa?: TarifaReformista }): TarifaReformista | undefined {

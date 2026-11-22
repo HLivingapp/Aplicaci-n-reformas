@@ -3,6 +3,7 @@ import Link from "next/link";
 import { APP } from "@/lib/marca";
 import { RESPONSABLE as R } from "@/lib/legal";
 import { COMERCIALIZACION, TEXTO_DESCUENTO_VISITA, VISITAS } from "@/lib/comercializacion";
+import { PUNTOS } from "@/lib/visibilidad";
 
 export const metadata: Metadata = { title: "Aviso legal" };
 
@@ -28,9 +29,15 @@ export default function AvisoLegal() {
         </p>
       </section>
       <section>
+        <h2 className="mb-2 font-semibold">Cómo elegimos los profesionales que te proponemos</h2>
+        <p>
+          Cuando un cliente pide presupuestos, la app le propone los {PUNTOS.propuestos} profesionales homologados con mejor encaje para su vivienda: primero por cercanía (que trabajen en su zona) y después por puntos de visibilidad. Los puntos suben con la facturación del profesional en la app, con las valoraciones de sus clientes y con cada cliente que trae a la app o que le invita.
+        </p>
+      </section>
+      <section>
         <h2 className="mb-2 font-semibold">Pago por visitas</h2>
         <p>
-          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que cubren todas las visitas que pida. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No hay pago de visitas cuando el cliente invita a su propio profesional.
+          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que cubren todas las visitas que pida. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No se cobra nada (ni visitas ni reserva) cuando el cliente invita a su propio profesional o el profesional trae a su cliente.
         </p>
       </section>
       <section>
