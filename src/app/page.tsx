@@ -348,6 +348,7 @@ export default function Inicio() {
           <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
           <Link href="/comunidad" className="hover:underline">Foro</Link>
           <Link href="/tramites" className="hover:underline">Trámites</Link>
+          <Link href="/hipoteca" className="hover:underline">Hipoteca</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
           <Link href="/arquitectos" className="hover:underline">Arquitectos</Link>
