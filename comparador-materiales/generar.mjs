@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 const aqui = dirname(fileURLToPath(import.meta.url));
 const salida = process.argv[2] || join(aqui, "dist");
-const SITE = (process.env.SITE_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/comparador-materiales").replace(/\/$/, "");
+const SITE = (process.env.SITE_URL || "https://comparamaterial.com").replace(/\/$/, "");
 const REGISTRO = process.env.REGISTRO_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/reformistas/";
 const NOMBRE = process.env.NOMBRE_WEB || "Comparamaterial";
 // Solo se deja indexar en el dominio definitivo (INDEXAR=1), para no duplicar contenido con la vista previa.
@@ -231,5 +231,7 @@ writeFileSync(join(salida, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"
 ${rutas.map((r) => `  <url><loc>${SITE}/${r}</loc><lastmod>${fecha}</lastmod></url>`).join("\n")}
 </urlset>
 `);
+// En el dominio definitivo, GitHub Pages necesita el archivo CNAME con el dominio.
+if (INDEXAR) writeFileSync(join(salida, "CNAME"), new URL(SITE).host + "\n");
 writeFileSync(join(salida, "robots.txt"), INDEXAR ? `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n` : `User-agent: *\nDisallow: /\n`);
 console.log(`Generadas ${rutas.length} páginas en ${salida}`);
