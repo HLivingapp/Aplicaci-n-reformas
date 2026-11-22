@@ -65,10 +65,10 @@ export default function Inicio() {
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Más de 300 reformas ejecutadas en Madrid
             </p>
             <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              Tu reforma, con precio claro <em className="font-medium text-amber-300">desde el primer día</em>
+              Tu presupuesto de reforma <em className="font-medium text-amber-300">en 2 minutos</em>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-stone-300">
-              Únete gratis con tu email, escribe tu dirección y en 3 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Y con el plan Básico ves lo que te costaría con cada reformista homologado de tu zona.
+              Únete gratis con tu email, escribe tu dirección y en 2 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Y con el plan Básico ves lo que te costaría con cada reformista homologado de tu zona.
             </p>
             <Link href={empezar} className="group mt-8 flex max-w-xl items-center gap-3 rounded-2xl bg-white p-2 pl-4 text-stone-500 shadow-2xl shadow-teal-900/40 ring-4 ring-white/10 transition hover:ring-amber-300/40">
               <span className="text-xl">📍</span>
@@ -328,7 +328,7 @@ export default function Inicio() {
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
           <h2 className="font-display text-4xl font-semibold tracking-tight">¿Cuánto costaría reformar tu casa?</h2>
-          <p className="max-w-xl text-teal-50">Únete gratis con tu email y míralo en 3 minutos, aquí mismo. Sin esperar a que te llegue por correo.</p>
+          <p className="max-w-xl text-teal-50">Únete gratis con tu email y míralo en 2 minutos, aquí mismo. Sin esperar a que te llegue por correo.</p>
           <Link href={empezar} className="rounded-xl bg-white px-6 py-3.5 font-semibold text-teal-800 hover:bg-teal-50">Calcular mi presupuesto gratis</Link>
         </div>
       </section>
