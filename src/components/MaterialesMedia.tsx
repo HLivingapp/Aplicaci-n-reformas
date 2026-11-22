@@ -26,7 +26,7 @@ export function PrecioMaterial({ p }: { p?: PrecioOrientativo }) {
 }
 
 /** Ficha de un material: imagen (o icono de la categoría), marca, nombre y enlace al catálogo. */
-export function FichaMaterial({ x, acciones }: { x: MaterialMedia; acciones?: React.ReactNode }) {
+export function FichaMaterial({ x, acciones, etiqueta }: { x: MaterialMedia; acciones?: React.ReactNode; etiqueta?: string }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-stone-100">
@@ -36,6 +36,7 @@ export function FichaMaterial({ x, acciones }: { x: MaterialMedia; acciones?: Re
         ) : (
           <span className="text-4xl opacity-60" aria-hidden>{cat(x.categoria).icono}</span>
         )}
+        {etiqueta && <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-stone-700 shadow-sm">{etiqueta}</span>}
       </div>
       <div className="flex flex-1 flex-col p-3">
         <div className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">{x.marca}</div>

@@ -7,17 +7,20 @@ import { useEffect, useState } from "react";
  * Los enlaces son a catálogos o fichas públicas del fabricante, nunca a tarifas de proveedor.
  * En la demo se guardan en el navegador; en producción irán a la base de datos (Supabase).
  */
-export type CategoriaMedia = "cocina" | "bano" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
+export type CategoriaMedia = "cocina" | "encimeras" | "bano" | "sanitarios" | "griferia" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
 
 export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: string }[] = [
-  { id: "cocina", texto: "Cocina", icono: "🍳" },
-  { id: "bano", texto: "Baño", icono: "🛁" },
+  { id: "cocina", texto: "Cocinas y electrodomésticos", icono: "🍳" },
+  { id: "encimeras", texto: "Encimeras", icono: "🪨" },
+  { id: "bano", texto: "Muebles de baño, platos y mamparas", icono: "🛁" },
+  { id: "sanitarios", texto: "Inodoros y lavabos", icono: "🚽" },
+  { id: "griferia", texto: "Grifería", icono: "🚿" },
   { id: "suelos", texto: "Suelos y tarimas", icono: "🪵" },
   { id: "azulejos", texto: "Azulejos y revestimientos", icono: "🧱" },
   { id: "ventanas", texto: "Ventanas", icono: "🪟" },
   { id: "puertas", texto: "Puertas", icono: "🚪" },
   { id: "armarios", texto: "Armarios", icono: "🗄️" },
-  { id: "electricidad", texto: "Electricidad e iluminación", icono: "💡" },
+  { id: "electricidad", texto: "Mecanismos e iluminación", icono: "💡" },
   { id: "climatizacion", texto: "Climatización y agua caliente", icono: "🌡️" },
 ];
 
@@ -95,17 +98,17 @@ export const MATERIALES_MEDIA_INICIALES: MaterialMedia[] = [
   m("alvic-luxe", "cocina", "Alvic", "Frentes Luxe", "Puertas de cocina de la colección Luxe", "https://alvic.com/es/descargas/"),
   m("alvic-zenit", "cocina", "Alvic", "Frentes Zenit", "Puertas de cocina de la colección Zenit", "https://alvic.com/es/descargas/"),
   m("alvic-syncron", "cocina", "Alvic", "Frentes Syncron", "Puertas de cocina de la colección Syncron", "https://alvic.com/es/descargas/"),
-  m("ascale", "cocina", "Ascale", "Encimera porcelánica", "La encimera más usada: resiste calor, rayas y manchas; se elige en el showroom con los frentes", "https://www.ascale.es/"),
+  m("ascale", "encimeras", "Ascale", "Encimera porcelánica", "La encimera más usada: resiste calor, rayas y manchas; se elige en el showroom con los frentes", "https://www.ascale.es/"),
   m("balay", "cocina", "Balay", "Electrodomésticos", "Horno, placa, campana, frigorífico y lavavajillas", "https://media3.bsh-group.com/Documents/28659371_Catalogo_interactivo_Balay_0526_280426.pdf"),
   m("teka", "cocina", "Teka", "Electrodomésticos", "Alternativa a Balay para el equipamiento de cocina", "https://www.teka.com/es-es/wp-content/uploads/sites/2/2022/03/CATALOGO-TEKA-MAYO2025.pdf"),
-  m("imex-cocina", "cocina", "Imex", "Grifo de cocina", "Negro o cromado", IMEX),
+  m("imex-cocina", "griferia", "Imex", "Grifo de cocina", "Negro o cromado", IMEX),
   m("salgar-noja", "bano", "Salgar", "Mueble de baño Noja", "35 cm de fondo, con lavabo", SALGAR),
   m("salgar-attila", "bano", "Salgar", "Mueble de baño Attila", "35 cm de fondo, con lavabo", SALGAR),
   m("salgar-uniq", "bano", "Salgar", "Mueble de baño Uniq", "35 cm de fondo, con lavabo", SALGAR),
   m("salgar-marville", "bano", "Salgar", "Mueble de baño Marville", "22 cm de fondo, para baños estrechos", SALGAR),
-  m("roca-gap", "bano", "Roca", "Inodoro Gap", "Inodoro de la selección recomendada", ROCA),
+  m("roca-gap", "sanitarios", "Roca", "Inodoro Gap", "Inodoro de la selección recomendada", ROCA),
   m("roca-contessa", "bano", "Roca", "Bañera Contessa", "Bañera de la selección recomendada", ROCA),
-  m("imex-bano", "bano", "Imex", "Grifería de baño", "Negra o cromada, vista o empotrada", IMEX),
+  m("imex-bano", "griferia", "Imex", "Grifería de baño", "Negra o cromada, vista o empotrada", IMEX),
   m("kassandra-delta", "bano", "Kassandra", "Mampara Delta", "Mampara de ducha", KASSANDRA),
   m("kassandra-luna", "bano", "Kassandra", "Mampara Luna", "Mampara de ducha", KASSANDRA),
   m("kassandra-sugar", "bano", "Kassandra", "Mampara Sugar", "Mampara de ducha", KASSANDRA),
