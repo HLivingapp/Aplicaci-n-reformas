@@ -1,5 +1,6 @@
 "use client";
 
+import { BotonAnadir } from "./Moodboard";
 import { useState } from "react";
 import { FichaMaterial } from "@/components/MaterialesMedia";
 import { CATEGORIAS_MEDIA, type CategoriaMedia } from "@/lib/gama-media";
@@ -57,7 +58,7 @@ export function CatalogoMateriales({ inicial = "todas" }: { inicial?: NivelFiltr
           <div key={c.id} className="mt-5">
             <h3 className="font-semibold">{c.icono} {c.texto}</h3>
             <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {items.map(({ x, n }) => <FichaMaterial key={n + x.id} x={x} etiqueta={nivel === "todas" ? ETIQUETA[n] : undefined} />)}
+              {items.map(({ x, n }) => <FichaMaterial key={n + x.id} x={x} etiqueta={nivel === "todas" ? ETIQUETA[n] : undefined} acciones={<BotonAnadir id={x.id} />} />)}
             </div>
           </div>
         );

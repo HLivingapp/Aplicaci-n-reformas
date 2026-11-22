@@ -1,5 +1,6 @@
 import { eurosRedondo as euros } from "@/lib/calc";
 import { ProductosPartida } from "./ProductosPartida";
+import { SeleccionCapitulo, SeleccionSinCapitulo } from "./SeleccionEnPresupuesto";
 import { SubpartidasTabla } from "./SubpartidasTabla";
 import { ALCANCE, cantidadLegible } from "@/lib/alcance";
 import type { Estimacion, LineaEstimacion } from "@/lib/estimacion";
@@ -75,9 +76,11 @@ export function VistaEstimacion({ e, detalle = false }: { e: Estimacion; detalle
                 );
               })}
             </ul>
+            <SeleccionCapitulo capitulo={k} />
           </details>
         ))}
       </div>
+      <SeleccionSinCapitulo capitulos={[...capitulos.keys()]} />
       {detalle && (
         <div className="mt-2 flex justify-between rounded-lg bg-stone-50 p-2 text-sm">
           <span>Coste {euros(e.coste)}</span>

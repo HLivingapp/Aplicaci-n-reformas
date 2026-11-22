@@ -1,5 +1,6 @@
 "use client";
 
+import { BarraSeleccion, Moodboard } from "@/components/Moodboard";
 import Link from "next/link";
 import { GuiaEleccion } from "@/components/GuiaEleccion";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
@@ -27,12 +28,19 @@ export default function Materiales() {
           Cocina, baño, suelos, puertas, armarios, ventanas, electricidad y climatización. Productos básicos, medios y premium con foto, precio público de tienda y enlace, para que sepas qué entra en cada calidad antes de pedir presupuesto.
         </p>
         <nav className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 text-sm">
-          {[["#catalogo", "🛒 Catálogo"], ["#gamas", "🎚️ Las tres gamas"], ["#videos", "🎬 Vídeos"], ["#seleccion", "⭐ Selección recomendada"], ["#guia", "🗓️ Qué elegir y cuándo"]].map(([h, t]) => (
+          {[["#catalogo", "🛒 Catálogo"], ["#moodboard", "🧩 Mi moodboard"], ["#gamas", "🎚️ Las tres gamas"], ["#videos", "🎬 Vídeos"], ["#seleccion", "⭐ Selección recomendada"], ["#guia", "🗓️ Qué elegir y cuándo"]].map(([h, t]) => (
             <a key={h} href={h} className="shrink-0 rounded-full bg-white px-3 py-1.5 ring-1 ring-stone-200 hover:bg-stone-100">{t}</a>
           ))}
         </nav>
 
         <div className="mt-6"><CatalogoMateriales /></div>
+
+        <section id="moodboard" className="mt-10 scroll-mt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Mi moodboard</h2>
+          <p className="mt-1 max-w-2xl text-stone-600">Se monta solo con lo que añades a tu reforma. Lo que elijas sale también escrito en tu presupuesto, en su partida, y puedes compartirlo con un enlace.</p>
+          <div className="mt-3"><Moodboard /></div>
+        </section>
+        <BarraSeleccion />
 
         <section id="gamas" className="mt-10">
           <h2 className="text-2xl font-semibold tracking-tight">Así es cada gama</h2>
