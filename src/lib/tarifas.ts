@@ -40,17 +40,17 @@ export const tarifasPorDefecto = (): Tarifas => ({
     l("dem_suelo_ceramico", "Mano de obra", "Demoliciones", "Suplemento picado de suelo cerámico o porcelánico", "m²", 8),
     l("dem_suelo_terrazo", "Mano de obra", "Demoliciones", "Suplemento picado de suelo de terrazo", "m²", 12),
     l("dem_falso_techo", "Mano de obra", "Demoliciones", "Desmontaje de falso techo existente", "m²", 8),
-    l("demolicion_estancia", "Mano de obra", "Demoliciones", "Demolición de baño o cocina y retirada de escombros (reforma parcial)", "ud", 900),
+    l("demolicion_estancia", "Mano de obra", "Demoliciones", "Demolición de baño o cocina y retirada de escombros (reforma parcial)", "ud", 650),
     l("sin_ascensor", "Mano de obra", "Demoliciones", "Subida de material y bajada de escombros sin ascensor (por planta)", "ud", 120),
     l("albanileria_integral", "Mano de obra", "Albañilería", "Albañilería integral: recrecidos, rozas, ayudas a instalaciones y tabiquería de baños y cocina", "m²c", 75),
     l("albanileria_redistribucion", "Mano de obra", "Albañilería", "Suplemento por redistribución de tabiquería", "m²c", 25),
-    l("albanileria_estancia", "Mano de obra", "Albañilería", "Albañilería de baño o cocina: regularización de paredes y suelo y ayudas a instalaciones (reforma parcial)", "ud", 1600),
+    l("albanileria_estancia", "Mano de obra", "Albañilería", "Albañilería de baño o cocina: regularización de paredes y suelo y ayudas a instalaciones (reforma parcial)", "ud", 1150),
     l("traslado_cocina", "Mano de obra", "Albañilería", "Traslado de cocina: desagües, rozas y salida de humos", "pa", 1200),
     l("alicatado_mo", "Mano de obra", "Alicatado", "Alicatado de baños y frente de cocina (mano de obra)", "m²", 25),
     l("falso_techo", "Mano de obra", "Pladur", "Falso techo de placa de yeso laminado", "m²", 40),
     l("vigas", "Mano de obra", "Pladur", "Limpieza y tratamiento de vigas vistas", "m²", 12),
     l("elec_completa", "Mano de obra", "Electricidad", "Instalación eléctrica completa con cuadro y boletín", "m²c", 50),
-    l("elec_adaptar", "Mano de obra", "Electricidad", "Adaptación eléctrica de baño, cocina y cambios", "pa", 2000),
+    l("elec_adaptar", "Mano de obra", "Electricidad", "Adaptación eléctrica por baño o cocina", "ud", 600),
     l("fonta_punto", "Mano de obra", "Fontanería", "Fontanería y saneamiento por punto de agua, colocación incluida", "ud", 110),
     l("fonta_adaptar", "Mano de obra", "Fontanería", "Adaptación de tomas existentes (se mantiene la instalación)", "ud", 500),
     l("radiadores", "Mano de obra", "Calefacción y agua caliente", "Circuito de calefacción y radiadores en todas las estancias", "m²c", 25, true),
@@ -83,7 +83,7 @@ export const tarifasPorDefecto = (): Tarifas => ({
     l("tasas", "Impuestos y tasas", "Impuestos y tasas", "Tasas de residuos, contenedor, PRL y coordinador", "pa", 370),
     // DIRECCIÓN DE OBRA
     l("direccion", "Dirección de obra", "Dirección de obra", "Jefatura de obra y diseño", "pa", 3500),
-    l("direccion_parcial", "Dirección de obra", "Dirección de obra", "Jefatura de obra (reforma de baño o cocina)", "ud", 715),
+    l("direccion_parcial", "Dirección de obra", "Dirección de obra", "Jefatura de obra (reforma de baño o cocina)", "ud", 430),
   ],
   materiales: materialesPorDefecto(),
 });
@@ -98,6 +98,9 @@ export function esTarifas(x: unknown): x is Tarifas {
   return !!t && typeof t === "object" && Array.isArray(t.precios) && Array.isArray(t.tramos) && typeof t.recargoPct === "number";
 }
 
+/** Coste por defecto anterior de partidas revisadas (22-nov-2026: el baño salía alto). */
+const REVISADOS: Record<string, number> = { elec_adaptar: 2000, demolicion_estancia: 900, albanileria_estancia: 1600, direccion_parcial: 715 };
+
 /** Completa un tarifario importado con las líneas o campos nuevos que falten. */
 export function completarTarifas(t: Partial<Tarifas>): Tarifas {
   const base = tarifasPorDefecto();
@@ -110,6 +113,12 @@ export function completarTarifas(t: Partial<Tarifas>): Tarifas {
       return b ? { ...x, capitulo: b.capitulo } : x;
     });
   for (const p of base.precios) if (!precios.some((x) => x.id === p.id)) precios.push(p);
+  // Precios por defecto revisados: si el tarifario aún tiene el valor anterior sin tocar, se actualiza.
+  for (let i = 0; i < precios.length; i++) {
+    const antes = REVISADOS[precios[i].id];
+    const b = base.precios.find((y) => y.id === precios[i].id);
+    if (antes !== undefined && b && precios[i].coste === antes) precios[i] = { ...precios[i], coste: b.coste, unidad: b.unidad, descripcion: b.descripcion };
+  }
   return { ...base, ...t, factorCalidad: { ...base.factorCalidad, ...t.factorCalidad }, precioM2Referencia: { ...base.precioM2Referencia!, ...t.precioM2Referencia }, recargoPorCapitulo: { ...base.recargoPorCapitulo, ...t.recargoPorCapitulo }, tramos: t.tramos?.length ? t.tramos : base.tramos, precios, materiales: completarMateriales(t.materiales) };
 }
 

@@ -225,7 +225,7 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   const elec = debeCambiar(r.electricidad, t, cambiaTabiques);
   if (elec.forzado) avisos.push(`Electricidad: se renueva porque ${r.electricidad.ano ? `tiene más de ${t.aniosMaxInstalacion} años` : "no se sabe su antigüedad y se mueven tabiques"}.`);
   if (elec.cambiar && quiere("Electricidad")) add("elec_completa", m2c, "Toda la vivienda");
-  else if (integral || hazBanos || hazCocina) add("elec_adaptar", 1);
+  else if (integral || hazBanos || hazCocina) add("elec_adaptar", Math.max(1, nBanos + (hazCocina ? 1 : 0)), estanciasHumedas || undefined);
 
   // --- Fontanería ---
   const fonta = debeCambiar(r.fontaneria, t, cambiaTabiques || r.moverCocina);
