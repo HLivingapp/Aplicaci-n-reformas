@@ -81,6 +81,7 @@ export const tarifasPorDefecto = (): Tarifas => ({
     l("tasas", "Impuestos y tasas", "Impuestos y tasas", "Tasas de residuos, contenedor, PRL y coordinador", "pa", 370),
     // DIRECCIÓN DE OBRA
     l("direccion", "Dirección de obra", "Dirección de obra", "Jefatura de obra y diseño", "pa", 3500),
+    l("direccion_parcial", "Dirección de obra", "Dirección de obra", "Jefatura de obra (reforma de baño o cocina)", "ud", 715),
   ],
   materiales: materialesPorDefecto(),
 });

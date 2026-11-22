@@ -82,6 +82,7 @@ export const ALCANCE: Record<string, Alcance> = {
   luminarias: { incluye: "Focos LED empotrados en falsos techos y lámparas básicas de superficie." },
   limpieza: { incluye: "Limpieza final de obra a fondo y pequeños remates para entregar la vivienda lista para entrar." },
   tasas: { incluye: "Tasa de residuos, permisos de contenedor, seguridad y salud (PRL) y coordinador de seguridad." },
+  direccion_parcial: { incluye: "Jefe de obra durante la reforma del baño o la cocina: planificación, coordinación de oficios y seguimiento contigo." },
   direccion: { incluye: "Jefe de obra durante toda la reforma, diseño de la distribución, planificación y seguimiento contigo." },
 };
 
