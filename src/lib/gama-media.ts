@@ -7,12 +7,13 @@ import { useEffect, useState } from "react";
  * Los enlaces son a catálogos o fichas públicas del fabricante, nunca a tarifas de proveedor.
  * En la demo se guardan en el navegador; en producción irán a la base de datos (Supabase).
  */
-export type CategoriaMedia = "cocina" | "bano" | "suelos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
+export type CategoriaMedia = "cocina" | "bano" | "suelos" | "azulejos" | "ventanas" | "puertas" | "armarios" | "electricidad" | "climatizacion";
 
 export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: string }[] = [
   { id: "cocina", texto: "Cocina", icono: "🍳" },
   { id: "bano", texto: "Baño", icono: "🛁" },
-  { id: "suelos", texto: "Suelos y azulejos", icono: "🪵" },
+  { id: "suelos", texto: "Suelos y tarimas", icono: "🪵" },
+  { id: "azulejos", texto: "Azulejos y revestimientos", icono: "🧱" },
   { id: "ventanas", texto: "Ventanas", icono: "🪟" },
   { id: "puertas", texto: "Puertas", icono: "🚪" },
   { id: "armarios", texto: "Armarios", icono: "🗄️" },
@@ -61,7 +62,7 @@ const EXTRA: Record<string, Partial<MaterialMedia>> = {
   "alvic-luxe": web("https://alvic.com/wp-content/uploads/2022/06/118-dsc0927-alvic-1200x1680.jpg", "Alvic", false),
   "alvic-zenit": ALVIC_COCINA,
   "alvic-syncron": web("https://alvic.com/wp-content/uploads/2021/11/syncron-laminates-alvic-1200x912.jpg", "Alvic", false),
-  // Compac: su web no deja enlazar sus fotos; sin foto hasta tener una propia
+  ascale: { ...web("https://almacendecocinas.com/wp-content/uploads/2025/01/ascale-croma-white-menu.jpg", "Almacén de Cocinas", false), precio: pvp("Unos 199 € el metro lineal (12 mm)", "Almacén de Cocinas", "https://almacendecocinas.com/producto/ascale-porcelanico-croma-white-1-metro-lineal-60-de-fondo/") },
   finfloor: web("https://finfloor.com/uploads/images/Portada-69f35ca047a946.43281349.jpg", "Finfloor", false),
   balay: { ...web("https://media3.bsh-group.com/Product_Shots/28980336_3HB2030X0_01_def.webp", "Balay"), precio: pvp("Horno multifunción desde unos 279 €", "Leroy Merlin", "https://www.leroymerlin.es/productos/horno-multifuncion-balay-3hb2030x0-66-litros-3-3kw-clase-a-84450875.html") },
   teka: web("https://teka.b-cdn.net/CMP1219/4/PR18549BI38886_111000005_HLB_8400_BK_SZ1.png", "Teka"),
@@ -94,7 +95,7 @@ export const MATERIALES_MEDIA_INICIALES: MaterialMedia[] = [
   m("alvic-luxe", "cocina", "Alvic", "Frentes Luxe", "Puertas de cocina de la colección Luxe", "https://alvic.com/es/descargas/"),
   m("alvic-zenit", "cocina", "Alvic", "Frentes Zenit", "Puertas de cocina de la colección Zenit", "https://alvic.com/es/descargas/"),
   m("alvic-syncron", "cocina", "Alvic", "Frentes Syncron", "Puertas de cocina de la colección Syncron", "https://alvic.com/es/descargas/"),
-  m("compac", "cocina", "Compac", "Encimera de cuarzo", "Encimera de cuarzo; se elige en el showroom con los frentes", "https://www.compac.es/wp-content/uploads/novedades/COMPAC%C2%A9COMPAC_Catalogo.pdf"),
+  m("ascale", "cocina", "Ascale", "Encimera porcelánica", "La encimera más usada: resiste calor, rayas y manchas; se elige en el showroom con los frentes", "https://www.ascale.es/"),
   m("balay", "cocina", "Balay", "Electrodomésticos", "Horno, placa, campana, frigorífico y lavavajillas", "https://media3.bsh-group.com/Documents/28659371_Catalogo_interactivo_Balay_0526_280426.pdf"),
   m("teka", "cocina", "Teka", "Electrodomésticos", "Alternativa a Balay para el equipamiento de cocina", "https://www.teka.com/es-es/wp-content/uploads/sites/2/2022/03/CATALOGO-TEKA-MAYO2025.pdf"),
   m("imex-cocina", "cocina", "Imex", "Grifo de cocina", "Negro o cromado", IMEX),
@@ -124,8 +125,10 @@ export function leerMaterialesMedia(): MaterialMedia[] {
   try {
     const x = JSON.parse(localStorage.getItem(CLAVE) ?? "null");
     if (!Array.isArray(x)) return MATERIALES_MEDIA_INICIALES;
+    // Fichas retiradas de la selección (p. ej. la encimera de cuarzo, sustituida por porcelánica)
+    const RETIRADAS = ["compac"];
     // Las fichas iniciales guardadas antes de tener foto y precio los toman de la selección actual
-    return (x as MaterialMedia[]).map((y) => {
+    return (x as MaterialMedia[]).filter((y) => !RETIRADAS.includes(y.id)).map((y) => {
       const s = MATERIALES_MEDIA_INICIALES.find((z) => z.id === y.id);
       // Las fotos enlazadas de la selección inicial se toman siempre de la versión actual (las subidas por el equipo se respetan)
       const subida = y.imagen?.startsWith("data:");

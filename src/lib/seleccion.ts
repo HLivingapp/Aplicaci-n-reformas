@@ -30,7 +30,7 @@ export const SELECCION: CategoriaSeleccion[] = [
     marcas: [
       { marca: "Alvic", que: "Frentes de cocina Luxe, Zenit y Syncron", url: "https://alvic.com/es/descargas/" },
       { marca: "Alvic Center (Hermosilla 75, Madrid)", que: "Showroom donde eliges puertas y encimera", url: "https://alviccenter.es/centros-distribucion/madrid-hermosilla/" },
-      { marca: "Compac", que: "Encimeras de cuarzo", url: "https://www.compac.es/wp-content/uploads/novedades/COMPAC%C2%A9COMPAC_Catalogo.pdf" },
+      { marca: "Ascale, Dekton o Laminam", que: "Encimeras porcelánicas, las más usadas", url: "https://www.ascale.es/" },
       { marca: "Balay", que: "Electrodomésticos", url: "https://media3.bsh-group.com/Documents/28659371_Catalogo_interactivo_Balay_0526_280426.pdf" },
       { marca: "Teka", que: "Electrodomésticos", url: "https://www.teka.com/es-es/wp-content/uploads/sites/2/2022/03/CATALOGO-TEKA-MAYO2025.pdf" },
       { marca: "Imex", que: "Grifería de cocina, negra o cromada", url: "https://imexproducts.es/descarga-catalogos/" },

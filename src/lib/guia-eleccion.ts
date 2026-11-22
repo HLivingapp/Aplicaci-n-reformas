@@ -81,7 +81,7 @@ export const GUIA_ELECCION: PasoGuia[] = [
     prioridad: 3,
     titulo: "Cocina: puertas, tirador y encimera",
     cuando: "Durante la demolición; después el fabricante mide y propone la distribución",
-    elige: ["Acabado de puertas", "Tirador: gola, tirador normal, push and pull o integrado", "Encimera: porcelánica, de cuarzo o laminada", "Frontal entre muebles (azulejo)", "Grifo de cocina"],
+    elige: ["Acabado de puertas", "Tirador: gola, tirador normal, push and pull o integrado", "Encimera: porcelánica (Dekton, Laminam, Ascale) o laminada", "Frontal entre muebles (azulejo)", "Grifo de cocina"],
     consejos: [
       "En el showroom eliges puertas y encimera; el diseño completo se hace con la cocina ya demolida y medida.",
       "Push and pull, tirador integrado, encimeras de acero, madera o piedra natural suelen tener sobrecoste o más plazo.",
