@@ -28,7 +28,7 @@ export function VideosNormativa({ soloLegal = false }: { soloLegal?: boolean }) 
           </figure>
         ))}
       </div>
-      <p className="text-[11px] text-stone-400">Vídeos generados con inteligencia artificial, sin personas reales.</p>
+      <p className="text-[11px] text-stone-400">Vídeos generados con inteligencia artificial.</p>
     </section>
   );
 }
