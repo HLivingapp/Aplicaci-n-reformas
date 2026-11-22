@@ -2,7 +2,7 @@
 import { RESPONSABLE, TEXTO_COMERCIALIZADORA, TITULAR } from "@/lib/legal";
 
 import { euros } from "@/lib/calc";
-import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaEncargo, TEXTO_RESERVA, type Encargo } from "@/lib/encargos";
+import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaEncargo, TEXTO_RESERVA, VISITAS, type Encargo } from "@/lib/encargos";
 import { SeguroPromotor } from "./SeguroPromotor";
 import { textoDireccion } from "@/lib/proyecto";
 
@@ -64,10 +64,10 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           {invitado ? (
             <>Contratista invitado por la propiedad: no hay reserva en la app. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           ) : (
-            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}) a {RESPONSABLE.razonSocial}, titular de la app. La reserva forma parte del precio y se descuenta del primer pago. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
+            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}) a {RESPONSABLE.razonSocial}, titular de la app. La reserva forma parte del precio y se descuenta del primer pago. De ella ya se pagaron {euros(VISITAS.cliente)} al pedir las visitas, así que a la firma quedan <b>{euros(Math.max(0, reserva - VISITAS.cliente))}</b>. Con el pago de la reserva se cotiza y se añade gratis el seguro de promotor. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
           )}
           <ul className="mt-1 space-y-0.5">
-            {!invitado && <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app, a la firma</span><span>{euros(reserva)}</span></li>}
+            {!invitado && <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app ({euros(VISITAS.cliente)} ya pagados al pedir las visitas)</span><span>{euros(reserva)}</span></li>}
             {HITOS.map((h, i) => (
               <li key={h.texto} className="flex justify-between gap-2 text-xs">
                 <span>{h.pct} % · {h.texto}{i === 0 && !invitado ? " (menos la reserva)" : ""}</span>

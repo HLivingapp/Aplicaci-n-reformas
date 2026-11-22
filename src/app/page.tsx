@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { TEXTO_DESCUENTO_VISITA, TEXTO_RESERVA, VISITAS } from "@/lib/comercializacion";
 import { APP } from "@/lib/marca";
 import { BENEFICIOS_CLIENTE } from "@/lib/beneficios";
 import { ListaBeneficios } from "@/components/Beneficios";
@@ -41,6 +41,7 @@ const VENTAJAS = [
 
 const PREGUNTAS = [
   { q: "¿Cuánto cuesta el presupuesto?", a: "Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. Para ver el precio de cada reformista homologado para tu casa y quedar con ellos está el plan Básico (5 €/mes) y, con el asistente IA de obra, el plan Pro (30 €/mes). Sin permanencia." },
+  { q: "¿Hay que pagar por las visitas?", a: `Sí: antes de que los reformistas vengan a ver tu casa pagas ${VISITAS.cliente} € una sola vez, y cubren todas las visitas que pidas para esa reforma. Cada reformista también paga por ir a verte, así que solo vienen los que van en serio. ${TEXTO_DESCUENTO_VISITA} Si invitas a tu propio reformista, no pagas visitas.` },
   { q: "¿Qué pago al contratar la obra?", a: `Al firmar el contrato en la app pagas una reserva: ${TEXTO_RESERVA}. No es un coste extra: forma parte del precio y se descuenta de tu primer pago al reformista. El resto se lo pagas directamente a él, por fases.` },
   { q: "¿El precio es definitivo?", a: "Es orientativo, con un margen de ±10 %. El reformista que elijas visita la vivienda, mide y te da el presupuesto final." },
   { q: "¿Quiénes son los reformistas?", a: "Empresas y autónomos de tu zona que han pasado la homologación: REA, certificado al corriente de pago y seguro RSC (responsabilidad civil) vigentes. El registro REA se vuelve a comprobar cada mes." },

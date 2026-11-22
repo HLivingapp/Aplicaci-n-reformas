@@ -4,7 +4,7 @@ import { AvisoMemoriaTecnica } from "./Beneficios";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import {
-  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, descartarEncargo, reservaApp, ORIGEN_ENCARGO, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
+  aplicarTarifa, COMERCIALIZACION, pctReserva, TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA, VISITAS, descartarEncargo, reservaApp, ORIGEN_ENCARGO, enviarPresupuestoFinal, ESTADO_ENCARGO, fijarVisita, firmarReformista, guardarTarifa, IVA_REFORMA, referencia, tarifaDe, tarifaVacia, type Encargo,
 } from "@/lib/encargos";
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
@@ -43,7 +43,7 @@ export function MisEncargos({ reformistaId, faltanDocs = [] }: { reformistaId: s
   return (
     <Tarjeta className="space-y-3">
       <h2 className="font-semibold">Tus clientes y obras</h2>
-      {encargos.length > 0 && <p className="text-xs text-stone-500">Los clientes de la app pagan la reserva ({TEXTO_RESERVA}), que es tu fee. Los clientes que tú traes invitándote no te cuestan nada.</p>}
+      {encargos.length > 0 && <p className="text-xs text-stone-500">Con los clientes de la app pagas {TEXTO_VISITA_REFORMISTA} (al confirmarla) y, si firman, la reserva que pagan ellos ({TEXTO_RESERVA}) es tu fee. Los clientes que tú traes invitándote no te cuestan nada.</p>}
       {!encargos.length && <p className="text-sm text-stone-500">Todavía no te ha pedido visita nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu presupuesto calculado.</p>}
       {faltanDocs.length > 0 && encargos.length > 0 && (
         <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">Para generar el contrato antes tienes que subir: {faltanDocs.join("; ")}.</p>
@@ -78,8 +78,9 @@ function EncargoReformista({ e, reformistaId, bloqueado }: { e: Encargo; reformi
         <div className="mt-3 flex flex-wrap items-end gap-2">
           <label className="text-xs text-stone-600">Día y hora de la visita<input type="datetime-local" className={`${inputCls} mt-1`} value={fecha} onChange={(x) => setFecha(x.target.value)} /></label>
           <input className={`${inputCls} min-w-40 flex-1`} placeholder="Nota para el cliente (opcional)" value={nota} onChange={(x) => setNota(x.target.value)} />
-          <Boton onClick={() => fijarVisita(e.id, new Date(fecha).toISOString(), nota)} disabled={!fecha}>Confirmar visita</Boton>
+          <Boton onClick={() => fijarVisita(e.id, new Date(fecha).toISOString(), nota)} disabled={!fecha}>Pagar {VISITAS.reformista} € y confirmar visita</Boton>
           <button onClick={() => descartarEncargo(e.id)} className="text-xs text-stone-500 underline">No puedo</button>
+          <p className="w-full text-xs text-stone-500">Cada visita a un cliente de la app cuesta {VISITAS.reformista} € y se paga al confirmarla. El cliente ya ha pagado su parte para pedir visitas. Demo: pago simulado.</p>
         </div>
       )}
 
@@ -87,7 +88,7 @@ function EncargoReformista({ e, reformistaId, bloqueado }: { e: Encargo; reformi
         <div className="mt-3">
           <p className="text-xs text-stone-600">
             {e.visita.fecha
-              ? `Visita el ${new Date(e.visita.fecha).toLocaleString("es-ES", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}. Después de verla, mete aquí la cifra acordada y tus tarifas para esta obra: la app genera el contrato.`
+              ? `Visita el ${new Date(e.visita.fecha).toLocaleString("es-ES", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}${e.visita.pagoReformista ? ` (visita pagada: ${VISITAS.reformista} €)` : ""}. Después de verla, mete aquí la cifra acordada y tus tarifas para esta obra: la app genera el contrato.`
               : "Tu cliente te ha invitado a la app. Mete aquí la cifra que habéis acordado y tus tarifas para esta obra: la app genera el contrato."}
           </p>
           {!editando && <Boton className="mt-2" onClick={() => setEditando(true)}>Meter el presupuesto acordado</Boton>}
