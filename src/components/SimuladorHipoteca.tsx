@@ -7,7 +7,7 @@ import { ComparativaBancos } from "./ComparativaBancos";
 import { inputCls } from "./ui";
 
 /** «Reforma en tu hipoteca»: cuota orientativa para financiar la reforma. Simulación, sin compromiso. */
-export function SimuladorHipoteca({ importe }: { importe: number }) {
+export function SimuladorHipoteca({ importe, conBancos = true }: { importe: number; conBancos?: boolean }) {
   const [cantidad, setCantidad] = useState(Math.round(importe / 1000) * 1000);
   const [anos, setAnos] = useState(25);
   const [tin, setTin] = useState(3);
@@ -31,7 +31,7 @@ export function SimuladorHipoteca({ importe }: { importe: number }) {
       <Link href="/subvenciones" className="mt-3 block rounded-xl bg-emerald-50 p-3 text-xs font-medium text-emerald-900 ring-1 ring-emerald-200 hover:bg-emerald-100">
         💶 Antes de financiar, mira las subvenciones y deducciones activas para tu reforma en Madrid y Málaga →
       </Link>
-      <ComparativaBancos />
+      {conBancos && <ComparativaBancos />}
     </div>
   );
 }

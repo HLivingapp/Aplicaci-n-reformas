@@ -10,6 +10,7 @@ const ENLACES = [
   { href: "/disena", texto: "Diseña", corto: "Diseña" },
   { href: "/comunidad", texto: "Foro", corto: "Foro" },
   { href: "/hipoteca", texto: "Hipoteca", corto: "Hipoteca" },
+  { href: "/subvenciones", texto: "Subvenciones", corto: "Ayudas" },
   { href: "/red", texto: "Profesionales", corto: "Pros" },
   { href: "/asistente", texto: "Asistente IA", corto: "IA" },
   { href: "/suscripcion", texto: "Planes", corto: "Planes" },

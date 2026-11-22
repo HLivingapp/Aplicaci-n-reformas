@@ -17,9 +17,11 @@ const plazoTexto = (m?: number | null) => (m == null ? "—" : m % 12 === 0 ? `$
 const importeTexto = (b: ProductoBanco) => (b.importeMax == null ? (b.pctTasacion ? `${b.pctTasacion} % tasación` : "—") : `${miles(b.importeMax)} €`);
 
 /** «Reforma en tu hipoteca»: productos de financiación de reformas de cada entidad, ordenables. */
-export function ComparativaBancos() {
+export function ComparativaBancos({ soloTipo, titulo, id = "bancos-reforma" }: { soloTipo?: ProductoBanco["tipo"]; titulo?: string; id?: string } = {}) {
   const [orden, setOrden] = useState<Orden>("importe");
-  const [tipo, setTipo] = useState<(typeof TIPOS)[number]>("Todos");
+  const [tipoElegido, setTipo] = useState<(typeof TIPOS)[number]>("Todos");
+  const tipo = soloTipo ?? tipoElegido;
+  const base = soloTipo ? BANCOS_REFORMA.filter((b) => b.tipo === soloTipo) : BANCOS_REFORMA;
   const lista = useMemo(() => {
     const l = BANCOS_REFORMA.filter((b) => tipo === "Todos" || b.tipo === tipo);
     const num = (n?: number | null) => n ?? -1;
@@ -31,10 +33,10 @@ export function ComparativaBancos() {
     );
   }, [orden, tipo]);
   return (
-    <div id="bancos-reforma" className="mt-4">
-      <div className="font-medium">Bancos con financiación para reformas ({BANCOS_REFORMA.length})</div>
+    <div id={id} className="mt-4 scroll-mt-20">
+      <div className="font-medium">{titulo ?? "Bancos con financiación para reformas"} ({base.length})</div>
       <ul className="mt-2 grid grid-cols-5 gap-1.5" aria-label="Entidades comparadas">
-        {BANCOS_REFORMA.map((b) => (
+        {base.map((b) => (
           <li key={b.banco} className="flex h-10 items-center justify-center rounded-lg bg-white p-1.5 ring-1 ring-stone-200" title={b.banco}>
             <LogoBanco b={b} className="max-h-full max-w-full object-contain" />
           </li>
@@ -46,12 +48,12 @@ export function ComparativaBancos() {
           <button key={o.id} onClick={() => setOrden(o.id)} aria-pressed={orden === o.id} className={`rounded-full px-2.5 py-1 ${orden === o.id ? "bg-stone-900 text-white" : "bg-white ring-1 ring-stone-200"}`}>{o.texto}</button>
         ))}
       </div>
-      <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+      {!soloTipo && <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
         <span className="text-stone-500">Ver:</span>
         {TIPOS.map((t) => (
           <button key={t} onClick={() => setTipo(t)} aria-pressed={tipo === t} className={`rounded-full px-2.5 py-1 ${tipo === t ? "bg-teal-700 text-white" : "bg-white ring-1 ring-stone-200"}`}>{t}</button>
         ))}
-      </div>
+      </div>}
       <ul className="mt-2 space-y-2">
         {lista.map((b) => (
           <li key={b.banco + b.producto} className="rounded-xl bg-white p-3 ring-1 ring-stone-200">
