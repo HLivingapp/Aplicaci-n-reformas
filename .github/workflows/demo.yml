@@ -29,6 +29,8 @@ jobs:
       - name: Subvenciones desde la BDNS (si no responde, se publican los datos anteriores)
         run: node scripts/actualizar-subvenciones.mjs || true
       - run: ./scripts/exportar-demo.sh "/${{ github.event.repository.name }}"
+      - name: Comparador de materiales (vista previa de la web aparte)
+        run: node comparador-materiales/generar.mjs out/comparador-materiales
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: out
