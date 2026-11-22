@@ -42,3 +42,6 @@ body {
     padding: 0 !important;
   }
 }
+
+/* Demo privada hasta el lanzamiento: solo se ve la pantalla de clave */
+html.bloqueada body > *:not(#puerta-clave) { display: none !important; }
