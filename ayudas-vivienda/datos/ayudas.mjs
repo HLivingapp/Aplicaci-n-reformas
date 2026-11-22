@@ -1,4 +1,4 @@
-// Datos de AyudasVivienda. Fuentes oficiales con fecha en cada ficha; redactado con nuestras palabras.
+// Datos de AyudasParaVivienda. Fuentes oficiales con fecha en cada ficha; redactado con nuestras palabras.
 // Al revisar: cambia FECHA, el «comprobado» de la ficha y el estado.
 export const FECHA = "2026-11-22";
 

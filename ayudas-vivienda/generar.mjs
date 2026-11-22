@@ -1,4 +1,4 @@
-// Genera la web estática AyudasVivienda: portada con las ayudas de vivienda más relevantes de España
+// Genera la web estática AyudasParaVivienda: portada con las ayudas de vivienda más relevantes de España
 // y una ficha por ayuda (en qué consiste, requisitos, bancos, checklist de documentación, enlaces y vídeo).
 // Uso: node ayudas-vivienda/generar.mjs [carpeta-salida]
 // Variables opcionales:
@@ -13,9 +13,9 @@ import { FECHA, AYUDAS, CATEGORIAS, ESTADOS } from "./datos/ayudas.mjs";
 
 const aqui = dirname(fileURLToPath(import.meta.url));
 const salida = process.argv[2] || join(aqui, "dist");
-const SITE = (process.env.SITE_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/ayudas-vivienda").replace(/\/$/, "");
+const SITE = (process.env.SITE_URL || "https://ayudasparavivienda.com").replace(/\/$/, "");
 const RM = (process.env.REFORMAMEJOR_URL || "https://hlivingapp.github.io/Aplicaci-n-reformas/").replace(/\/?$/, "/");
-const NOMBRE = process.env.NOMBRE_WEB || "AyudasVivienda";
+const NOMBRE = process.env.NOMBRE_WEB || "AyudasParaVivienda";
 const INDEXAR = process.env.INDEXAR === "1";
 const css = readFileSync(join(aqui, "estilos.css"), "utf8");
 
@@ -23,7 +23,7 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 const fechaTxt = (f) => { const [a, m, d] = f.split("-").map(Number); return `${d} de ${MESES[m - 1]} de ${a}`; };
 const mesTxt = (() => { const [a, m] = FECHA.split("-").map(Number); return `${MESES[m - 1]} ${a}`; })();
-const marca = () => esc(NOMBRE).replace(/^(Ayudas)/, "$1<span>") + "</span>";
+const marca = () => (/^Ayudas/.test(NOMBRE) ? esc(NOMBRE).replace(/^(Ayudas)/, "$1<span>") + "</span>" : esc(NOMBRE));
 const estadoHtml = (e) => `<span class="estado ${esc(e)}">${esc(ESTADOS[e])}</span>`;
 
 function pagina({ titulo, descripcion, ruta, cuerpo, jsonld, raiz, script = "" }) {
@@ -293,5 +293,7 @@ writeFileSync(join(salida, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"
 ${rutas.map((r) => `  <url><loc>${SITE}/${r}</loc><lastmod>${FECHA}</lastmod></url>`).join("\n")}
 </urlset>
 `);
+// Dominio propio en GitHub Pages
+if (INDEXAR) writeFileSync(join(salida, "CNAME"), new URL(SITE).hostname + "\n");
 writeFileSync(join(salida, "robots.txt"), INDEXAR ? `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n` : `User-agent: *\nDisallow: /\n`);
 console.log(`Generadas ${rutas.length} páginas en ${salida}`);
