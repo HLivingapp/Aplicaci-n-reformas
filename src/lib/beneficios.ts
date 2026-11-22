@@ -18,7 +18,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
     t: "Seguro de promotor MAPFRE, gratis",
     d: "Si contratas tu obra por la app, te regalamos un seguro como promotor de la obra mientras dura la reforma.",
     mas: [
-      "Responsabilidad civil como promotor: daños a vecinos, a la comunidad o a terceros durante la obra",
+      "Responsabilidad civil como promotor: daños a vecinos, a la comunidad de vecinos o a terceros durante la obra",
       "Defensa jurídica y reclamación de daños",
       "Asesoramiento legal telefónico durante la obra",
     ],
@@ -27,7 +27,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🤖",
     t: "Asesoramiento urbanístico con IA",
-    d: "Licencia o declaración responsable, ICIO, permisos de la comunidad, edificios protegidos: te orienta con la normativa de Madrid antes de empezar.",
+    d: "Licencia o declaración responsable, ICIO, permisos de la comunidad de vecinos, edificios protegidos: te orienta con la normativa de Madrid antes de empezar.",
     pendiente: "Incluido en el plan Pro.",
   },
   {

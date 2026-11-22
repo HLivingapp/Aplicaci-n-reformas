@@ -51,7 +51,7 @@ export const ALCANCE: Record<string, Alcance> = {
   aerotermia_clima: { incluye: "Aerotermia para calefacción, refrigeración y agua caliente: unidad exterior, interior, depósito y conexiones." },
   split: {
     incluye: "Aire acondicionado split frío/calor por estancia: unidad interior, exterior, tuberías y desagüe.",
-    noIncluye: "Permisos de la comunidad para la unidad exterior, si hacen falta.",
+    noIncluye: "Permisos de la comunidad de vecinos para la unidad exterior, si hacen falta.",
   },
   conductos: { incluye: "Máquina de aire acondicionado por conductos en el falso techo del pasillo, con conductos, rejillas en cada estancia y termostato." },
   pintura: {
@@ -61,7 +61,7 @@ export const ALCANCE: Record<string, Alcance> = {
   material_obra: { incluye: "Cemento, yeso, mortero, adhesivos, placas, perfiles y el resto de material de albañilería que se gasta en la obra." },
   ventana: {
     incluye: "Ventana nueva oscilobatiente de perfilería Cortizo o similar, en PVC o aluminio con rotura de puente térmico, doble acristalamiento tipo Climalit, persiana, retirada de la antigua y colocación con sellado, por cada ventana.",
-    noIncluye: "Cambio de la fachada o de los huecos, que necesita permiso de la comunidad.",
+    noIncluye: "Cambio de la fachada o de los huecos, que necesita permiso de la comunidad de vecinos.",
   },
   ventanal: { incluye: "Balconera o ventanal de salida a la terraza de perfilería Cortizo o similar (PVC o aluminio con rotura de puente térmico), doble acristalamiento tipo Climalit de seguridad, persiana y colocación." },
   puerta_entrada: { incluye: "Panelado interior de la puerta de entrada a juego con las puertas de paso." },

@@ -8,7 +8,7 @@ import { useSuscripcion } from "@/lib/suscripcion";
 
 const ENLACES = [
   { href: "/disena", texto: "Diseña", corto: "Diseña" },
-  { href: "/comunidad", texto: "Comunidad", corto: "Foro" },
+  { href: "/comunidad", texto: "Foro", corto: "Foro" },
   { href: "/red", texto: "Profesionales", corto: "Pros" },
   { href: "/asistente", texto: "Asistente IA", corto: "IA" },
   { href: "/suscripcion", texto: "Planes", corto: "Planes" },

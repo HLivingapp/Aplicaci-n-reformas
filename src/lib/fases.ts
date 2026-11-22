@@ -88,9 +88,9 @@ export function planificarFases(e: Estimacion, v: Vivienda, r: DatosReforma, R =
     clave: "permisos",
     nombre: "Permisos y pedidos",
     explicacion:
-      "Tramitamos el permiso de obra del Ayuntamiento y avisamos a la comunidad. A la vez pedimos lo que tarda en llegar, como ventanas y muebles de cocina.",
+      "Tramitamos el permiso de obra del Ayuntamiento y avisamos a la comunidad de vecinos. A la vez pedimos lo que tarda en llegar, como ventanas y muebles de cocina.",
     dias: ventanas || hayCocina ? 15 : 10,
-    tareas: ["Declaración responsable o licencia", "Aviso a la comunidad", ventanas ? "Pedido de ventanas" : "", hayCocina ? "Pedido de cocina" : ""].filter(Boolean),
+    tareas: ["Declaración responsable o licencia", "Aviso a la comunidad de vecinos", ventanas ? "Pedido de ventanas" : "", hayCocina ? "Pedido de cocina" : ""].filter(Boolean),
     momento: "antes",
     enParalelo: true,
   });

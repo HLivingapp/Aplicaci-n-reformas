@@ -72,7 +72,7 @@ function VistaPlanes() {
                     <div className="rounded-xl bg-stone-100 py-2.5 text-center text-sm font-medium text-stone-700">Tu plan actual</div>
                   ) : p.id === "gratis" ? (
                     s && s.plan !== "gratis" ? (
-                      <button onClick={() => confirm("¿Cancelar tu suscripción? Mantienes el presupuesto y la comunidad.") && activar("gratis")} className="w-full rounded-xl border border-stone-300 py-2.5 text-sm hover:bg-stone-50">Cancelar suscripción</button>
+                      <button onClick={() => confirm("¿Cancelar tu suscripción? Mantienes el presupuesto y el foro.") && activar("gratis")} className="w-full rounded-xl border border-stone-300 py-2.5 text-sm hover:bg-stone-50">Cancelar suscripción</button>
                     ) : (
                       <Link href="/nuevo" className="block rounded-xl border border-stone-300 py-2.5 text-center text-sm hover:bg-stone-50">Calcular mi presupuesto</Link>
                     )

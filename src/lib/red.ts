@@ -93,7 +93,7 @@ export const FICHAS_COMUNIDADES: FichaRed[] = [
   },
   {
     id: "ej-c3", codigo: "R-7754", tipo: "empresa", zonas: ["Málaga", "Torremolinos", "Benalmádena"], especialidades: ["Fachadas y rehabilitación de edificios", "Tejados y cubiertas", "Impermeabilización"], trabajadores: 12,
-    presentacion: "Equipo en Málaga para fachadas, cubiertas y patios de luces de comunidades. Informe previo y fotos de cada fase para la junta.", obrasReferencia: 3, comprobado: haceDias(6), capitalRC: 600000, obrasEnApp: 2,
+    presentacion: "Equipo en Málaga para fachadas, cubiertas y patios de luces de comunidades de vecinos. Informe previo y fotos de cada fase para la junta.", obrasReferencia: 3, comprobado: haceDias(6), capitalRC: 600000, obrasEnApp: 2,
     valoraciones: [{ fase: "Ejecución", media: 4.7, n: 2 }],
   },
 ];

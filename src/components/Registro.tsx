@@ -17,7 +17,7 @@ export function RequiereRegistro({ children, motivo }: { children: React.ReactNo
 
 const VENTAJAS = [
   ["🧾", "Tu presupuesto partida a partida, al momento en la app"],
-  ["💬", "La comunidad: experiencias reales y respuestas de profesionales"],
+  ["💬", "El foro: experiencias reales y respuestas de profesionales"],
   ["🎨", "Diseña tu baño o cocina y compara acabados"],
   ["✅", "El precio de cada reformista homologado para tu casa (plan Básico)"],
 ];
@@ -45,7 +45,7 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
             <span className="font-display text-lg font-semibold">{APP.nombre}</span>
           </Link>
           <h1 className="mt-6 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:mt-8">
-            Únete a la comunidad <em className="font-medium text-amber-300">{APP.nombre}</em>
+            Únete a <em className="font-medium text-amber-300">{APP.nombre}</em>
           </h1>
           <p className="mt-4 text-lg text-stone-300">{motivo ?? "Solo te pedimos tu email. Sin contraseñas y gratis."}</p>
           <ul className="mt-6 hidden space-y-3 lg:block">
@@ -80,7 +80,7 @@ export function PantallaRegistro({ motivo, alCerrar }: { motivo?: string; alCerr
           {aceptaContacto && !telefono.trim() && <p className="ml-7 mt-1 text-xs text-amber-700">Escribe tu teléfono para que podamos contactarte.</p>}
           <label className="mt-3 flex gap-3 text-sm text-stone-700">
             <input type="checkbox" required checked={aceptaPrivacidad} onChange={(e) => setAceptaPrivacidad(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-teal-700" />
-            <span>He leído la <Link href="/privacidad" className="underline">política de privacidad</Link> y acepto unirme a la comunidad {APP.nombre} con mi email.</span>
+            <span>He leído la <Link href="/privacidad" className="underline">política de privacidad</Link> y acepto unirme a {APP.nombre} con mi email.</span>
           </label>
           {error && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
           <button disabled={enviando || !aceptaPrivacidad || !email.trim() || (aceptaContacto && !telefono.trim())} className="mt-5 w-full rounded-2xl bg-teal-700 py-3.5 font-semibold text-white transition hover:bg-teal-800 disabled:opacity-50">

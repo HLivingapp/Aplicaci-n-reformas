@@ -229,12 +229,12 @@ export default function Inicio() {
       <section className="mx-auto max-w-6xl px-4 pt-16">
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Comunidad de reformas</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Foro de reformas</p>
             <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
             <p className="mt-3 text-stone-600">
               Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y el asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
             </p>
-            <Link href="/comunidad" className="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en la comunidad</Link>
+            <Link href="/comunidad" className="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en el foro</Link>
           </div>
           <ul className="space-y-2 text-sm">
             {[
@@ -259,7 +259,7 @@ export default function Inicio() {
         <p className="mx-auto mt-2 max-w-2xl text-center text-stone-600">Sin permanencia. Los pagos de la obra van directamente al reformista que elijas.</p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
-            { n: "Gratis", p: "0 €", d: "Te unes con tu email y ves tu presupuesto partida a partida en la app, al momento. Y la comunidad.", cls: "border-stone-200" },
+            { n: "Gratis", p: "0 €", d: "Te unes con tu email y ves tu presupuesto partida a partida en la app, al momento. Y el foro.", cls: "border-stone-200" },
             { n: "Básico", p: "5 €/mes", d: "Accede a nuestra red de profesionales homologados: ves el presupuesto de cada uno para tu casa, calculado con sus tarifas, quedas con los que te interesen y firmas en la app.", cls: "border-teal-600 ring-2 ring-teal-100" },
             { n: "Pro", p: "30 €/mes", d: "Todo lo del Básico y un asistente IA especializado en obra: presupuestos, licencias en Madrid y dudas técnicas.", cls: "border-indigo-300" },
           ].map((x) => (
@@ -343,7 +343,7 @@ export default function Inicio() {
           <Link href="/human-living" className="hover:underline">★ Empresa destacada: Human Living</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
-          <Link href="/comunidad" className="hover:underline">Comunidad</Link>
+          <Link href="/comunidad" className="hover:underline">Foro</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
           <Link href="/arquitectos" className="hover:underline">Arquitectos</Link>

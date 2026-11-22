@@ -5,9 +5,9 @@ import { APP } from "./marca";
  * el consentimiento comercial no puede ser condición para entrar).
  */
 export const TEXTO_PRIVACIDAD_MIEMBRO =
-  `He leído la política de privacidad y acepto unirme a la comunidad ${APP.nombre} con mi email.`;
+  `He leído la política de privacidad y acepto unirme a ${APP.nombre} con mi email.`;
 export const TEXTO_CONTACTO_MIEMBRO =
-  `Autorizo a ${APP.nombre} a escribirme por WhatsApp o llamarme a este teléfono sobre mi reforma y la comunidad. Puedo retirarlo cuando quiera.`;
+  `Autorizo a ${APP.nombre} a escribirme por WhatsApp o llamarme a este teléfono sobre mi reforma y la app. Puedo retirarlo cuando quiera.`;
 
 export interface Miembro {
   email: string;

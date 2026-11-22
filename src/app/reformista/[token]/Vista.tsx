@@ -134,9 +134,9 @@ export default function PortalReformista() {
 
       {p.estado === "aprobado" && !pendientes && (
         <Tarjeta>
-          <h2 className="font-semibold">Comunidad de reformas</h2>
+          <h2 className="font-semibold">Foro de reformas</h2>
           <p className="mt-1 text-sm text-stone-600">Responde dudas de gente que está reformando su casa. Tus respuestas llevan el sello de profesional homologado y tu empresa sigue siendo anónima. Es la mejor forma de que te conozcan antes de pedir presupuesto.</p>
-          <Link href="/comunidad" onClick={() => recordarProfesional(token)} className="mt-3 inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">Responder en la comunidad</Link>
+          <Link href="/comunidad" onClick={() => recordarProfesional(token)} className="mt-3 inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">Responder en el foro</Link>
         </Tarjeta>
       )}
 
