@@ -1,7 +1,6 @@
 import { ALCANCE } from "./alcance";
 import type { Estimacion, LineaEstimacion } from "./estimacion";
 import { nuevoId } from "./id";
-import { NIVELES } from "./materiales";
 import type { Capitulo } from "./types";
 
 /** Texto largo de una partida: medición, acabado elegido, qué incluye y qué no. */
@@ -18,12 +17,12 @@ export function detallePartida(tarifaId: string | undefined, extra: { medicion?:
     .join("\n");
 }
 
-function acabadoDe(e: Estimacion, l: LineaEstimacion) {
+export function acabadoDe(e: Estimacion, l: LineaEstimacion) {
   const g = l.grupoMaterial && e.materiales.find((m) => m.grupo === l.grupoMaterial);
   const o = g ? g.opciones.find((x) => x.id === g.elegida) : undefined;
   if (!o) return undefined;
-  const nivel = NIVELES.find((n) => n.valor === o.nivel)?.texto;
-  return `${o.nombre}${nivel ? ` (gama ${nivel.toLowerCase()})` : ""}. ${o.detalle}`;
+  const gama = ({ basico: "básica", medio: "media", premium: "premium" } as Record<string, string>)[o.nivel];
+  return `${o.nombre}${gama ? ` (gama ${gama})` : ""}. ${o.detalle}`;
 }
 
 /** Convierte la cotización automática en capítulos y partidas editables, con todo el detalle. */

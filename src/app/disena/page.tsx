@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
+import { DesglosePresupuesto } from "@/components/DesglosePresupuesto";
 import { GuiaAudio, SeleccionProductos } from "@/components/SeleccionProductos";
 import { euros } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
@@ -105,6 +106,8 @@ export default function Disena() {
                 ))}
               </ul>
             </div>
+
+            <div id="desglose">{e ? <DesglosePresupuesto e={e} titulo={`Presupuesto desglosado de tu ${estancia === "bano" ? "baño" : "cocina"}`} /> : null}</div>
           </section>
 
           <aside className="space-y-3 lg:sticky lg:top-20 lg:self-start">
@@ -117,6 +120,7 @@ export default function Disena() {
                 <input type="number" min={30} max={400} value={m2} onChange={(x) => setM2(Math.min(400, Math.max(30, Number(x.target.value) || 30)))} className="mt-1 w-full rounded-lg bg-white/10 px-3 py-2 text-white" />
               </label>
               <p className="mt-2 text-xs text-stone-400">Incluye demolición, fontanería, alicatado y montaje, con las medidas estándar de {estancia === "bano" ? "un baño" : "una cocina"} en un piso de {m2} m².</p>
+              {e && <a href="#desglose" className="mt-3 block rounded-lg bg-white/10 py-2 text-center text-sm font-medium text-white hover:bg-white/20">Ver el desglose por partidas ↓</a>}
             </div>
             <Link href="/nuevo" className="block rounded-xl bg-teal-700 py-3 text-center font-semibold text-white hover:bg-teal-800">Calcular mi reforma completa</Link>
             <Link href="/red" className="block rounded-xl border border-stone-300 bg-white py-3 text-center text-sm font-medium hover:bg-stone-50">Pedir presupuesto a reformistas homologados</Link>
