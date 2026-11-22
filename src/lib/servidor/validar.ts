@@ -1,4 +1,5 @@
 import { limpiarMateriales } from "../materiales";
+import { limpiarDetalle } from "../detalle-reforma";
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
 import { CERTIFICACIONES, CURSOS_PREVENCION, ESPECIALIDADES, INICIOS, nifValido, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ZONAS, type AltaProveedor } from "../proveedores";
@@ -18,6 +19,7 @@ export function validarProyecto(b: unknown, grupos: GrupoMaterial[] = []): { viv
   if (!Array.isArray(v.terrazas) || v.terrazas.length > 10 || !Array.isArray(r.estancias) || r.estancias.length > 30) return null;
   r.comentarios = texto(r.comentarios, 4000);
   r.materiales = limpiarMateriales(r.materiales, grupos);
+  r.detalle = limpiarDetalle(r.detalle);
   return { vivienda: v, reforma: r };
 }
 

@@ -8,7 +8,7 @@ import { buscarCatastro } from "@/lib/catastro/cliente";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hoy } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
 import { enviarProyecto, pedirEstimacion } from "@/lib/publico-cliente";
@@ -25,6 +25,8 @@ import {
 import { cambiosDistribucion } from "@/lib/estimacion";
 import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from "@/lib/types";
 import { VistaEstimacion } from "@/components/Estimacion";
+import { DetalleReformaForm } from "@/components/DetalleReforma";
+import type { DetalleReforma } from "@/lib/detalle-reforma";
 import { Moodboard } from "@/components/Moodboard";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
@@ -58,6 +60,18 @@ function NuevoProyectoContenido() {
     setR(nr);
     setRecalculando(true);
     pedirEstimacion(v, nr).then(setEstimacion).catch(() => undefined).finally(() => setRecalculando(false));
+    if (nr.detalle) pedirEstimacion(v, { ...nr, detalle: undefined }).then((e) => setRapida(e.base)).catch(() => undefined);
+  };
+  const [rapida, setRapida] = useState<number | undefined>();
+  const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cambiarDetalle = (detalle: DetalleReforma) => {
+    const nr = { ...r, detalle };
+    setR(nr);
+    setRecalculando(true);
+    if (temporizador.current) clearTimeout(temporizador.current);
+    temporizador.current = setTimeout(() => {
+      pedirEstimacion(v, nr).then(setEstimacion).catch(() => undefined).finally(() => setRecalculando(false));
+    }, 400);
   };
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
@@ -86,6 +100,7 @@ function NuevoProyectoContenido() {
     if (paso !== PASOS.length - 1) return;
     setEstimacion(null);
     pedirEstimacion(v, r).then(setEstimacion).catch(() => setEstimacion(null));
+    pedirEstimacion(v, { ...r, detalle: undefined }).then((e) => setRapida(e.base)).catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paso]);
 
@@ -471,6 +486,11 @@ function NuevoProyectoContenido() {
                 </div>
                 <Moodboard compacto />
               </div>
+            </Tarjeta>
+          )}
+          {estimacion && (
+            <Tarjeta className="border-teal-200">
+              <DetalleReformaForm detalle={r.detalle} onCambio={cambiarDetalle} rapida={rapida} ajustada={estimacion.base} ocupado={recalculando} />
             </Tarjeta>
           )}
           {estimacion && estimacion.materiales?.length > 0 && (

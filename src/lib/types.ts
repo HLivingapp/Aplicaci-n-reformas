@@ -1,3 +1,4 @@
+import type { DetalleReforma } from "./detalle-reforma";
 export type EstadoPresupuesto = "borrador" | "enviado" | "aceptado" | "rechazado";
 export type EstadoFase = "pendiente" | "en_curso" | "terminada";
 
@@ -195,6 +196,8 @@ export interface DatosReforma {
   cuando: string;
   viviraEnObra: boolean | null;
   comentarios: string;
+  /** Descripción detallada (opcional) para afinar el presupuesto */
+  detalle?: DetalleReforma;
 }
 
 export type EstadoProyecto = "nuevo" | "visita" | "presupuestado" | "descartado";

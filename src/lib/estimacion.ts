@@ -4,6 +4,7 @@ import { subpartidasDe, type Subpartida } from "./subpartidas";
 import { grupoDePartida, NIVEL_POR_CALIDAD, opcionElegida } from "./materiales";
 import { recargoDe } from "./tarifas";
 import type { DatosReforma, Instalacion, NivelMaterial, Tarifas, TramoMedidas, Vivienda } from "./types";
+import { FACTOR_AZULEJO, FACTOR_GAMA, M2_PANO, MODULOS_COCINA_ESTANDAR, respondidas } from "./detalle-reforma";
 
 export interface LineaEstimacion {
   tarifaId: string;
@@ -148,6 +149,7 @@ export function reformaEstandar(r: DatosReforma): DatosReforma {
     fontaneria: { accion: "cambiar", ano: null },
     electricidad: { accion: "cambiar", ano: null },
     materiales: {},
+    detalle: undefined,
   };
 }
 
@@ -161,13 +163,14 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   const lineas: LineaEstimacion[] = [];
   const factor = t.factorCalidad[r.calidad] ?? 1;
 
-  const add = (id: string, cantidad: number, medicion?: string) => {
+  const d = r.detalle ?? {};
+  const add = (id: string, cantidad: number, medicion?: string, fijo?: number) => {
     const p = t.precios.find((x) => x.id === id);
     if (!p || !(cantidad > 0)) return;
     // Si el cliente puede elegir el acabado de esta partida, manda la opción elegida
     const g = grupoDePartida(t, id);
     const op = g && opcionElegida(g, r);
-    const coste = r2(p.coste * (op ? op.factor : p.dependeCalidad ? factor : 1));
+    const coste = r2(p.coste * (fijo ?? (op ? op.factor : p.dependeCalidad ? factor : 1)));
     const existente = lineas.find((l) => l.tarifaId === id);
     if (existente) {
       existente.cantidad = r1(existente.cantidad + cantidad);
@@ -198,13 +201,38 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   else add("demolicion_estancia", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
   if (hazSuelos && r.sueloActual === "porcelanico") add("dem_suelo_ceramico", util - m2Banos, sueloSinBanos);
   if (hazSuelos && r.sueloActual === "terrazo") add("dem_suelo_terrazo", util - m2Banos, sueloSinBanos);
-  if (r.techoActual === "falso_techo" && integral) add("dem_falso_techo", util, "Toda la superficie útil");
+  if (d.demFalsoTecho != null) {
+    if (d.demFalsoTecho === "todo") add("dem_falso_techo", util, "Toda la superficie útil");
+    if (d.demFalsoTecho === "parte") add("dem_falso_techo", m2Banos + pasillo.m2, `Baños y pasillo, unos ${n(m2Banos + pasillo.m2)} m²`);
+  } else if (r.techoActual === "falso_techo" && integral) add("dem_falso_techo", util, "Toda la superficie útil");
+  if (d.capasSuelo != null && d.capasSuelo > 1) add("dem_suelo_capa", (util - m2Banos) * (d.capasSuelo - 1), `${d.capasSuelo - 1} capa${d.capasSuelo > 2 ? "s" : ""} más de suelo × ${n(util - m2Banos)} m²`);
+  if (d.demTrasdosados === "algunos" || d.demTrasdosados === "muchos") {
+    const m2t = util * (d.demTrasdosados === "muchos" ? 1.2 : 0.4);
+    add("dem_trasdosado", m2t, `${d.demTrasdosados === "muchos" ? "Casi todas las paredes" : "Alguna pared"}: unos ${n(m2t)} m²`);
+  }
+  if (d.tabiquesTirar) {
+    const m2t = d.tabiquesTirar * M2_PANO;
+    const med = `${d.tabiquesTirar} tabique${d.tabiquesTirar > 1 ? "s" : ""} × ${n(M2_PANO)} m²`;
+    if (!integral) add("dem_tabique", m2t, med);
+    if (d.grosorParedes === "grueso") add("dem_tabique_grueso", m2t, med);
+  }
+  if (d.carpinteriasQuitar) add("dem_carpinteria", d.carpinteriasQuitar, "Puertas, armarios o ventanas que indicaste");
 
   // --- Albañilería ---
   if (integral) add("albanileria_integral", m2c, "Toda la vivienda");
   else add("albanileria_estancia", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
-  if (cambiaTabiques) add("albanileria_redistribucion", m2c, `${cambios} cambio${cambios > 1 ? "s" : ""} de distribución (habitaciones, baños o cocina), en toda la vivienda`);
+  if (d.tabiquesNuevos != null) {
+    if (d.tabiquesNuevos > 0) add(d.tipoTabique === "ladrillo" ? "tabique_ladrillo" : d.tipoTabique === "pladur_aislado" ? "tabique_pladur_aislado" : "tabique_pladur", d.tabiquesNuevos * M2_PANO, `${d.tabiquesNuevos} tabique${d.tabiquesNuevos > 1 ? "s" : ""} × ${n(M2_PANO)} m²`);
+  } else if (cambiaTabiques) add("albanileria_redistribucion", m2c, `${cambios} cambio${cambios > 1 ? "s" : ""} de distribución (habitaciones, baños o cocina), en toda la vivienda`);
   if (r.moverCocina) add("traslado_cocina", 1);
+  if (d.cajeados) add("cajeado", d.cajeados, `${d.cajeados} viga${d.cajeados > 1 ? "s" : ""} o pilar${d.cajeados > 1 ? "es" : ""}`);
+  if (d.trasdosadosNuevos === "fachada" || d.trasdosadosNuevos === "todo") {
+    const m2t = util * (d.trasdosadosNuevos === "todo" ? 1 : 0.6);
+    add("trasdosado", m2t, `${d.trasdosadosNuevos === "todo" ? "Fachada y medianeras" : "Muros de fachada"}: unos ${n(m2t)} m²`);
+  }
+  if (d.picadoEsquinas) add("picado_esquinas", util * 1.5, `Unos ${n(util * 1.5)} m lineales de encuentros de techo`);
+  if (d.niveladoSuelo === "leve") add("nivelado_leve", util - m2Banos, sueloSinBanos);
+  if (d.niveladoSuelo === "recrecido") add("recrecido", util - m2Banos, sueloSinBanos);
 
   // --- Techos ---
   let m2FalsoTecho = (hazBanos ? m2Banos : 0) + (hazCocina ? cocina.m2 : 0);
@@ -217,14 +245,20 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
     if (integral) add("vigas", util - m2FalsoTecho, "Techos de la vivienda salvo los baños");
     avisos.push("Vigas vistas: se tratan y se mantienen; el falso techo se limita a los baños.");
   }
+  if (d.falsoTechoNuevo === "humedas") m2FalsoTecho = m2Banos + cocina.m2;
+  if (d.falsoTechoNuevo === "humedas_pasillo") m2FalsoTecho = m2Banos + cocina.m2 + pasillo.m2;
+  if (d.falsoTechoNuevo === "todo") m2FalsoTecho = util;
   if (conductos) m2FalsoTecho = Math.max(m2FalsoTecho, m2Banos + cocina.m2 + pasillo.m2);
   add("falso_techo", m2FalsoTecho, m2FalsoTecho === util ? "Toda la superficie útil" : [hazBanos && nBanos ? `baños ${n(m2Banos)} m²` : "", hazCocina ? `cocina ${n(cocina.m2)} m²` : "", conductos ? `pasillo ${n(pasillo.m2)} m² para los conductos` : ""].filter(Boolean).join(", "));
-  add("alicatado_mo", nBanos * t.m2AlicatadoBano + (hazCocina ? t.m2AlicatadoCocina : 0), [nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""} × ${n(t.m2AlicatadoBano)} m² de pared` : "", hazCocina ? `frente de cocina ${n(t.m2AlicatadoCocina)} m²` : ""].filter(Boolean).join(" + "));
+  add("alicatado_mo", nBanos * t.m2AlicatadoBano + (hazCocina ? t.m2AlicatadoCocina : 0), [nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""} × ${n(t.m2AlicatadoBano)} m² de pared` : "", hazCocina ? `frente de cocina ${n(t.m2AlicatadoCocina)} m²` : ""].filter(Boolean).join(" + "), d.tipoAzulejo === "gran_formato" ? 1.3 : undefined);
 
   // --- Electricidad ---
   const elec = debeCambiar(r.electricidad, t, cambiaTabiques);
   if (elec.forzado) avisos.push(`Electricidad: se renueva porque ${r.electricidad.ano ? `tiene más de ${t.aniosMaxInstalacion} años` : "no se sabe su antigüedad y se mueven tabiques"}.`);
-  if (elec.cambiar && quiere("Electricidad")) add("elec_completa", m2c, "Toda la vivienda");
+  if (elec.cambiar && quiere("Electricidad")) {
+    add("elec_completa", m2c, "Toda la vivienda");
+    if (d.dificultadElectrica === "compleja") add("elec_suplemento", m2c, "Instalación compleja que indicaste");
+  }
   else if (integral || hazBanos || hazCocina) add("elec_adaptar", Math.max(1, nBanos + (hazCocina ? 1 : 0)), estanciasHumedas || undefined);
 
   // --- Fontanería ---
@@ -233,16 +267,17 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   const puntos = nBanos * t.puntosAguaBano + (hazCocina ? t.puntosAguaCocina : 0);
   if (fonta.cambiar && (integral || r.estancias.includes("Fontanería") || puntos)) add("fonta_punto", puntos || t.puntosAguaBano, [nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""} × ${t.puntosAguaBano} puntos` : "", hazCocina ? `cocina ${t.puntosAguaCocina} puntos (fregadero, lavavajillas, lavadora…)` : ""].filter(Boolean).join(" + ") || undefined);
   else add("fonta_adaptar", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
+  if (d.dificultadFontaneria === "compleja") add("fonta_bajante", 1);
 
   // --- Climatización y agua caliente ---
   let caldera = false;
   let aerotermia = false;
   if (quiere("Calefacción / aire acondicionado") && r.climaDeseado && r.climaDeseado !== r.climaActual) {
     switch (r.climaDeseado) {
-      case "split": add("split", r.dormitoriosDeseados + 1, `${r.dormitoriosDeseados} dormitorio${r.dormitoriosDeseados === 1 ? "" : "s"} + salón`); break;
+      case "split": add("split", d.estanciasClima || r.dormitoriosDeseados + 1, d.estanciasClima ? `${d.estanciasClima} estancias que indicaste` : `${r.dormitoriosDeseados} dormitorio${r.dormitoriosDeseados === 1 ? "" : "s"} + salón`); break;
       case "conductos": add("conductos", m2c); break;
       case "radiadores_gas": add("radiadores", m2c); add("caldera_gas", 1); caldera = true; break;
-      case "radiadores_electricos": add("radiador_electrico", r.dormitoriosDeseados + banos.length + 1, "Uno por dormitorio, baño y salón"); break;
+      case "radiadores_electricos": add("radiador_electrico", d.estanciasClima || r.dormitoriosDeseados + banos.length + 1, d.estanciasClima ? `${d.estanciasClima} estancias que indicaste` : "Uno por dormitorio, baño y salón"); break;
       case "suelo_radiante": add("suelo_radiante", util, "Toda la superficie útil"); break;
       case "aerotermia": add("aerotermia_clima", 1); aerotermia = true; break;
     }
@@ -265,13 +300,20 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
   if (integral) add("puerta_entrada", 1);
   if (quiere("Puertas")) add("puerta_paso", Math.max(2, r.dormitoriosDeseados + banos.length), "Una por dormitorio y baño");
   if (hazCocina) {
-    add("cocina", 1);
-    add("electrodomesticos", 1);
-    add("revest_cocina", 1, `Unos ${n(t.m2AlicatadoCocina)} m²`);
+    const mods = d.modulosCocina;
+    add("cocina", mods != null && mods < MODULOS_COCINA_ESTANDAR ? Math.max(0.5, mods / MODULOS_COCINA_ESTANDAR) : 1, mods != null ? `Cocina de ${mods} módulos (la estándar tiene ${MODULOS_COCINA_ESTANDAR})` : undefined);
+    if (mods != null && mods > MODULOS_COCINA_ESTANDAR) add("cocina_modulo", mods - MODULOS_COCINA_ESTANDAR, `${mods} módulos menos los ${MODULOS_COCINA_ESTANDAR} de la cocina estándar`);
+    if (d.esquinerosCocina) add("cocina_esquinero", d.esquinerosCocina);
+    if (d.especialesCocina) add("cocina_especial", d.especialesCocina);
+    add("electrodomesticos", 1, d.gamaElectrodomesticos ? `Gama ${d.gamaElectrodomesticos === "basica" ? "básica" : d.gamaElectrodomesticos}` : undefined, d.gamaElectrodomesticos ? FACTOR_GAMA[d.gamaElectrodomesticos] : undefined);
+    add("revest_cocina", 1, `Unos ${n(t.m2AlicatadoCocina)} m²`, d.tipoAzulejo ? FACTOR_AZULEJO[d.tipoAzulejo] : undefined);
   }
-  add("equip_bano", nBanos, nBanos > 1 ? `${nBanos} baños` : undefined);
-  add("revest_bano", nBanos, nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""} de unos ${n(m2Banos / Math.max(nBanos, 1))} m² de suelo y ${n(t.m2AlicatadoBano)} m² de pared cada uno` : undefined);
-  if (integral) add("pavimento_terraza", v.terrazas.length, "Una por terraza");
+  add("equip_bano", nBanos, nBanos > 1 ? `${nBanos} baños` : undefined, d.gamaBano ? FACTOR_GAMA[d.gamaBano] : undefined);
+  add("revest_bano", nBanos, nBanos ? `${nBanos} baño${nBanos > 1 ? "s" : ""} de unos ${n(m2Banos / Math.max(nBanos, 1))} m² de suelo y ${n(t.m2AlicatadoBano)} m² de pared cada uno` : undefined, d.tipoAzulejo ? FACTOR_AZULEJO[d.tipoAzulejo] : undefined);
+  if (d.terrazaM2 && d.terrazaIntervencion && d.terrazaIntervencion !== "nada") {
+    add("terraza_solado", d.terrazaM2, `${n(d.terrazaM2)} m² de terraza`);
+    if (d.terrazaIntervencion === "suelo_impermeabilizar") add("impermeabilizacion", d.terrazaM2, `${n(d.terrazaM2)} m² de terraza`);
+  } else if (integral && d.terrazaIntervencion !== "nada") add("pavimento_terraza", v.terrazas.length, "Una por terraza");
   if (hazSuelos) add(r.sueloDeseado === "porcelanico" ? "suelo_porcelanico" : "suelo_laminado", util - m2Banos, sueloSinBanos);
   if (integral) add("luminarias", 1);
   if (lineas.length) {
@@ -282,6 +324,10 @@ function estimarSinAjuste(v: Vivienda, r: DatosReforma, t: Tarifas): Estimacion 
     if (soloHumedas && nBanos + (hazCocina ? 1 : 0) > 0) add("direccion_parcial", nBanos + (hazCocina ? 1 : 0), estanciasHumedas);
     else add("direccion", 1);
   }
+
+  const nDet = respondidas(r.detalle);
+  if (nDet) avisos.push(`Presupuesto afinado con ${nDet} respuesta${nDet > 1 ? "s" : ""} de tu descripción detallada.`);
+  if (d.observaciones?.trim()) avisos.push(`Tus observaciones: «${d.observaciones.trim().slice(0, 300)}». Las revisa el reformista en la visita.`);
 
   // --- Accesos y avisos ---
   if (v.tipo !== "casa" && v.ascensor === false && (v.planta ?? 0) >= 1) {
