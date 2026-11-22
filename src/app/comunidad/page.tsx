@@ -12,7 +12,7 @@ import { Boton, inputCls } from "@/components/ui";
 
 export default function Comunidad() {
   const { temas: cargados, error, enviar, esProfesional } = useForo();
-  const { exigir, modal } = useExigirRegistro("Únete gratis para contar tu experiencia o preguntar. Leer la comunidad siempre es libre.");
+  const { exigir, modal } = useExigirRegistro("Únete gratis para contar tu experiencia o preguntar. Leer el foro siempre es libre.");
   const temas = useMemo(() => cargados ?? [], [cargados]);
   const [q, setQ] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -31,7 +31,7 @@ export default function Comunidad() {
       <CabeceraComunidad />
       <section className="bg-gradient-to-b from-teal-50 to-stone-50">
         <div className="mx-auto max-w-4xl px-4 pb-6 pt-10">
-          <h1 className="text-3xl font-semibold tracking-tight">Comunidad de reformas</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Foro de reformas</h1>
           <p className="mt-2 max-w-2xl text-stone-600">
             Experiencias reales de gente que está reformando su casa: lo que salió bien, lo que salió mal y cómo se resolvió. Busca tu problema o pregunta, y los profesionales homologados te dan su opinión.
           </p>
@@ -47,13 +47,13 @@ export default function Comunidad() {
         {nuevo && <NuevoTema categoriaInicial={categoria} alPublicar={async (a) => { if (await enviar(a)) setNuevo(false); }} />}
 
         <div className="mb-5 grid gap-3 sm:grid-cols-3">
-          <Tarjeta icono="🏛️" titulo="Legalizaciones en Madrid" texto="Licencias, declaraciones responsables, terrazas y comunidad. Responde el asistente IA con la normativa oficial." activo={categoria === CATEGORIA_LEGAL} onClick={() => setCategoria(categoria === CATEGORIA_LEGAL ? "" : CATEGORIA_LEGAL)} />
+          <Tarjeta icono="🏛️" titulo="Legalizaciones en Madrid" texto="Licencias, declaraciones responsables, terrazas y comunidad de vecinos. Responde el asistente IA con la normativa oficial." activo={categoria === CATEGORIA_LEGAL} onClick={() => setCategoria(categoria === CATEGORIA_LEGAL ? "" : CATEGORIA_LEGAL)} />
           <Tarjeta icono="🦺" titulo="Responden profesionales" texto="Reformistas homologados opinan con su sello. Su empresa sigue siendo anónima hasta que tú decides." />
           <Tarjeta icono="🤖" titulo="Asistente IA de obra" texto="En cada tema puedes pedir una primera opinión técnica con fuentes, mientras llegan las respuestas." />
         </div>
         <VideosNormativa soloLegal={categoria === CATEGORIA_LEGAL} />
         {!esProfesional && (
-          <p className="mb-4 text-xs text-stone-500">¿Eres reformista homologado? Entra desde tu portal (botón «Responder en la comunidad») para que tus respuestas lleven el sello. <Link href="/reformistas" className="underline">Homologarme</Link></p>
+          <p className="mb-4 text-xs text-stone-500">¿Eres reformista homologado? Entra desde tu portal (botón «Responder en el foro») para que tus respuestas lleven el sello. <Link href="/reformistas" className="underline">Homologarme</Link></p>
         )}
 
         <div className="mb-3 flex flex-wrap gap-1.5">

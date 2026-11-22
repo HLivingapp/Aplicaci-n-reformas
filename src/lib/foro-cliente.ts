@@ -72,7 +72,7 @@ export function useForo() {
       })
       .catch(() => {
         setTemas([]);
-        setError("No se ha podido cargar la comunidad. Prueba de nuevo en un momento.");
+        setError("No se ha podido cargar el foro. Prueba de nuevo en un momento.");
       });
   }, []);
 

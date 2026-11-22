@@ -82,7 +82,7 @@ function Vista() {
         <div className="mt-6 flex flex-wrap gap-2">
           {(["particulares", "comunidades"] as Para[]).map((p) => (
             <button key={p} onClick={() => setPara(p)} className={`rounded-full px-4 py-2 text-sm font-medium ${para === p ? "bg-stone-900 text-white" : "bg-white ring-1 ring-stone-200"}`}>
-              {p === "particulares" ? "🏠 Para tu vivienda" : "🏢 Para comunidades"}
+              {p === "particulares" ? "🏠 Para tu vivienda" : "🏢 Para comunidades de vecinos"}
             </button>
           ))}
         </div>

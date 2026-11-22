@@ -28,7 +28,7 @@ const QUE_HACEMOS = [
   {
     i: "🤝",
     t: "Acceder a nuestra red",
-    d: "Años de contactos, experiencias, técnicas y opciones a tu alcance: reformistas homologados, proveedores y una comunidad que ya pasó por lo mismo.",
+    d: "Años de contactos, experiencias, técnicas y opciones a tu alcance: reformistas homologados, proveedores y un foro con gente que ya pasó por lo mismo.",
   },
 ];
 
@@ -38,7 +38,7 @@ const EDIFICIOS_CENTRO = [
   ["Bajantes y tuberías antiguas", "Plomo o fibrocemento: se sustituyen, y el amianto lo retira una empresa autorizada."],
   ["Electricidad sin tierra", "Instalaciones de otra época, sin toma de tierra ni potencia suficiente para una vivienda actual."],
   ["Humedades", "Patios de luces, plantas bajas y cubiertas: localizamos la causa antes de tapar nada."],
-  ["Edificios protegidos", "Fachadas y carpinterías catalogadas, licencias y permisos de la comunidad, desde el primer día."],
+  ["Edificios protegidos", "Fachadas y carpinterías catalogadas, licencias y permisos de la comunidad de vecinos, desde el primer día."],
 ] as const;
 
 const PRINCIPIOS = [
@@ -183,10 +183,10 @@ export default function SobreNosotros() {
       <section className="bg-teal-700 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-14 text-center">
           <h2 className="font-display text-4xl font-semibold tracking-tight">Empieza tu proyecto con ventaja</h2>
-          <p className="max-w-xl text-teal-50">Calcula tu reforma en 3 minutos, pregunta en la comunidad y conoce a los reformistas homologados de tu zona.</p>
+          <p className="max-w-xl text-teal-50">Calcula tu reforma en 3 minutos, pregunta en el foro y conoce a los reformistas homologados de tu zona.</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/nuevo" className="rounded-xl bg-white px-6 py-3.5 font-semibold text-teal-800 hover:bg-teal-50">Calcular mi presupuesto gratis</Link>
-            <Link href="/comunidad" className="rounded-xl px-6 py-3.5 font-semibold text-white ring-1 ring-white/40 hover:bg-white/10">Ir a la comunidad</Link>
+            <Link href="/comunidad" className="rounded-xl px-6 py-3.5 font-semibold text-white ring-1 ring-white/40 hover:bg-white/10">Ir al foro</Link>
           </div>
         </div>
       </section>
@@ -197,7 +197,7 @@ export default function SobreNosotros() {
           <Link href="/" className="hover:underline">Inicio</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
-          <Link href="/comunidad" className="hover:underline">Comunidad</Link>
+          <Link href="/comunidad" className="hover:underline">Foro</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
         </p>
       </footer>

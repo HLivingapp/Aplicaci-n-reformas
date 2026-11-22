@@ -20,7 +20,7 @@ export const SERVICIOS_CLIENTE = [
     id: "seguro",
     i: "🛡️",
     t: "Seguro de promotor MAPFRE",
-    d: "Responsabilidad civil como promotor (daños a vecinos, comunidad o terceros) y defensa jurídica mientras dura la obra. Gratis si contratas la obra con un reformista de la app; si no, puedes contratarlo aquí con coste.",
+    d: "Responsabilidad civil como promotor (daños a vecinos, a la comunidad de vecinos o a terceros) y defensa jurídica mientras dura la obra. Gratis si contratas la obra con un reformista de la app; si no, puedes contratarlo aquí con coste.",
     pendiente: "Coberturas y precio según la póliza, pendientes de cerrar con MAPFRE.",
   },
 ] as const;

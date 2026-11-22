@@ -75,7 +75,7 @@ export const SUBVENCIONES: Subvencion[] = [
   // ---------- Madrid capital ----------
   {
     id: "plan-rehabilita-2026", nombre: "Plan Rehabilita Madrid 2026", organismo: "Ayuntamiento de Madrid", ambito: "madrid-capital", para: ["comunidades", "particulares"],
-    cubre: "Comunidades y viviendas unifamiliares: accesibilidad, eficiencia energética, conservación, salubridad y seguridad, con un 5 % más por embellecer la fachada.",
+    cubre: "Comunidades de vecinos y viviendas unifamiliares: accesibilidad, eficiencia energética, conservación, salubridad y seguridad, con un 5 % más por embellecer la fachada.",
     importe: "Porcentaje según la línea (ver la convocatoria).",
     requisitos: "Edificio en Madrid capital; las obras van por líneas.",
     plazo: "Del 03/06/2026 al 30/09/2026.", desde: "2026-06-03", hasta: "2026-09-30",

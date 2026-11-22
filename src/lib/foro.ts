@@ -193,13 +193,13 @@ export function temasIniciales(): Tema[] {
       ],
     },
     {
-      ...m("ej-6", par("Jorge_Carabanchel"), "Queremos cerrar la terraza con aluminio y cristal para ganar un trozo de salón. ¿Es legal? ¿Qué nos va a pedir la comunidad y el Ayuntamiento?", 9, 5),
+      ...m("ej-6", par("Jorge_Carabanchel"), "Queremos cerrar la terraza con aluminio y cristal para ganar un trozo de salón. ¿Es legal? ¿Qué nos va a pedir la comunidad de vecinos y el Ayuntamiento?", 9, 5),
       titulo: "Cerrar la terraza: ¿qué permisos hacen falta?",
       categoria: CATEGORIA_LEGAL,
       tipoTema: "pregunta",
       respuestaIA: {
         creado: dias(9),
-        texto: "Cerrar una terraza cambia la fachada, así que necesitas dos cosas: el acuerdo de la comunidad de propietarios (y que todos los cierres sigan el mismo modelo si ya hay uno aprobado) y el título urbanístico del Ayuntamiento. Además, la superficie cerrada puede contar como edificabilidad: si el edificio ya ha agotado la que permite el planeamiento, el cierre puede no ser legalizable.\n\nPide primero en la comunidad si hay un modelo de cerramiento aprobado y consulta la normativa de tu zona antes de encargarlo.\n\nEs una orientación general: un profesional homologado o el Ayuntamiento deben confirmarlo en tu caso.",
+        texto: "Cerrar una terraza cambia la fachada, así que necesitas dos cosas: el acuerdo de la comunidad de vecinos (y que todos los cierres sigan el mismo modelo si ya hay uno aprobado) y el título urbanístico del Ayuntamiento. Además, la superficie cerrada puede contar como edificabilidad: si el edificio ya ha agotado la que permite el planeamiento, el cierre puede no ser legalizable.\n\nPide primero en la comunidad si hay un modelo de cerramiento aprobado y consulta la normativa de tu zona antes de encargarlo.\n\nEs una orientación general: un profesional homologado o el Ayuntamiento deben confirmarlo en tu caso.",
         fuentes: [{ titulo: "Ordenanza de Licencias y Declaraciones Responsables Urbanísticas (Madrid, 2022)", url: "https://sede.madrid.es" }, { titulo: "Ley 49/1960 de Propiedad Horizontal (BOE)", url: "https://www.boe.es/buscar/act.php?id=BOE-A-1960-10906" }],
       },
       respuestas: [

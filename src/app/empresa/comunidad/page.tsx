@@ -38,7 +38,7 @@ export default function Miembros() {
 
   return (
     <div>
-      <Titulo>Comunidad</Titulo>
+      <Titulo>Foro</Titulo>
       <p className="-mt-2 mb-4 text-sm text-stone-500">
         {lista ? `${lista.length} miembros · ${conContacto} autorizan WhatsApp o llamada` : "Cargando…"}
         {!conBaseDeDatos && " · En la demo solo aparecen los registros hechos en este navegador."}

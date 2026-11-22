@@ -51,15 +51,15 @@ export default function Privacidad() {
       </Seccion>
 
       <Seccion titulo="5. Quién puede ver tus datos">
-        <p>El equipo de {R.razonSocial} que gestiona la app y, cuando eliges a un profesional (reformista, estudio de arquitectura o especialista para tu comunidad), ese profesional, que firma al darse de alta un compromiso de usar tus datos solo para tu reforma y protegerlos. Para que la aplicación funcione usamos proveedores que tratan los datos por cuenta nuestra (encargados del tratamiento), con contrato conforme al art. 28 del RGPD: {R.proveedores}.</p>
+        <p>El equipo de {R.razonSocial} que gestiona la app y, cuando eliges a un profesional (reformista, estudio de arquitectura o especialista para tu comunidad de vecinos), ese profesional, que firma al darse de alta un compromiso de usar tus datos solo para tu reforma y protegerlos. Para que la aplicación funcione usamos proveedores que tratan los datos por cuenta nuestra (encargados del tratamiento), con contrato conforme al art. 28 del RGPD: {R.proveedores}.</p>
         <p>Si es necesario para tu obra, compartiremos lo imprescindible con los profesionales e industriales que intervienen en ella, o con entidades financieras si nos pides gestionar la financiación. No vendemos tus datos ni los cedemos a terceros para otros fines, salvo obligación legal.</p>
         <p>Los datos se guardan en servidores ubicados en la Unión Europea.</p>
       </Seccion>
 
-      <Seccion titulo={`Comunidad ${APP.nombre}`}>
-        <p>Para usar la aplicación te unes a la comunidad con tu <b>email</b>, sin contraseña. Lo usamos para darte acceso y enviarte avisos sobre tu cuenta (art. 6.1.b RGPD).</p>
-        <p>Si además nos das tu <b>teléfono</b> y marcas la casilla, te escribiremos por WhatsApp o te llamaremos sobre tu reforma y la comunidad, con tu consentimiento (art. 6.1.a RGPD). Es opcional, no es necesario para entrar y puedes retirarlo cuando quieras escribiéndonos. Guardamos el texto que aceptaste y la fecha.</p>
-        <p>Si dejas de usar la comunidad, borramos tus datos a los 24 meses de tu última actividad, o antes si nos lo pides.</p>
+      <Seccion titulo={`Registro en ${APP.nombre}`}>
+        <p>Para usar la aplicación te unes a la app con tu <b>email</b>, sin contraseña. Lo usamos para darte acceso y enviarte avisos sobre tu cuenta (art. 6.1.b RGPD).</p>
+        <p>Si además nos das tu <b>teléfono</b> y marcas la casilla, te escribiremos por WhatsApp o te llamaremos sobre tu reforma y la app, con tu consentimiento (art. 6.1.a RGPD). Es opcional, no es necesario para entrar y puedes retirarlo cuando quieras escribiéndonos. Guardamos el texto que aceptaste y la fecha.</p>
+        <p>Si dejas de usar la app, borramos tus datos a los 24 meses de tu última actividad, o antes si nos lo pides.</p>
       </Seccion>
 
       <Seccion titulo="6. Si eres reformista o proveedor">

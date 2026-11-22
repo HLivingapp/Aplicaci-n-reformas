@@ -37,7 +37,7 @@ const NECESARIO = [
 
 /** Fachadas y tejados para comunidades de propietarios y administradores de fincas. */
 export default function Comunidades() {
-  const { exigir, modal } = useExigirRegistro("Únete gratis para pedir visitas a especialistas para tu comunidad.");
+  const { exigir, modal } = useExigirRegistro("Únete gratis para pedir visitas a especialistas para tu comunidad de vecinos.");
   const [zona, setZona] = useState<(typeof ZONAS)[number]>("Madrid");
   const [trabajos, setTrabajos] = useState<string[]>(["fachada"]);
   const [viviendas, setViviendas] = useState(16);
@@ -63,12 +63,12 @@ export default function Comunidades() {
       {modal}
       <section className="bg-gradient-to-b from-sky-50 to-stone-50">
         <div className="mx-auto max-w-5xl px-4 pb-8 pt-10">
-          <div className="text-sm font-semibold uppercase tracking-wide text-sky-800">Para comunidades de propietarios y administradores de fincas</div>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Fachadas y tejados para tu comunidad, con especialistas homologados</h1>
+          <div className="text-sm font-semibold uppercase tracking-wide text-sky-800">Para comunidades de vecinos y administradores de fincas</div>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Fachadas y tejados para tu comunidad de vecinos, con especialistas homologados</h1>
           <p className="mt-3 max-w-2xl text-stone-600">Rehabilitación de fachadas, aislamiento SATE, tejados, azoteas y patios de luces. Elegís a la empresa, recibís el presupuesto en la app para la junta y lo firmáis todo aquí, con seguimiento para todos los vecinos.</p>
           <div className="mt-4 flex flex-wrap gap-2 text-sm">
-            <a href="#pedir" className="rounded-xl bg-teal-700 px-4 py-2.5 font-semibold text-white hover:bg-teal-800">Pedir visitas para mi comunidad</a>
-            <Link href="/subvenciones?para=comunidades" className="rounded-xl border border-stone-300 bg-white px-4 py-2.5 font-medium hover:bg-stone-50">💶 Ver subvenciones para comunidades</Link>
+            <a href="#pedir" className="rounded-xl bg-teal-700 px-4 py-2.5 font-semibold text-white hover:bg-teal-800">Pedir visitas para mi comunidad de vecinos</a>
+            <Link href="/subvenciones?para=comunidades" className="rounded-xl border border-stone-300 bg-white px-4 py-2.5 font-medium hover:bg-stone-50">💶 Ver subvenciones para comunidades de vecinos</Link>
           </div>
         </div>
       </section>
@@ -175,12 +175,12 @@ export default function Comunidades() {
                   <li key={t}><span className="font-medium">{t}.</span> <span className="text-stone-600">{d}</span></li>
                 ))}
               </ul>
-              <Link href="/subvenciones?para=comunidades" className="mt-3 block text-sm font-medium text-teal-800 underline">Ver subvenciones para comunidades →</Link>
+              <Link href="/subvenciones?para=comunidades" className="mt-3 block text-sm font-medium text-teal-800 underline">Ver subvenciones para comunidades de vecinos →</Link>
               <Link href="/arquitectos" className="mt-1 block text-sm font-medium text-teal-800 underline">Estudios de arquitectura para el informe →</Link>
             </div>
             <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm">
               <div className="font-semibold">¿Eres empresa de fachadas o tejados?</div>
-              <p className="mt-1 text-stone-600">Date de alta, elige tu especialidad y te llegarán las comunidades de tu zona.</p>
+              <p className="mt-1 text-stone-600">Date de alta, elige tu especialidad y te llegarán las comunidades de vecinos de tu zona.</p>
               <Link href="/reformistas" className="mt-2 inline-block font-medium text-sky-900 underline">Darme de alta →</Link>
             </div>
           </aside>

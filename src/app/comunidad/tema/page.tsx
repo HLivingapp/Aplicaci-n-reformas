@@ -32,7 +32,7 @@ function VistaTema() {
     return (
       <div className="min-h-dvh bg-stone-50">
         <CabeceraComunidad />
-        <main className="mx-auto max-w-3xl p-6 text-stone-600">Este tema no existe o está en revisión. <Link href="/comunidad" className="underline">Volver a la comunidad</Link></main>
+        <main className="mx-auto max-w-3xl p-6 text-stone-600">Este tema no existe o está en revisión. <Link href="/comunidad" className="underline">Volver al foro</Link></main>
       </div>
     );
   }
@@ -63,7 +63,7 @@ function VistaTema() {
       {modal}
       <CabeceraComunidad />
       <main className="mx-auto max-w-3xl px-4 pb-16 pt-6">
-        <Link href="/comunidad" className="text-sm text-stone-500 hover:underline">← Comunidad</Link>
+        <Link href="/comunidad" className="text-sm text-stone-500 hover:underline">← Foro</Link>
         {error && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
         <article className="mt-3 rounded-2xl border border-stone-200 bg-white p-5">
           <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500">
@@ -94,7 +94,7 @@ function VistaTema() {
           <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-5 sm:flex-row sm:items-center">
             <div className="flex-1">
               <div className="font-semibold">¿Te ha pasado algo parecido o sabes la respuesta?</div>
-              <div className="text-sm text-stone-600">Únete gratis a la comunidad {APP.nombre} con tu email para responder.</div>
+              <div className="text-sm text-stone-600">Únete gratis a {APP.nombre} con tu email para responder.</div>
             </div>
             <button onClick={() => exigir()} className="rounded-full bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">Unirme y responder</button>
           </div>

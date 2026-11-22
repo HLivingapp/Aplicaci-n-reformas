@@ -24,7 +24,7 @@ export const PLANES: InfoPlan[] = [
     nombre: "Gratis",
     precio: 0,
     lema: "Para saber cuánto cuesta tu reforma",
-    incluye: ["Presupuesto orientativo partida a partida, al momento en la app", "Acabados básico, medio o premium", "Comunidad de reformas: leer, preguntar y responder", "Una opinión del asistente IA en cada tema de la comunidad"],
+    incluye: ["Presupuesto orientativo partida a partida, al momento en la app", "Acabados básico, medio o premium", "Foro de reformas: leer, preguntar y responder", "Una opinión del asistente IA en cada tema del foro"],
   },
   {
     id: "basico",
@@ -50,7 +50,7 @@ export const PLANES: InfoPlan[] = [
       "Todo lo del plan Básico",
       "Asistente IA de obra privado, sin límite razonable de preguntas",
       "Revisa presupuestos: qué falta, qué está caro y qué preguntar",
-      "Legalizaciones en Madrid: licencia o declaración responsable, ICIO, comunidad",
+      "Legalizaciones en Madrid: licencia o declaración responsable, ICIO, comunidad de vecinos",
       "Dudas técnicas: humedades, aerotermia, ventanas, plazos y garantías",
     ],
   },
