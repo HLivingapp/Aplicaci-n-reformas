@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { publico } from "@/lib/base";
+import { PrecioMaterial, srcImagen } from "@/components/MaterialesMedia";
+import { MATERIALES_MEDIA_INICIALES } from "@/lib/gama-media";
 import { seleccionPara, type CategoriaSeleccion } from "@/lib/seleccion";
 
 /** Vídeo vertical que no se descarga hasta que el cliente le da al play (no ralentiza el móvil). */
@@ -22,9 +24,34 @@ function Video({ c }: { c: CategoriaSeleccion }) {
   );
 }
 
+/** Fotos y precio orientativo de los materiales de la categoría. */
+function MiniFichas({ c }: { c: CategoriaSeleccion }) {
+  const xs = MATERIALES_MEDIA_INICIALES.filter((m) => m.categoria === c.id && (m.imagen || m.precio));
+  if (!xs.length) return null;
+  return (
+    <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1">
+      {xs.map((m) => (
+        <div key={m.id} className="w-36 shrink-0 overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+          {m.imagen ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={srcImagen(m.imagen)} alt={`${m.marca} ${m.nombre}`} loading="lazy" referrerPolicy="no-referrer" className={`aspect-[4/3] w-full bg-white ${m.encajar ? "object-contain p-1" : "object-cover"}`} />
+          ) : (
+            <div className="flex aspect-[4/3] items-center justify-center text-2xl opacity-50">{c.icono}</div>
+          )}
+          <div className="p-2">
+            <div className="text-[10px] font-semibold uppercase text-stone-500">{m.marca}</div>
+            <div className="text-xs font-medium leading-tight">{m.nombre}</div>
+            <PrecioMaterial p={m.precio} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Categoria({ c }: { c: CategoriaSeleccion }) {
   return (
-    <article className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-4">
+    <article className="flex min-w-0 gap-4 rounded-2xl border border-stone-200 bg-white p-4">
       <Video c={c} />
       <div className="min-w-0 flex-1">
         <h3 className="font-semibold">{c.icono} {c.titulo}</h3>
@@ -43,6 +70,7 @@ function Categoria({ c }: { c: CategoriaSeleccion }) {
             ))}
           </ul>
         )}
+        <MiniFichas c={c} />
         {c.consejo && <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">💡 {c.consejo}</p>}
       </div>
     </article>
@@ -57,13 +85,13 @@ export function SeleccionProductos({ grupos, excluir }: { grupos?: string[]; exc
   const lista = seleccionPara(grupos, excluir);
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         {lista.map((c) => (
           <Categoria key={c.id} c={c} />
         ))}
       </div>
       <Link href="/materiales" className="block rounded-xl border border-teal-200 bg-white px-4 py-3 text-sm font-semibold text-teal-800 hover:bg-teal-50">🧱 Ver todos los materiales de gama media, con fotos →</Link>
-      <p className="text-xs text-stone-400">Enlaces a los catálogos públicos de cada fabricante. Los precios de tu reforma son los de tu presupuesto.</p>
+      <p className="text-xs text-stone-400">Enlaces a los catálogos públicos de cada fabricante. Los precios orientativos son de venta al público en tiendas online, con IVA, en la fecha indicada; pueden cambiar. Los precios de tu reforma son los de tu presupuesto.</p>
     </div>
   );
 }

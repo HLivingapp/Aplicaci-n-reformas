@@ -20,6 +20,8 @@ export const CATEGORIAS_MEDIA: { id: CategoriaMedia; texto: string; icono: strin
   { id: "climatizacion", texto: "Climatización y agua caliente", icono: "🌡️" },
 ];
 
+export type PrecioOrientativo = { texto: string; fuente: string; url?: string; fecha: string };
+
 export type MaterialMedia = {
   id: string;
   categoria: CategoriaMedia;
@@ -30,12 +32,56 @@ export type MaterialMedia = {
   url?: string;
   /** Foto subida (JPEG sin metadatos) o enlace https a una imagen. */
   imagen?: string;
+  /** Precio orientativo público (PVP en una tienda o guía de precios), nunca tarifa de proveedor. */
+  precio?: PrecioOrientativo;
+  /** De dónde sale la foto. */
+  credito?: string;
+  /** Foto de producto recortada sobre fondo blanco: se muestra entera, sin recortar. */
+  encajar?: boolean;
   /** Quién lo añadió. */
   autor: "Human Living" | string;
   fecha: string;
 };
 
-const m = (id: string, categoria: CategoriaMedia, marca: string, nombre: string, detalle: string, url?: string): MaterialMedia => ({ id, categoria, marca, nombre, detalle, url, autor: "Human Living", fecha: "2026-11-21" });
+const m = (id: string, categoria: CategoriaMedia, marca: string, nombre: string, detalle: string, url?: string): MaterialMedia => ({ id, categoria, marca, nombre, detalle, url, autor: "Human Living", fecha: "2026-11-21", ...EXTRA[id] });
+
+const HOY = "2026-11-22";
+const pvp = (texto: string, fuente: string, url: string): PrecioOrientativo => ({ texto, fuente, url, fecha: HOY });
+const foto = (id: string, credito: string) => ({ imagen: `/materiales/${id}.jpg`, credito });
+const OBRA = "Foto: obra terminada (Human Living)";
+/** Foto oficial de producto en la web del fabricante (se enlaza, no se copia). */
+const web = (url: string, marca: string, encajar = true) => ({ imagen: url, credito: `Foto: web de ${marca}`, encajar });
+const ALVIC_COCINA = web("https://alvic.com/wp-content/uploads/2021/10/cocinas-alvic-vanguardia.jpg", "Alvic", false);
+const CAT = (marca: string) => `Foto: catálogo de ${marca}`;
+const BANOIDEA = "Bañoidea";
+const KASS = pvp("Frentes de ducha Kassandra desde unos 259 €", BANOIDEA, "https://banoidea.com/en/products/kassandra-siena-mampara-frente-de-ducha-fijo-puerta-corredera-negro-mate-transparente");
+
+/** Foto y precio orientativo de la selección inicial. Precios con IVA de tiendas públicas; fotos oficiales enlazadas desde la web de cada fabricante (o de su catálogo). */
+const EXTRA: Record<string, Partial<MaterialMedia>> = {
+  "alvic-luxe": web("https://alvic.com/wp-content/uploads/2021/10/luxe-alvic.jpg", "Alvic", false),
+  "alvic-zenit": ALVIC_COCINA,
+  "alvic-syncron": ALVIC_COCINA,
+  compac: web("https://www.compac.es/wp-content/uploads/2020/03/TABLERO_MAX_PURE_SINREGLA-scaled.jpg", "Compac", false),
+  balay: { ...web("https://media3.bsh-group.com/Product_Shots/28980336_3HB2030X0_01_def.webp", "Balay"), precio: pvp("Horno multifunción desde unos 279 €", "Leroy Merlin", "https://www.leroymerlin.es/productos/horno-multifuncion-balay-3hb2030x0-66-litros-3-3kw-clase-a-84450875.html") },
+  teka: web("https://teka.b-cdn.net/CMP1219/4/PR18549BI38886_111000005_HLB_8400_BK_SZ1.png", "Teka"),
+  "imex-cocina": web("https://imexproducts.es/wp-content/uploads/2022/06/GCZ044-NG-scaled.jpg", "Imex"),
+  "salgar-noja": { ...foto("salgar-noja", CAT("Salgar")), precio: pvp("Mueble desde unos 173 €", BANOIDEA, "https://banoidea.com/en/products/salgar-noja-mueble-de-bano-con-tapa-encimera-2-puertas-color-natural") },
+  "salgar-attila": { ...foto("salgar-attila", CAT("Salgar")), precio: pvp("Conjunto con lavabo y espejo, unos 404 €", BANOIDEA, "https://banoidea.com/en/products/salgar-attila-conjunto-mueble-de-bano-completo-verde-mate") },
+  "salgar-uniq": { ...web("https://www.salgar.net/cdnassets/categoria-mueble-bano-uniiq-sol-600-spirit.jpg", "Salgar", false), precio: pvp("Mueble de 60 cm, unos 385 €", BANOIDEA, "https://banoidea.com/en/products/mue-uniiq-60-2c-nata") },
+  "salgar-marville": { ...foto("salgar-marville", CAT("Salgar")), precio: pvp("Conjunto de 40 cm con lavabo, unos 269 €", BANOIDEA, "https://banoidea.com/en/products/salgar-106312-marville-conjunto-completo-mueble-de-bano-mini-con-lavabo-1-puerta-color-roble-africa") },
+  "roca-gap": { ...web("https://www.roca.es/RocaResourceServlet/resources/getTransformation?idObject=%7B040DF0D6-D27C-4DD0-9E80-C5FCA7BBE74F%7D&trName=TF_Web_Big", "Roca"), precio: pvp("Conjunto con cisterna y tapa, unos 311 €", "Obramat", "https://www.obramat.es/productos/pack-wc-inodoro-con-salida-vertical-cisterna-inferior-y-tapa-gap-25150626.html") },
+  "roca-contessa": { ...web("https://www.roca.es/RocaResourceServlet/resources/getTransformation?idObject=%7B89951A1F-ACC7-474A-9A17-EB941ABFEEB3%7D&trName=TF_Web_Big", "Roca"), precio: pvp("160 × 70 cm, unos 145 € (sin faldón)", "Obramat", "https://www.obramat.es/productos/banera-chapa-de-acero-roca-contesa-160x70cm-10097290.html") },
+  "imex-bano": web("https://imexproducts.es/wp-content/uploads/2022/06/BDZ044-4NG-scaled.jpg", "Imex"),
+  "kassandra-delta": { ...web("https://kassandra.net/637-superlarge_default/frente-de-ducha-delta-de102.jpg", "Kassandra"), precio: KASS },
+  "kassandra-luna": { ...foto("kassandra-luna", OBRA), precio: KASS },
+  "kassandra-sugar": { ...foto("kassandra-sugar", OBRA), precio: KASS },
+  "meister-lc150": web("https://www.meister.com/_Resources/Persistent/0/c/0/f/0c0f1443aafb0c7630c41bda6e07db7ea2f2488c/462_laminate_LC150_Perspektive.jpg", "Meister", false),
+  parador: web("https://parador.de/media/catalog/product/cache/2ab59e795355d47654a6e98d116935c7/p/a/parador_1748185_b_side_hkmjosncmjh8zizx.jpg", "Parador", false),
+  cortizo: { ...web("https://www.cortizo.com/ficheros/sistemasinline/MTc4OTczMzA4M18xNjRfY29yXzcwX2V2b2x1dGlvbl9ycHRfZXM,/images/evolution.jpg", "Cortizo"), precio: pvp("Instalada, unos 230–370 €/m²", "guía de precios de Habitissimo", "https://www.habitissimo.es/presupuestos/ventanas-puente-termico") },
+  kommerling: web("https://www.kommerling.es/sites/default/files/styles/image_360_360/public/system/K%C3%96MMERLING76-md-xtrem_0.png.webp?itok=O7AANYA_", "Kömmerling"),
+  "ikea-pax": { ...web("https://www.ikea.com/es/en/images/products/pax-wardrobe-white__1193392_pe901437_s5.jpg", "IKEA"), precio: pvp("Armario de 175 cm de ancho, unos 403 €", "IKEA", "https://www.ikea.com/es/en/p/pax-wardrobe-s69502631/") },
+  "simon-27": web("https://cdn.pimber.ly/public/asset/raw/61e53326b02781001c06e002/9e19aa0d/6482da79ace8bd0012b19ddb/aaf320d8/27472-65-main.jpg", "Simon"),
+};
 
 const IMEX = "https://imexproducts.es/descarga-catalogos/";
 const SALGAR = "https://www.salgar.net/salgar-catalogues-uk";
@@ -76,7 +122,12 @@ const EVENTO = "materiales-media";
 export function leerMaterialesMedia(): MaterialMedia[] {
   try {
     const x = JSON.parse(localStorage.getItem(CLAVE) ?? "null");
-    return Array.isArray(x) ? x : MATERIALES_MEDIA_INICIALES;
+    if (!Array.isArray(x)) return MATERIALES_MEDIA_INICIALES;
+    // Las fichas iniciales guardadas antes de tener foto y precio los toman de la selección actual
+    return (x as MaterialMedia[]).map((y) => {
+      const s = MATERIALES_MEDIA_INICIALES.find((z) => z.id === y.id);
+      return s ? { ...y, imagen: y.imagen ?? s.imagen, credito: y.credito ?? s.credito, encajar: y.encajar ?? s.encajar, precio: y.precio ?? s.precio } : y;
+    });
   } catch {
     return MATERIALES_MEDIA_INICIALES;
   }

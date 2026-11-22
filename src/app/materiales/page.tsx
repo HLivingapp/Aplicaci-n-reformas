@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { GuiaEleccion } from "@/components/GuiaEleccion";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { MaterialesMedia } from "@/components/MaterialesMedia";
 
@@ -17,6 +18,7 @@ export default function Materiales() {
         <div className="mt-6">
           <MaterialesMedia />
         </div>
+        <div className="mt-10"><GuiaEleccion /></div>
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-stone-200 bg-white p-4">
             <div className="font-semibold">¿Quieres ver los vídeos del equipo?</div>

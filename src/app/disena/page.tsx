@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { DesglosePresupuesto } from "@/components/DesglosePresupuesto";
+import { GuiaEleccion } from "@/components/GuiaEleccion";
 import { SeleccionProductos } from "@/components/SeleccionProductos";
 import { euros } from "@/lib/calc";
 import type { Estimacion } from "@/lib/estimacion";
@@ -127,6 +128,8 @@ export default function Disena() {
             <p className="text-center text-xs text-stone-400">Muy pronto: verás tu foto con los acabados elegidos.</p>
           </aside>
         </div>
+
+        <div id="guia" className="mt-12"><GuiaEleccion estancia={estancia} titulo={`Qué se elige en ${estancia === "bano" ? "un baño" : "una cocina"}, y en qué orden`} /></div>
 
         <section id="seleccion" className="mt-12">
           <h2 className="text-2xl font-semibold tracking-tight">Selección de productos recomendada</h2>
