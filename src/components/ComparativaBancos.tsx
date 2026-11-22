@@ -33,6 +33,13 @@ export function ComparativaBancos() {
   return (
     <div id="bancos-reforma" className="mt-4">
       <div className="font-medium">Bancos con financiación para reformas ({BANCOS_REFORMA.length})</div>
+      <ul className="mt-2 grid grid-cols-5 gap-1.5" aria-label="Entidades comparadas">
+        {BANCOS_REFORMA.map((b) => (
+          <li key={b.banco} className="flex h-10 items-center justify-center rounded-lg bg-white p-1.5 ring-1 ring-stone-200" title={b.banco}>
+            <LogoBanco b={b} className="max-h-full max-w-full object-contain" />
+          </li>
+        ))}
+      </ul>
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
         <span className="text-stone-500">Ordenar:</span>
         {ORDENES.map((o) => (
@@ -48,8 +55,11 @@ export function ComparativaBancos() {
       <ul className="mt-2 space-y-2">
         {lista.map((b) => (
           <li key={b.banco + b.producto} className="rounded-xl bg-white p-3 ring-1 ring-stone-200">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-2">
-              <span className="font-semibold">{b.banco}</span>
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="flex h-8 w-24 shrink-0 items-center"><LogoBanco b={b} className="max-h-8 max-w-24 object-contain" /></span>
+                <span className="font-semibold">{b.banco}</span>
+              </span>
               <span className="text-xs text-stone-500">{b.producto}</span>
             </div>
             <dl className="mt-2 grid grid-cols-3 gap-1 text-center text-xs">
@@ -64,7 +74,7 @@ export function ComparativaBancos() {
         ))}
       </ul>
       <p className="mt-2 text-xs text-stone-500">
-        Resumen orientativo de la información pública de cada entidad, consultada el 21/11/2026. «—» significa que la web no lo indica. Las condiciones, el tipo de interés y la concesión los decide cada entidad. La app todavía no tiene acuerdo con estas entidades.
+        Resumen orientativo de la información pública de cada entidad, consultada el 21/11/2026. «—» significa que la web no lo indica. Las condiciones, el tipo de interés y la concesión los decide cada entidad. La app todavía no tiene acuerdo con estas entidades. Los logotipos son marcas de sus respectivos titulares y se muestran solo para identificar cada entidad.
       </p>
     </div>
   );
@@ -100,4 +110,10 @@ function Detalle({ b }: { b: ProductoBanco }) {
       {(d.tin || d.tae) && <p className="mt-2 text-stone-400">Tipos publicados por {b.banco} el 21/11/2026; pueden cambiar y dependen de tu perfil.</p>}
     </details>
   );
+}
+
+function LogoBanco({ b, className }: { b: ProductoBanco; className: string }) {
+  if (!b.logo) return null;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={b.logo} alt={`Logotipo de ${b.banco}`} loading="lazy" referrerPolicy="no-referrer" className={className} />;
 }

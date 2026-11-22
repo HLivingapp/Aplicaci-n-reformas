@@ -1,4 +1,7 @@
 "use client";
+
+import { FotosCalidad } from "@/components/FotosCalidad";
+import { NIVEL_DE_CALIDAD } from "@/lib/fotos-calidad";
 import { RequiereRegistro } from "@/components/Registro";
 import { useMiembro } from "@/lib/miembro-cliente";
 import { buscarCatastro } from "@/lib/catastro/cliente";
@@ -426,6 +429,7 @@ function NuevoProyectoContenido() {
           <div>
             <h3 className="mb-2 text-sm font-medium text-stone-600">Nivel de acabados</h3>
             <Opciones columnas={3} valor={r.calidad} onChange={(calidad) => setR({ ...r, calidad })} opciones={CALIDADES.map((x) => ({ valor: x.valor, texto: x.texto, detalle: x.detalle }))} />
+            {r.calidad && <FotosCalidad nivel={NIVEL_DE_CALIDAD[r.calidad] ?? "medio"} />}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Campo etiqueta="Presupuesto aproximado">

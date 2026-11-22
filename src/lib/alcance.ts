@@ -8,8 +8,12 @@ export interface Alcance {
 }
 
 export const ALCANCE: Record<string, Alcance> = {
-  albanileria_base: {
-    incluye: "Protección de zonas comunes, demolición de revestimientos, sanitarios y cocina, retirada de escombros con contenedor, recrecidos y regularización de suelos, rozas y ayudas a instalaciones, y tabiquería de los baños y la cocina.",
+  demolicion_integral: {
+    incluye: "Protección de zonas comunes, demolición de revestimientos, sanitarios y cocina, y retirada de escombros con contenedor.",
+    noIncluye: "Picado de suelos cerámicos o de terrazo y desmontaje de falsos techos, que van en sus partidas.",
+  },
+  albanileria_integral: {
+    incluye: "Recrecidos y regularización de suelos, rozas y ayudas a instalaciones, y tabiquería de los baños y la cocina.",
     noIncluye: "Refuerzos de estructura o forjado, que se valoran tras la visita si hacen falta.",
   },
   albanileria_redistribucion: {
@@ -18,8 +22,11 @@ export const ALCANCE: Record<string, Alcance> = {
   dem_suelo_ceramico: { incluye: "Picado del suelo cerámico o porcelánico existente y retirada de escombros antes de colocar el nuevo." },
   dem_suelo_terrazo: { incluye: "Picado del terrazo existente, que es más duro y pesado, y retirada de escombros antes de colocar el nuevo suelo." },
   dem_falso_techo: { incluye: "Desmontaje del falso techo actual y retirada de escombros." },
-  dem_estancia: {
-    incluye: "Demolición de alicatados, suelo y sanitarios o muebles de la estancia, retirada de escombros, regularización de paredes y suelo, y ayudas a fontanería y electricidad.",
+  demolicion_estancia: {
+    incluye: "Demolición de alicatados, suelo y sanitarios o muebles de la estancia, y retirada de escombros.",
+  },
+  albanileria_estancia: {
+    incluye: "Regularización de paredes y suelo, recrecidos y ayudas a fontanería y electricidad.",
     noIncluye: "Cambios de distribución fuera de la estancia.",
   },
   traslado_cocina: { incluye: "Nuevos desagües con su pendiente, rozas para las tomas y nueva salida de humos para la campana en la nueva ubicación." },

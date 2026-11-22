@@ -1,4 +1,5 @@
 import { ProductosPartida } from "./ProductosPartida";
+import { SubpartidasTabla } from "./SubpartidasTabla";
 import { ALCANCE, cantidadLegible } from "@/lib/alcance";
 import { euros } from "@/lib/calc";
 import type { Estimacion, LineaEstimacion } from "@/lib/estimacion";
@@ -50,6 +51,7 @@ export function DesglosePresupuesto({ e, iva = 10, titulo = "Presupuesto desglos
                     {acabado && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Acabado:</span> {acabado}</p>}
                     {l.especificacion && <p className="mt-1 text-xs text-stone-700"><span className="font-medium">Equipo de referencia:</span> {l.especificacion}</p>}
                     <ProductosPartida ids={l.productos} />
+                    <SubpartidasTabla l={l} codigo={`${i + 1}.${j + 1}`} />
                     {(a?.incluye || a?.noIncluye) && (
                       <details className="mt-1 text-xs">
                         <summary className="cursor-pointer text-teal-800">Qué incluye y qué no</summary>
@@ -70,7 +72,7 @@ export function DesglosePresupuesto({ e, iva = 10, titulo = "Presupuesto desglos
         <div className="flex justify-between text-base font-semibold"><dt>Total</dt><dd>{euros(base + cuotaIva)}</dd></div>
       </dl>
       <p className="border-t border-stone-100 px-4 py-3 text-xs text-stone-500">
-        Presupuesto orientativo con medidas estándar. El precio final lo fija el reformista tras la visita, con las mediciones reales y los materiales que elijas. IVA del 10 % para reformas de la vivienda de un particular, siempre que los materiales que aporta el reformista no superen el 40 % de la base; si no, el IVA es del 21 %. No incluye licencias, tasas, proyecto ni lo indicado en «No incluye».
+        Presupuesto orientativo con medidas estándar. Las subpartidas se miden con las unidades recomendadas para una vivienda como la tuya (en electricidad, los mínimos del REBT por estancia) y muestran precios medios de venta. El precio final lo fija el reformista tras la visita, con las mediciones reales y los materiales que elijas. IVA del 10 % para reformas de la vivienda de un particular, siempre que los materiales que aporta el reformista no superen el 40 % de la base; si no, el IVA es del 21 %. No incluye licencias, tasas, proyecto ni lo indicado en «No incluye».
       </p>
     </div>
   );
