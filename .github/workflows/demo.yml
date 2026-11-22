@@ -29,6 +29,8 @@ jobs:
       - name: Subvenciones desde la BDNS (si no responde, se publican los datos anteriores)
         run: node scripts/actualizar-subvenciones.mjs || true
       - run: ./scripts/exportar-demo.sh "/${{ github.event.repository.name }}"
+      - name: AyudasVivienda (vista previa de la web aparte)
+        run: node ayudas-vivienda/generar.mjs out/ayudas-vivienda
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: out
