@@ -25,6 +25,7 @@ import {
 import { cambiosDistribucion } from "@/lib/estimacion";
 import type { Acs, Clima, DatosReforma, Direccion, Instalacion, Vivienda } from "@/lib/types";
 import { VistaEstimacion } from "@/components/Estimacion";
+import { Moodboard } from "@/components/Moodboard";
 import { FasesYParecidas } from "@/components/Galeria";
 import { ElegirMateriales } from "@/components/Materiales";
 import { SeleccionPlegable } from "@/components/SeleccionProductos";
@@ -463,6 +464,13 @@ function NuevoProyectoContenido() {
               <h2 className="text-lg font-semibold">Tu presupuesto orientativo, partida a partida</h2>
               <p className="mb-3 mt-1 text-sm text-stone-500">Aquí mismo, al momento. Cambia los acabados y verás cómo se actualiza.</p>
               <VistaEstimacion e={estimacion} />
+              <div className="mt-4">
+                <div className="mb-2 flex items-baseline justify-between gap-2">
+                  <h3 className="text-sm font-semibold">🧩 Tu moodboard</h3>
+                  <Link href="/materiales#catalogo" className="text-sm font-medium text-teal-800 underline">Elegir materiales</Link>
+                </div>
+                <Moodboard compacto />
+              </div>
             </Tarjeta>
           )}
           {estimacion && estimacion.materiales?.length > 0 && (

@@ -1,4 +1,5 @@
 import { ProductosPartida } from "./ProductosPartida";
+import { SeleccionCapitulo, SeleccionSinCapitulo } from "./SeleccionEnPresupuesto";
 import { SubpartidasTabla } from "./SubpartidasTabla";
 import { ALCANCE, cantidadLegible } from "@/lib/alcance";
 import { euros } from "@/lib/calc";
@@ -63,9 +64,11 @@ export function DesglosePresupuesto({ e, iva = 10, titulo = "Presupuesto desglos
                 );
               })}
             </ul>
+            <SeleccionCapitulo capitulo={c.nombre} />
           </li>
         ))}
       </ol>
+      <div className="px-4"><SeleccionSinCapitulo capitulos={caps.map((c) => c.nombre)} /></div>
       <dl className="space-y-1 border-t border-stone-200 p-4 text-sm">
         <div className="flex justify-between"><dt className="text-stone-600">Base imponible</dt><dd>{euros(base)}</dd></div>
         <div className="flex justify-between"><dt className="text-stone-600">IVA {iva} % (reforma de vivienda)</dt><dd>{euros(cuotaIva)}</dd></div>
