@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { buscarTemas, CATEGORIA_LEGAL, CATEGORIAS, DENUNCIAS_OCULTAR, tieneSolucion, TIPOS, type Accion, type TipoTema } from "@/lib/foro";
 import { useForo } from "@/lib/foro-cliente";
 import { useExigirRegistro } from "@/components/Registro";
@@ -16,6 +16,10 @@ export default function Comunidad() {
   const temas = useMemo(() => cargados ?? [], [cargados]);
   const [q, setQ] = useState("");
   const [categoria, setCategoria] = useState("");
+  // Enlace directo al apartado de legalizaciones: /comunidad?legal
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("legal")) setCategoria(CATEGORIA_LEGAL);
+  }, []);
   const [tipo, setTipo] = useState<TipoTema | "">("");
   const [orden, setOrden] = useState<"recientes" | "utiles">("recientes");
   const [nuevo, setNuevo] = useState(false);
@@ -51,6 +55,11 @@ export default function Comunidad() {
           <Tarjeta icono="🦺" titulo="Responden profesionales" texto="Reformistas homologados opinan con su sello. Su empresa sigue siendo anónima hasta que tú decides." />
           <Tarjeta icono="🤖" titulo="Asistente IA de obra" texto="En cada tema puedes pedir una primera opinión técnica con fuentes, mientras llegan las respuestas." />
         </div>
+        <Link href="/tramites" className="mb-5 flex items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 hover:border-teal-600">
+          <span className="text-3xl" aria-hidden>🧭</span>
+          <span className="min-w-0"><span className="block font-semibold text-teal-900">¿Qué trámite necesita tu reforma?</span><span className="text-sm text-teal-800">Toca lo que vas a hacer y te decimos si es declaración responsable, licencia o nada.</span></span>
+          <span className="ml-auto text-teal-700" aria-hidden>→</span>
+        </Link>
         <VideosNormativa soloLegal={categoria === CATEGORIA_LEGAL} />
         {!esProfesional && (
           <p className="mb-4 text-xs text-stone-500">¿Eres reformista homologado? Entra desde tu portal (botón «Responder en el foro») para que tus respuestas lleven el sello. <Link href="/reformistas" className="underline">Homologarme</Link></p>
