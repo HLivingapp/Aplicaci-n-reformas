@@ -71,6 +71,10 @@ const EQ = "https://pror2.equipeceramicas.com/cdn-cgi/image/width=600,height=450
 const nais = (col: string, nombre: string, detalle: string, euros: string, foto: string): MaterialMedia =>
   ({ ...otra(`nais-${col}`, "azulejos", "Nais", nombre, detalle, { texto: `${euros} €/m²`, fuente: "Nais", url: `${NAIS}${col}/` }, `${NAIS}${col}/`, `${EQ}${foto}-mini.png`, "Foto: web de Nais"), encajar: false });
 
+const pack = (id: string, m: string, modelos: string, total: string, fuente: string, url: string, web: string, foto: string): MaterialMedia =>
+  ({ ...otra(id, "electrodomesticos", m, `Paquete ${m}: horno, placa, campana, lavavajillas y frigorífico`, modelos, { texto: `Unos ${total} € los cinco`, fuente, url }, web, foto, `Foto: web de ${fuente}`), encajar: true });
+const LMQ = "https://www.leroymerlin.es/search?q=";
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -110,11 +114,12 @@ export const CATALOGO_BASICO: MaterialMedia[] = [
   amazon("amz-starryol", "Colgante industrial doble", "Starryol, cuerda doble", "15", "B07BL3ZS9D"),
   amazon("amz-canamo", "Colgante vintage de cuerda de cáñamo", "Casquillo E27", "28", "B07XY1LS5D"),
   amazon("amz-led-madera", "Colgante LED metal y madera", "Varios colores", "21", "B09B1Y72LZ"),
+  // Electrodomésticos: paquetes de ejemplo (PVP Leroy Merlin, 22-nov-2026)
+  pack("pack-teka", "Teka", "Horno HSB 6150 (349 €), placa de inducción IBF 63210 (251 €), campana DLH 786 T (334 €), lavavajillas integrable DFI 46650 (397 €) y frigorífico combi integrable RBF 73355 FI (617 €)", "1.947", "Leroy Merlin", LMQ + "teka", "https://www.teka.com/es-es/", "https://media.adeo.com/media/4830054/media.png"),
+  pack("pack-beko", "Beko", "Horno BBIE12300XD (216 €), placa de inducción HIIS63206M (253 €), campana HCP61310I (93 €), lavavajillas integrable BDIN14320 (336 €) y frigorífico combi integrable BCHA275E4SN (610 €)", "1.508", "Leroy Merlin", LMQ + "beko", "https://www.beko.com/es-es", "https://media.adeo.com/media/4087131/media.png"),
 ];
 
 export const CATALOGO_PREMIUM: MaterialMedia[] = [
-  lm("lm-bosch-placa", "cocina", "Bosch", "Placa de inducción PXV875DV1E", "5 zonas y zona flex, 82 cm", "999 €", "placa-de-induccion-bosch-pxv875dv1e-con-5-zonas-de-coccion-y-zona-flex-7400-w-negro-82cm-82718567.html", "4081485/media.jpg"),
-  lm("lm-bosch-horno", "cocina", "Bosch", "Horno HBA514ES3", "Multifunción 71 l con limpieza por hidrólisis", "289 €", "horno-bosch-hba514es3-multifuncion-71-litros-hidrolisis-negro-clase-a-93470587.html", "4625446/media.png"),
   otra("enc-dekton", "encimeras", "Dekton", "Encimera porcelánica Marina", "Blanca con vetas grises suaves, 12 mm", { texto: "Unos 234 € el metro lineal", fuente: ADC, url: "https://almacendecocinas.com/producto/dekton-marina-encimera-porcelanica-blanca-con-vetas-grises-suaves-precio-por-metro-lineal/" }, "https://www.cosentino.com/es/dekton/", "https://almacendecocinas.com/wp-content/uploads/2026/04/dekton-marina-mn.jpg", "Foto: web de Almacén de Cocinas"),
   otra("enc-laminam", "encimeras", "Laminam", "Encimera porcelánica Bianco Lasa", "Tipo mármol blanco con vetas doradas, acabado mate, 12 mm", { texto: "Unos 276 € el metro lineal", fuente: ADC, url: "https://almacendecocinas.com/producto/laminam-bianco-lasa-superficie-tipo-marmol-blanco-con-vetas-doradas-y-grises-suaves-en-acabado-mate-precio-por-metro-lineal/" }, "https://www.laminam.com/", "https://almacendecocinas.com/wp-content/uploads/2025/02/laminam-bianco-lasa.jpg", "Foto: web de Almacén de Cocinas"),
   enc("enc-dekton-moone", "Dekton", "Moone", "Gris claro uniforme", 268, "dekton-moone-encimera-porcelanica-gris-claro-uniforme-precio-por-metro-lineal/", "2026/04/dekton-moone-mn.jpg"),
@@ -172,6 +177,9 @@ export const CATALOGO_PREMIUM: MaterialMedia[] = [
   nais("bamboo", "Colección Bamboo", "Azulejo 5,6 x 22,4 con textura de bambú, estilo japandi", "65,87", "8579ce20e64080b70ae7b0a214544ee5f7abeaa74d08a8274a0ddef45f425b6b"),
   nais("porto", "Colección Porto", "Piezas en cruz y estrella (12 x 12 y 16,8 x 16,8) en ocho colores", "65,87", "5084f078e48734676792fbba8628ec539e05c8a857c421c24959d6423417d830"),
   nais("elda", "Colección Elda", "Piezas en cruz y estrella en cinco colores", "65,87", "cc95852709782298a0ed1734927603c5663f978186d7ad7911973173ea1d6349"),
+  // Electrodomésticos: paquetes de ejemplo (22-nov-2026)
+  pack("pack-siemens", "Siemens", "Horno iQ500 HR538ABS1 (1.097 €), placa de inducción EX775LYE4E (1.129 €), campana iQ300 LC87KEM60 (796 €), lavavajillas integrable SN63HX03TE (848 €) y frigorífico combi iQ500 KG39EAWCA (903 €)", "4.772", "Leroy Merlin", LMQ + "siemens", "https://www.siemens-home.bsh-group.com/es/", "https://media.adeo.com/mkp/042a614221e7f68a5a8f703b4d88b5a8/media.jpg"),
+  pack("pack-miele", "Miele", "Horno H 2467 B Active (949 €), placa de inducción KM 7360 FL (849 €), campana PUR 98 W (1.049 €), lavavajillas integrable G 5651 SCVi Active (1.099 €) y frigorífico integrable K 7737 D (1.749 €)", "5.695", "Miele", "https://www.miele.es/category/1022125/hornos-integrables", "https://www.miele.es/", "https://media.miele.com/dam/af19375f-1319-4f72-90d0-b3ba0173af02/20000199861_HighresDigitalRGB.png"),
 ];
 
 /** Medio: además de la selección de gama media de la app. */
@@ -198,8 +206,6 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   lm("lm-sky", "electricidad", "Niessen", "Enchufe Sky plano", "9 mm, blanco", "5,99 €", "enchufe-plano-9mm-sky-82834277.html", "1881485/media.jpg"),
   // Marcas que más usamos en obra (catálogos oficiales, sin tarifas)
   marca("alvic-frentes", "cocina", "Alvic", "Frentes de cocina Luxe, Zenit y Syncron", "Frentes en alto brillo, mate antihuellas y texturas madera", "https://alvic.com/es/descargas/"),
-  marca("teka-placas", "cocina", "Teka", "Placas, campanas y fregaderos", "Catálogo Teka de electrodomésticos de cocina", "https://www.teka.com/es-es/"),
-  marca("balay-electro", "cocina", "Balay", "Electrodomésticos de cocina", "Hornos, placas, lavavajillas y frigoríficos integrables", "https://www.balay.es/"),
   marca("imex-catalogos", "griferia", "Imex", "Grifería de baño y cocina", "Novedades 2026 en grifería, mamparas y accesorios", "https://imexproducts.es/descarga-catalogos/"),
   marca("salgar-muebles", "bano", "Salgar", "Muebles de baño", "Muebles suspendidos y de suelo con lavabo integrado", "https://www.salgar.net/"),
   marca("roca-sanitarios", "sanitarios", "Roca", "Inodoros, lavabos y platos de ducha", "Gama completa de sanitarios Roca", "https://www.roca.es/"),
@@ -233,6 +239,9 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   nais("isola", "Colección Isola", "Azulejo alargado 5 x 30 en ocho colores", "42,35", "07e5a5e7b2868eb209ad891db118255eb8f1debc67df8c44060ac76c044c224a"),
   nais("lumina", "Colección Lumina", "Azulejo brillo 6 x 24,6 que refleja la luz, para baños y cocinas", "36,72", "c6564409d3d1bc1f032e5b67de7472b972a8bc2ac7a27d316d349e0227022e54"),
   nais("miyako", "Colección Miyako", "Azulejo 10 x 15 de inspiración japonesa y textura artesanal", "42,35", "070119dfcc406e7d745eedce5b9d1c5001c2b613e522c2ac9d91d9930f34c0c0"),
+  // Electrodomésticos: paquetes de ejemplo (PVP Leroy Merlin, 22-nov-2026)
+  pack("pack-balay", "Balay", "Horno 3HB5131N3 (451 €), placa de inducción 3EB865FR (306 €), campana 3BD866MX (374 €), lavavajillas integrable 3VF5012NP (536 €) y frigorífico combi integrable 3KID834F (1.330 €)", "2.998", "Leroy Merlin", LMQ + "balay", "https://www.balay.es/", "https://media.adeo.com/media/5256628/media.jpg"),
+  pack("pack-bosch", "Bosch", "Horno HBG536EB4 (469 €), placa de inducción PVS61RBB5E (356 €), campana DWK65DK60 (489 €), lavavajillas integrable SPV4EMX17E (725 €) y frigorífico combi integrable KIV86VSE0 (792 €)", "2.832", "Leroy Merlin", LMQ + "bosch", "https://www.bosch-home.es/", "https://media.adeo.com/media/5287327/media.jpg"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */
