@@ -45,6 +45,8 @@ export interface ObraTramite {
   id: string;
   icono: string;
   texto: string;
+  /** Pregunta del formulario (respuesta Sí / No) */
+  pregunta: string;
   /** Trámite que exige esta obra */
   nivel: NivelTramite;
   /** Trámite si el edificio está protegido (si es distinto) */
@@ -60,20 +62,20 @@ export interface ObraTramite {
 }
 
 export const OBRAS: ObraTramite[] = [
-  { id: "tabiques", icono: "🧱", texto: "Cambio tabiques de sitio", nivel: 1, nivelProtegido: 2, porque: "Cambiar la distribución interior se tramita con declaración responsable.", confirmada: true },
-  { id: "carga", icono: "🏚️", texto: "Abro o quito un muro de carga", nivel: 3, porque: "Afecta a la estructura del edificio: hace falta proyecto técnico firmado y licencia.", confirmada: true, comunidad: true },
-  { id: "aire", icono: "❄️", texto: "Pongo aire acondicionado en la fachada", nivel: 2, porque: "La máquina exterior en fachada cambia el aspecto exterior del edificio: licencia básica.", confirmada: true, comunidad: true },
-  { id: "ventanas", icono: "🪟", texto: "Cambio las ventanas", nivel: 1, nivelProtegido: 2, porque: "Si el edificio no está protegido, declaración responsable. Si está protegido, licencia y el mismo modelo y color que exija la protección.", confirmada: true },
-  { id: "terraza", icono: "🌇", texto: "Cierro la terraza o cambio su cerramiento", nivel: 2, porque: "Cambia la fachada: licencia básica, y el cierre debe seguir el modelo aprobado por la comunidad si lo hay.", confirmada: true, comunidad: true },
-  { id: "puerta", icono: "🚪", texto: "Cambio la puerta de entrada", nivel: 0, porque: "Cambiar la puerta de la vivienda no necesita trámite. Si da al rellano, respeta el aspecto que marque la comunidad.", confirmada: true },
-  { id: "instalaciones", icono: "🔌", texto: "Renuevo electricidad o fontanería sin tocar tabiques ni techos", nivel: 0, porque: "Renovar instalaciones sin cambiar tabiques ni techos no necesita trámite urbanístico. La electricidad sí necesita boletín del instalador.", confirmada: true },
-  { id: "acabados", icono: "🎨", texto: "Cambio suelos, alicatados o pinto", nivel: 0, porque: "Cambiar acabados sin tocar la distribución se considera obra menor sin trámite.", confirmada: false },
-  { id: "bano-cocina", icono: "🚿", texto: "Cambio de sitio la cocina o el baño", nivel: 1, nivelProtegido: 2, porque: "Suele implicar mover tabiques y llevar desagües a otra zona: declaración responsable. Comprueba que la bajante llega.", confirmada: false },
-  { id: "techos", icono: "⬇️", texto: "Bajo techos o pongo falso techo", nivel: 1, porque: "Modificar techos en una reforma interior se tramita normalmente con declaración responsable.", confirmada: false },
-  { id: "huecos", icono: "🪟", texto: "Abro o agrando un hueco en la fachada", nivel: 3, porque: "Tocar la fachada y su estructura necesita proyecto técnico y licencia, además del acuerdo de la comunidad.", confirmada: false, comunidad: true },
-  { id: "unir", icono: "🔀", texto: "Uno dos pisos o divido uno en dos", nivel: 3, porque: "Cambia el número de viviendas del edificio: proyecto técnico, licencia y acuerdo de la comunidad.", confirmada: false, comunidad: true },
-  { id: "uso", icono: "🏪", texto: "Paso un local a vivienda", nivel: 3, porque: "Un cambio de uso necesita proyecto técnico y licencia, y cumplir las condiciones de vivienda (luz, ventilación, superficie).", confirmada: false, comunidad: true },
-  { id: "via", icono: "🚛", texto: "Pondré contenedor o andamio en la calle", nivel: 0, porque: "No cambia el trámite de la obra, pero necesitas autorización para ocupar la vía pública.", confirmada: false, extra: "Autorización de ocupación de la vía pública (contenedor o andamio)" },
+  { id: "tabiques", pregunta: "¿Cambias tabiquería (tiras o levantas tabiques)?", icono: "🧱", texto: "Cambio tabiques de sitio", nivel: 1, nivelProtegido: 2, porque: "Cambiar la distribución interior se tramita con declaración responsable.", confirmada: true },
+  { id: "carga", pregunta: "¿Abres o quitas un muro de carga?", icono: "🏚️", texto: "Abro o quito un muro de carga", nivel: 3, porque: "Afecta a la estructura del edificio: hace falta proyecto técnico firmado y licencia.", confirmada: true, comunidad: true },
+  { id: "aire", pregunta: "¿Pones aire acondicionado con la máquina en la fachada?", icono: "❄️", texto: "Pongo aire acondicionado en la fachada", nivel: 2, porque: "La máquina exterior en fachada cambia el aspecto exterior del edificio: licencia básica.", confirmada: true, comunidad: true },
+  { id: "ventanas", pregunta: "¿Cambias las ventanas?", icono: "🪟", texto: "Cambio las ventanas", nivel: 1, nivelProtegido: 2, porque: "Si el edificio no está protegido, declaración responsable. Si está protegido, licencia y el mismo modelo y color que exija la protección.", confirmada: true },
+  { id: "terraza", pregunta: "¿Cierras la terraza o cambias su cerramiento?", icono: "🌇", texto: "Cierro la terraza o cambio su cerramiento", nivel: 2, porque: "Cambia la fachada: licencia básica, y el cierre debe seguir el modelo aprobado por la comunidad si lo hay.", confirmada: true, comunidad: true },
+  { id: "puerta", pregunta: "¿Cambias la puerta de entrada?", icono: "🚪", texto: "Cambio la puerta de entrada", nivel: 0, porque: "Cambiar la puerta de la vivienda no necesita trámite. Si da al rellano, respeta el aspecto que marque la comunidad.", confirmada: true },
+  { id: "instalaciones", pregunta: "¿Renuevas electricidad o fontanería sin tocar tabiques ni techos?", icono: "🔌", texto: "Renuevo electricidad o fontanería sin tocar tabiques ni techos", nivel: 0, porque: "Renovar instalaciones sin cambiar tabiques ni techos no necesita trámite urbanístico. La electricidad sí necesita boletín del instalador.", confirmada: true },
+  { id: "acabados", pregunta: "¿Cambias suelos, alicatados o pintas?", icono: "🎨", texto: "Cambio suelos, alicatados o pinto", nivel: 0, porque: "Cambiar acabados sin tocar la distribución se considera obra menor sin trámite.", confirmada: false },
+  { id: "bano-cocina", pregunta: "¿Cambias de sitio la cocina o el baño?", icono: "🚿", texto: "Cambio de sitio la cocina o el baño", nivel: 1, nivelProtegido: 2, porque: "Suele implicar mover tabiques y llevar desagües a otra zona: declaración responsable. Comprueba que la bajante llega.", confirmada: false },
+  { id: "techos", pregunta: "¿Bajas techos o pones falso techo?", icono: "⬇️", texto: "Bajo techos o pongo falso techo", nivel: 1, porque: "Modificar techos en una reforma interior se tramita normalmente con declaración responsable.", confirmada: false },
+  { id: "huecos", pregunta: "¿Abres o agrandas un hueco en la fachada?", icono: "🪟", texto: "Abro o agrando un hueco en la fachada", nivel: 3, porque: "Tocar la fachada y su estructura necesita proyecto técnico y licencia, además del acuerdo de la comunidad.", confirmada: false, comunidad: true },
+  { id: "unir", pregunta: "¿Unes dos pisos o divides uno en dos?", icono: "🔀", texto: "Uno dos pisos o divido uno en dos", nivel: 3, porque: "Cambia el número de viviendas del edificio: proyecto técnico, licencia y acuerdo de la comunidad.", confirmada: false, comunidad: true },
+  { id: "uso", pregunta: "¿Pasas un local u oficina a vivienda?", icono: "🏪", texto: "Paso un local a vivienda", nivel: 3, porque: "Un cambio de uso necesita proyecto técnico y licencia, y cumplir las condiciones de vivienda (luz, ventilación, superficie).", confirmada: false, comunidad: true },
+  { id: "via", pregunta: "¿Pondrás contenedor o andamio en la calle?", icono: "🚛", texto: "Pondré contenedor o andamio en la calle", nivel: 0, porque: "No cambia el trámite de la obra, pero necesitas autorización para ocupar la vía pública.", confirmada: false, extra: "Autorización de ocupación de la vía pública (contenedor o andamio)" },
 ];
 
 export type Proteccion = "no" | "si" | "nose";

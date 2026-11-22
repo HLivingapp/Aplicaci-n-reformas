@@ -57,7 +57,7 @@ export default function Comunidad() {
         </div>
         <Link href="/tramites" className="mb-5 flex items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 hover:border-teal-600">
           <span className="text-3xl" aria-hidden>🧭</span>
-          <span className="min-w-0"><span className="block font-semibold text-teal-900">¿Qué trámite necesita tu reforma?</span><span className="text-sm text-teal-800">Toca lo que vas a hacer y te decimos si es declaración responsable, licencia o nada.</span></span>
+          <span className="min-w-0"><span className="block font-semibold text-teal-900">¿Qué trámite necesita tu reforma?</span><span className="text-sm text-teal-800">Responde unas preguntas y te decimos al momento si es declaración responsable, licencia o nada.</span></span>
           <span className="ml-auto text-teal-700" aria-hidden>→</span>
         </Link>
         <VideosNormativa soloLegal={categoria === CATEGORIA_LEGAL} />
