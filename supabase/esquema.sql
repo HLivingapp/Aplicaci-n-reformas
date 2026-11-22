@@ -94,3 +94,28 @@ create table if not exists miembros (
   actualizado timestamptz not null default now()
 );
 alter table miembros enable row level security;
+
+-- Intranet privada de cada obra (contrato firmado en la app entre cliente y reformista).
+-- Cada parte entra con su propio enlace privado (clave de 128 bits, sin contraseña) y siempre
+-- a través del servidor de la app: nadie lee estas tablas directamente desde el navegador.
+create table if not exists obra_intranet (
+  encargo_id text primary key,
+  clave_cliente text not null unique,
+  clave_reformista text not null unique,
+  datos jsonb not null,            -- fases, registro de pagos y actividad
+  creado timestamptz not null default now(),
+  actualizado timestamptz not null default now()
+);
+alter table obra_intranet enable row level security;
+drop policy if exists "equipo ve intranets" on obra_intranet;
+create policy "equipo ve intranets" on obra_intranet for select to authenticated using (es_del_equipo());
+
+-- Fotos, certificados y documentos de las obras: almacén PRIVADO (región UE del proyecto Supabase).
+-- El servidor los sube tras quitar la ubicación GPS de las fotos y entrega enlaces temporales
+-- solo a las dos partes de la obra. Nunca se publican en la galería ni en el escaparate.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('obras', 'obras', false, 15728640, array['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+  on conflict (id) do nothing;
+drop policy if exists "equipo ve archivos de obras" on storage.objects;
+create policy "equipo ve archivos de obras" on storage.objects for select to authenticated
+  using (bucket_id = 'obras' and es_del_equipo());

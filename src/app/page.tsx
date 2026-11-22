@@ -364,6 +364,7 @@ export default function Inicio() {
             <Link href="/p/demo-marta-0000000000000000000003" className="underline">cliente eligiendo acabados</Link>,{" "}
             <Link href="/p/demo-carlos-000000000000000000004/presupuesto/p-demo-detalle" className="underline">presupuesto detallado</Link>,{" "}
             <Link href="/reformista/demo-reformista-0000000000000001" className="underline">reformista con documentos pendientes</Link>,{" "}
+            <Link href="/obra" className="underline">intranet de una obra firmada</Link>,{" "}
             <Link href="/empresa" className="underline">panel de la empresa</Link>.
           </p>
         )}

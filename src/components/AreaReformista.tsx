@@ -9,6 +9,7 @@ import {
 import type { TarifaReformista } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
 import { SeguimientoEncargo } from "./SeguimientoEncargo";
+import { EnlaceIntranet } from "./EnlaceIntranet";
 import { useEncargos } from "./ComparativaRed";
 import { EditorTarifas } from "./TarifasReformista";
 import { ChatEncargo } from "./ChatEncargo";
@@ -107,6 +108,7 @@ function EncargoReformista({ e, reformistaId, bloqueado }: { e: Encargo; reformi
         <PresupuestoFinal e={e} reformistaId={reformistaId} bloqueado={bloqueado} alEnviar={() => setEditando(false)} />
       )}
 
+      {e.final && e.estado !== "descartado" && <div className="mt-3"><EnlaceIntranet e={e} parte="reformista" /></div>}
       {e.estado === "firmado" && <div className="mt-3"><SeguimientoEncargo e={e} parte="reformista" /></div>}
       {e.final && e.estado !== "descartado" && (
         <div className="mt-3">

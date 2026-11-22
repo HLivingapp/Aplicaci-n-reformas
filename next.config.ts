@@ -28,7 +28,7 @@ const nextConfig: NextConfig = exportar
           },
           {
             // Ni los portales de cliente ni la zona de empresa deben aparecer en buscadores
-            source: "/(p|empresa|entrar)/:path*",
+            source: "/(p|obra|empresa|entrar)/:path*",
             headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
           },
         ];
