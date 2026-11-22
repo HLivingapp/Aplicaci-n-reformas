@@ -97,7 +97,7 @@ export const GUIA_ELECCION: PasoGuia[] = [
     titulo: "Mueble de baño y lavabo",
     cuando: "Durante la demolición",
     elige: ["Ancho: los estándar miden 60, 70 u 80 cm (míralo en el plano)", "Tipo: 3 cajones con patas (con o sin zócalo) o 2 cajones suspendido", "Lavabo encastrado o sobre encimera", "Espejo, mejor retroiluminado"],
-    consejos: ["El suspendido es más actual y deja limpiar el suelo.", "Para baños estrechos hay muebles de 35 y hasta 22 cm de fondo."],
+    consejos: ["El suspendido es más actual y deja limpiar el suelo.", "Con zócalo, las patas quedan ocultas y el acabado es más uniforme; sin zócalo, se ven las patas y el mueble parece más ligero.", "Lavabo encastrado → grifo de caño bajo. Lavabo sobre encimera → grifo de caño alto.", "Para baños estrechos hay muebles de 35 y hasta 22 cm de fondo."],
     donde: "Online",
     categoria: "bano",
     estancias: ["bano", "vivienda"],

@@ -79,6 +79,9 @@ const BEST = "https://www.bestile.es/";
 const bestile = (serie: string, nombre: string, detalle: string, foto: string): MaterialMedia =>
   ({ ...marca(`bestile-${serie}`, "azulejos", "Bestile", nombre, detalle, `${BEST}series/${serie}/`, `${BEST}wp-content/uploads/${foto}`), encajar: false });
 
+const salgar = (serie: string, nombre: string, detalle: string): MaterialMedia =>
+  ({ ...marca(`salgar-${serie}-cat`, "bano", "Salgar", nombre, detalle, "https://www.salgar.net/salgar-catalogues-uk", `/materiales/salgar-${serie}.jpg`), credito: "Foto: catálogo de Salgar", encajar: false });
+
 export const CATALOGO_BASICO: MaterialMedia[] = [
   lm("lm-eleki", "cocina", "Leroy Merlin", "Cocina en kit Eleki blanca", "5 módulos altos y 4 bajos, 3 m de largo (sin encimera ni electrodomésticos)", "608,18 € la cocina", "cocina-en-kit-eleki-blanca-5-modulos-altos-4-bajos-l-300-x-h-217-x-p-58-cm-90581351.html", "4051619/media.png"),
   lm("lm-tokyo", "cocina", "Delinia (Leroy Merlin)", "Cocina en kit iD Tokyo", "Blanco mate, 3 m con muebles altos y bajos (sin encimera ni electrodomésticos)", "1.515,27 € la cocina", "cocina-en-kit-delinia-id-tokyo-blanco-mate-300-cm-con-muebles-altos-y-bajos-82466853.html", "2294371/media.png"),
@@ -259,6 +262,13 @@ export const CATALOGO_MEDIO_EXTRA: MaterialMedia[] = [
   bestile("meraki", "Serie Meraki", "Azulejo de aspecto artesanal en colores intensos", "amb-meraki-aguamarina_hq-1024x768.jpg"),
   bestile("pierre", "Serie Pierre", "Baldosa 20 x 20 y 20 x 30 efecto piedra", "amb_pierre_black_01_hq-1024x880.jpg"),
   bestile("musa", "Serie Musa", "Azulejo decorativo en tonos naturales", "amb-musa-oliva_hq-1024x1024.jpg"),
+  // Salgar: más modelos de mueble de baño (fotos del catálogo del fabricante)
+  salgar("silane", "Mueble de baño Silane", "Suspendido de 2 cajones, de 60 a 120 cm. Blanco, gris o verde satinado, roble o nogal"),
+  salgar("vima", "Mueble de baño Vima", "Suspendido de 2 cajones con lavabo sobre encimera, de 60 a 120 cm, en blanco o madera"),
+  salgar("luva", "Mueble de baño Luva", "Suspendido de 2 cajones, de 60 a 120 cm, en blanco, gris, aguamarina o nogal"),
+  salgar("domus", "Mueble de baño Domus", "Encimera volada con cajón para lavabo sobre encimera, de 60 a 120 cm"),
+  salgar("biba", "Mueble de baño Biba", "Suspendido con frente acanalado, de 60 u 80 cm, blanco o nogal"),
+  salgar("inara", "Mueble de baño Inara", "Fondo reducido de 35 cm para baños estrechos, de 50 o 70 cm"),
 ];
 
 /** Medio: la selección de gama media de la app (con sus PVP públicos donde los hay) y lo añadido aquí. */
