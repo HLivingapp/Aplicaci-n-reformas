@@ -56,7 +56,7 @@ export interface Encargo {
   avances?: { fecha: string; texto: string }[];
   /** «app»: el cliente lo encontró en la app (reserva y fee). «invitado»: el cliente lo invitó (sin reserva ni fee, sin seguro gratis). */
   origen?: OrigenEncargo;
-  /** Invitado desde la lista de proveedores sin homologar: sin reserva ni fee en esta primera obra, pero el cliente paga el acceso a la red (150 €) y el proveedor la visita (150 €). */
+  /** Invitado desde la lista de proveedores sin homologar: en esta primera obra nadie paga nada: ni acceso, ni visita, ni reserva ni fee. Después entra en la red con las reglas normales. */
   desdeNoHomologado?: boolean;
   /** Chat antes de la firma (para preparar la primera visita). Los contactos se ocultan automáticamente. */
   chat?: MensajeChat[];
@@ -222,7 +222,7 @@ export function firmarCliente(id: string) {
     ),
   );
   // Si pagó las visitas y al final firma en la app con un proveedor que trae él, se le devuelven los 150 € (simulado)
-  if (e.origen === "invitado" && !e.desdeNoHomologado && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
+  if (e.origen === "invitado" && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
     escribir(CLAVE_DEVOLUCION, { ...leer<Record<string, string>>(CLAVE_DEVOLUCION, {}), [e.proyectoId]: ahora });
   }
 }
@@ -286,7 +286,7 @@ export function aceptarInvitacion(codigo: string, reformista: { id: string; codi
     codigo: reformista.codigo,
     baseInicial: referencia(inv.datos.vivienda, inv.datos.reforma).base,
     creado: new Date().toISOString(),
-    estado: inv.publicoId ? "visita_pedida" : "visita_fijada",
+    estado: "visita_fijada",
     visita: { preferencia: "Te ha invitado el cliente" },
     origen: "invitado",
     ...(inv.publicoId && { desdeNoHomologado: true }),

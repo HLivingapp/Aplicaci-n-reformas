@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { alCambiar, invitarProveedor, leerInvitaciones, pagarVisitasCliente, visitasPagadas, VISITAS, type Invitacion } from "@/lib/encargos";
+import { alCambiar, invitarProveedor, leerInvitaciones, type Invitacion } from "@/lib/encargos";
 import { AVISO_NO_HOMOLOGADO, noHomologadosEn, type ProveedorPublico } from "@/lib/no-homologados";
 
 /**
@@ -32,7 +32,7 @@ export function NoHomologados({ zona, datos }: { zona?: string; datos?: Invitaci
       </p>
       <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ {AVISO_NO_HOMOLOGADO}</p>
       <p className="mt-2 text-xs text-stone-600">
-        Si le invitas y se homologa, en esta primera reforma con él no hay reserva ni fee. Para invitarle pagas el acceso a la red de homologados ({VISITAS.cliente} €, una sola vez por reforma) y él paga {VISITAS.reformista} € al confirmar la visita. Una vez homologado, su contacto deja de salir aquí. Demo: pago simulado.
+        Invitarle es gratis para ti: no pagas nada, ni reserva ni comisión, en esta reforma con él. Él tampoco paga nada en esta primera reforma: ni la homologación, ni la visita, ni comisión. Una vez homologado, su contacto deja de salir aquí y pasa a la red de homologados con las condiciones normales.
       </p>
       <ul className="mt-3 grid gap-3 md:grid-cols-2">
         {lista.map((p) => {
@@ -62,14 +62,8 @@ export function NoHomologados({ zona, datos }: { zona?: string; datos?: Invitaci
                   <Link href={`/reformistas/?invita=${inv.codigo}`} className="text-stone-400 underline">Demo: abrir como el proveedor</Link>
                 </div>
               ) : (
-                <button
-                  onClick={() => {
-                    if (!visitasPagadas(datos.proyectoId)) pagarVisitasCliente(datos.proyectoId);
-                    invitarProveedor(datos, p.nombre, p.id);
-                  }}
-                  className="rounded-lg border border-violet-700 px-3 py-1.5 text-xs font-medium text-violet-800 hover:bg-violet-50"
-                >
-                  {visitasPagadas(datos.proyectoId) ? "Invitarle a homologarse (gratis para él)" : `Pagar ${VISITAS.cliente} € e invitarle a homologarse`}
+                <button onClick={() => invitarProveedor(datos, p.nombre, p.id)} className="rounded-lg border border-violet-700 px-3 py-1.5 text-xs font-medium text-violet-800 hover:bg-violet-50">
+                  Invitarle a homologarse (gratis)
                 </button>
               )}
             </li>
