@@ -234,7 +234,10 @@ export default function Inicio() {
             <p className="mt-3 text-stone-600">
               Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y el asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
             </p>
-            <Link href="/comunidad" className="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en el foro</Link>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link href="/comunidad" className="inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en el foro</Link>
+              <Link href="/tramites" className="inline-block rounded-xl border border-stone-300 bg-white px-5 py-3 font-semibold text-stone-900 hover:border-teal-600">🧭 ¿Qué trámite necesito?</Link>
+            </div>
           </div>
           <ul className="space-y-2 text-sm">
             {[
@@ -344,6 +347,7 @@ export default function Inicio() {
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
           <Link href="/comunidad" className="hover:underline">Foro</Link>
+          <Link href="/tramites" className="hover:underline">Trámites</Link>
           <Link href="/suscripcion" className="hover:underline">Planes</Link>
           <Link href="/reformistas" className="hover:underline">Reformistas</Link>
           <Link href="/arquitectos" className="hover:underline">Arquitectos</Link>
