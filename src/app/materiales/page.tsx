@@ -4,6 +4,8 @@ import Link from "next/link";
 import { GuiaEleccion } from "@/components/GuiaEleccion";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { MaterialesMedia } from "@/components/MaterialesMedia";
+import { VideosNormativa } from "@/components/foro/VideosNormativa";
+import { VIDEOS_DECISIONES } from "@/lib/videos-normativa";
 
 /** Materiales de gama media recomendados, con foto y catálogo. */
 export default function Materiales() {
@@ -16,6 +18,7 @@ export default function Materiales() {
           Materiales recomendados en la gama media, la más elegida. La selección inicial es de Human Living, empresa destacada de la app. Cada ficha enlaza al catálogo del fabricante para que veas colores y modelos. El precio de tu reforma es el de tu presupuesto.
         </p>
         <div className="mt-6">
+          <VideosNormativa videos={VIDEOS_DECISIONES} carpeta="decisiones" titulo="Vídeos: decide tus acabados a tiempo" texto="El orden de la obra y qué elegir en cada momento: grifería, cocina, baño, suelos, puertas y armarios. Contenido orientativo." />
           <MaterialesMedia />
         </div>
         <div className="mt-10"><GuiaEleccion /></div>
