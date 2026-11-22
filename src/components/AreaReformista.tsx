@@ -155,7 +155,7 @@ function PresupuestoFinal({ e, reformistaId, bloqueado, alEnviar }: { e: Encargo
       </div>
       <textarea rows={2} className={inputCls} placeholder="Condiciones particulares acordadas en la visita (opcional)" value={notas} onChange={(x) => setNotas(x.target.value)} />
       {e.origen === "invitado" ? (
-        <p className="text-xs text-violet-900">{e.desdeNoHomologado ? "Te ha invitado este cliente a homologarte: en esta primera obra no hay reserva ni fee (solo la visita que pagaste al confirmarla)." : "Cliente tuyo: te ha invitado él, así que en esta obra no hay reserva ni fee."}</p>
+        <p className="text-xs text-violet-900">{e.desdeNoHomologado ? "Te ha invitado este cliente a homologarte: en esta primera obra no pagas nada, ni visita ni fee. Las siguientes obras de la app van con las condiciones normales." : "Cliente tuyo: te ha invitado él, así que en esta obra no hay reserva ni fee."}</p>
       ) : (
         <p className="text-xs text-stone-600">Reserva del cliente al firmar, que es el fee de la app: <b>{euros(reservaApp(cifra))}</b> ({TEXTO_RESERVA}). Se descuenta de lo que cobras.</p>
       )}
