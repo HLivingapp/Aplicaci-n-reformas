@@ -21,7 +21,7 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
 export const IVA_REFORMA = 10;
 
 import { reservaApp } from "./comercializacion";
-export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo } from "./comercializacion";
+export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA } from "./comercializacion";
 
 export type { TarifaReformista };
 
@@ -45,7 +45,8 @@ export interface Encargo {
   baseInicial: number;
   creado: string;
   estado: EstadoEncargo;
-  visita: { preferencia: string; fecha?: string; nota?: string };
+  /** pagoReformista: fecha en que el reformista pagó la visita (150 €, simulado en la demo) */
+  visita: { preferencia: string; fecha?: string; nota?: string; pagoReformista?: string };
   final?: { importe: number; capitulos: Record<string, number>; plazoSemanas: number; notas: string; fecha: string; lineas: LineaEstimacion[] };
   firmas?: { cliente?: string; reformista?: string };
   /** Estado de cada hito de pago del contrato (mismo orden que HITOS) */
@@ -179,8 +180,17 @@ export function actualizarEncargo(id: string, cambio: (e: Encargo) => Encargo) {
   if (e) guardarEncargo(cambio(e));
 }
 
+/** El reformista confirma la visita y paga los 150 € de la visita (simulado en la demo). */
 export const fijarVisita = (id: string, fecha: string, nota: string) =>
-  actualizarEncargo(id, (e) => ({ ...e, estado: "visita_fijada", visita: { ...e.visita, fecha, nota } }));
+  actualizarEncargo(id, (e) => ({ ...e, estado: "visita_fijada", visita: { ...e.visita, fecha, nota, pagoReformista: e.visita.pagoReformista ?? new Date().toISOString() } }));
+
+const CLAVE_PAGO_VISITAS = "app-reformas:pago-visitas";
+/** Fecha en que el cliente pagó las visitas de este proyecto (150 €, una sola vez), o undefined. */
+export const visitasPagadas = (proyectoId: string) => leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {})[proyectoId];
+/** Pago simulado del cliente antes de pedir las visitas. */
+export function pagarVisitasCliente(proyectoId: string) {
+  escribir(CLAVE_PAGO_VISITAS, { ...leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {}), [proyectoId]: new Date().toISOString() });
+}
 
 export function enviarPresupuestoFinal(id: string, f: { importe: number; capitulos: Record<string, number>; plazoSemanas: number; notas: string }) {
   actualizarEncargo(id, (e) => {

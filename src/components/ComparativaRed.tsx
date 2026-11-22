@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
-import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
+import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, TEXTO_VISITA_CLIENTE, TEXTO_DESCUENTO_VISITA, VISITAS, pagarVisitasCliente, visitasPagadas, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, soloComunidades, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
@@ -63,6 +63,8 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   const [elegidos, setElegidos] = useState<string[]>([]);
   const [preferencia, setPreferencia] = useState("");
   const [abierto, setAbierto] = useState<string | null>(null);
+  const [pagoVisitas, setPagoVisitas] = useState<string | undefined>();
+  useEffect(() => setPagoVisitas(visitasPagadas(proyectoId)), [proyectoId, encargos.length]);
   const suscrito = s ? incluye(s.plan, "basico") : false;
   const ref = useMemo(() => referencia(vivienda, reforma), [vivienda, reforma]);
   const lista = useMemo(() => (fichas ? ofertas(vivienda, reforma, fichas) : []), [fichas, vivienda, reforma]);
@@ -74,6 +76,10 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   const encargoDe = (id: string) => encargos.find((e) => e.reformistaId === id);
   const alternar = (id: string) => setElegidos((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= 3 ? x : [...x, id]));
   const pedir = () => {
+    if (!pagoVisitas) {
+      pagarVisitasCliente(proyectoId);
+      setPagoVisitas(new Date().toISOString());
+    }
     pedirVisitas(lista.filter((o) => elegidos.includes(o.ficha.id)), datos, preferencia);
     setElegidos([]);
   };
@@ -83,7 +89,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
       <div>
         <h2 className="text-lg font-semibold">El presupuesto de cada reformista para tu casa</h2>
         <p className="text-sm text-stone-600">
-          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y te regalamos un seguro de promotor con responsabilidad civil y defensa jurídica.
+          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige hasta 3, queda con ellos para una visita ({TEXTO_VISITA_CLIENTE}) y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y de ella se descuentan los {VISITAS.cliente} € de las visitas. Al pagarla te cotizamos y añadimos gratis un seguro de promotor con responsabilidad civil y defensa jurídica.
         </p>
       </div>
       {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
@@ -113,7 +119,16 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
           <div className="font-semibold">Pedir visita a {elegidos.length} reformista{elegidos.length > 1 ? "s" : ""}</div>
           <p className="text-xs text-stone-500">Vendrán a ver tu casa, medir y ajustar el presupuesto. Tu teléfono solo lo verán ellos.</p>
           <input className={`${inputCls} mt-2`} placeholder="¿Cuándo te viene bien? (p. ej. tardes entre semana)" value={preferencia} onChange={(e) => setPreferencia(e.target.value)} />
-          <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">Pedir visita</button>
+          {pagoVisitas ? (
+            <p className="mt-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">✓ Ya pagaste las visitas de esta reforma: puedes pedir más sin pagar de nuevo.</p>
+          ) : (
+            <div className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">
+              <div className="font-semibold">Pago de visitas: {VISITAS.cliente} €</div>
+              Lo pagas una sola vez y cubre todas las visitas que pidas para esta reforma. Así los reformistas saben que vas en serio y vienen a verte. {TEXTO_DESCUENTO_VISITA}
+              <div className="mt-1 text-amber-800">Demo: el pago es simulado, no se cobra nada.</div>
+            </div>
+          )}
+          <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">{pagoVisitas ? "Pedir visita" : `Pagar ${VISITAS.cliente} € y pedir visita`}</button>
         </div>
       )}
       <InvitaProveedor datos={datos} invitados={encargos.filter(esInvitado)} bloqueado={!!firmado} />

@@ -11,7 +11,7 @@ import { fichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
-import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA } from "@/lib/comercializacion";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
 import { altaVacia, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
@@ -90,7 +90,7 @@ export default function AltaReformista() {
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-3">
         {[
-          ["💶", "Solo pagas si firmas", `Sin cuotas por contacto. Solo pagas cuando el cliente firma en la app: el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}) y se descuenta de lo que cobras.`],
+          ["💶", "Pagas por visita y al firmar", `Sin cuotas por contacto: pagas ${TEXTO_VISITA_REFORMISTA}, solo con clientes que ya te han elegido y han pagado su parte para pedir visitas. Si firma en la app, el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}).`],
           ["📋", "Tus tarifas trabajan por ti", "Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido."],
           ["⭐", "Tu reputación cuenta", "Valoraciones por fase y respuestas en el foro te dan más visibilidad."],
           ...BENEFICIOS_PROFESIONAL.filter((b) => !b.t.startsWith("Clientes que")).map((b) => [b.i, b.t, b.d]),

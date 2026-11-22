@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { APP } from "@/lib/marca";
 import { RESPONSABLE as R } from "@/lib/legal";
-import { COMERCIALIZACION } from "@/lib/comercializacion";
+import { COMERCIALIZACION, TEXTO_DESCUENTO_VISITA, VISITAS } from "@/lib/comercializacion";
 
 export const metadata: Metadata = { title: "Aviso legal" };
 
@@ -25,6 +25,12 @@ export default function AvisoLegal() {
         <h2 className="mb-2 font-semibold">Qué es {APP.nombre}</h2>
         <p>
           {APP.nombre} es una plataforma que pone en contacto a particulares y comunidades de propietarios con reformistas y estudios de arquitectura homologados. Las obras las contrata y ejecuta el profesional que elige el cliente, que es el responsable de ellas; los pagos de la obra van directamente a ese profesional.
+        </p>
+      </section>
+      <section>
+        <h2 className="mb-2 font-semibold">Pago por visitas</h2>
+        <p>
+          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que cubren todas las visitas que pida. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No hay pago de visitas cuando el cliente invita a su propio profesional.
         </p>
       </section>
       <section>

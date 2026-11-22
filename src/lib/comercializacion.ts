@@ -25,3 +25,18 @@ export const TEXTO_RESERVA =
 export const umbralMinimo = (c = COMERCIALIZACION) => (c.minimo * 100) / c.pct;
 /** % que supone la reserva sobre la obra (sin IVA). */
 export const pctReserva = (importeSinIva: number) => (importeSinIva > 0 ? (reservaApp(importeSinIva) / importeSinIva) * 100 : 0);
+
+/**
+ * Pago por visitas (decidido por el titular el 22/11/2026), para que cliente y reformista no se salten la app tras la visita:
+ * - El cliente paga 150 € una sola vez antes de las visitas; cubre todas las visitas que pida para esa reforma.
+ * - Cada reformista paga 150 € por cada visita a la que va (al confirmarla).
+ * - La reserva del 3 % (mín. 1.000 €) al firmar se mantiene.
+ * - Confirmado (22/11/2026): los 150 € del cliente se descuentan de su reserva si firma en la app.
+ * En la demo el pago es simulado. Si el cliente invita a su propio proveedor, no hay pago de visitas.
+ */
+export const VISITAS = { cliente: 150, reformista: 150, descuentaDeReserva: true, descuentoPendiente: false };
+export const TEXTO_VISITA_CLIENTE = `${eur(VISITAS.cliente)} una sola vez, que cubren todas las visitas que pidas para esta reforma`;
+export const TEXTO_DESCUENTO_VISITA = VISITAS.descuentaDeReserva
+  ? `Si firmas en la app, se descuentan de tu reserva${VISITAS.descuentoPendiente ? " (pendiente de confirmar)" : ""}.`
+  : "";
+export const TEXTO_VISITA_REFORMISTA = `${eur(VISITAS.reformista)} por cada visita a la que vas`;
