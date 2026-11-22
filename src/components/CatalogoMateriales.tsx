@@ -8,19 +8,24 @@ import { NIVELES_CATALOGO, catalogoDe, type NivelCatalogo } from "@/lib/catalogo
 /** Zonas de la vivienda y las categorías de material que lleva cada una. */
 export const ZONAS: { id: string; texto: string; icono: string; categorias: CategoriaMedia[] }[] = [
   { id: "todo", texto: "Toda la vivienda", icono: "🏠", categorias: CATEGORIAS_MEDIA.map((c) => c.id) },
-  { id: "cocina", texto: "Cocina", icono: "🍳", categorias: ["cocina", "azulejos", "suelos"] },
-  { id: "bano", texto: "Baño", icono: "🛁", categorias: ["bano", "azulejos", "suelos"] },
+  { id: "cocina", texto: "Cocina", icono: "🍳", categorias: ["cocina", "encimeras", "griferia", "azulejos", "suelos"] },
+  { id: "bano", texto: "Baño", icono: "🛁", categorias: ["bano", "sanitarios", "griferia", "azulejos", "suelos"] },
   { id: "salon", texto: "Salón y dormitorios", icono: "🛋️", categorias: ["suelos", "puertas", "armarios"] },
   { id: "ventanas", texto: "Ventanas", icono: "🪟", categorias: ["ventanas"] },
   { id: "instalaciones", texto: "Electricidad y clima", icono: "⚡", categorias: ["electricidad", "climatizacion"] },
 ];
 
 /** Catálogo de materiales por zona, nivel y categoría, con foto, PVP público, tienda y fecha. */
-export function CatalogoMateriales({ inicial = "medio" }: { inicial?: NivelCatalogo }) {
-  const [nivel, setNivel] = useState<NivelCatalogo>(inicial);
+type NivelFiltro = NivelCatalogo | "todas";
+const OPCIONES: { id: NivelFiltro; texto: string; detalle: string }[] = [{ id: "todas", texto: "Todas", detalle: "Las tres gamas juntas" }, ...NIVELES_CATALOGO];
+const ETIQUETA: Record<NivelCatalogo, string> = { basico: "Básico", medio: "Medio", premium: "Premium" };
+
+export function CatalogoMateriales({ inicial = "todas" }: { inicial?: NivelFiltro }) {
+  const [nivel, setNivel] = useState<NivelFiltro>(inicial);
   const [zona, setZona] = useState("todo");
   const cats = ZONAS.find((z) => z.id === zona)!.categorias;
-  const lista = catalogoDe(nivel).filter((x) => cats.includes(x.categoria));
+  const niveles: NivelCatalogo[] = nivel === "todas" ? ["basico", "medio", "premium"] : [nivel];
+  const lista = niveles.flatMap((n) => catalogoDe(n).filter((x) => cats.includes(x.categoria)).map((x) => ({ x, n })));
   return (
     <section id="catalogo" className="rounded-2xl border border-stone-200 bg-white p-4">
       <h2 className="text-xl font-semibold">Catálogo con fotos y precios</h2>
@@ -32,8 +37,8 @@ export function CatalogoMateriales({ inicial = "medio" }: { inicial?: NivelCatal
           </button>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-2" role="tablist">
-        {NIVELES_CATALOGO.map((n) => (
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4" role="tablist">
+        {OPCIONES.map((n) => (
           <button key={n.id} role="tab" aria-selected={nivel === n.id} onClick={() => setNivel(n.id)} className={`rounded-xl border p-2 text-left ${nivel === n.id ? "border-teal-600 bg-teal-50 ring-2 ring-teal-100" : "border-stone-200"}`}>
             <div className="font-semibold">{n.texto}</div>
             <div className="text-xs text-stone-500">{n.detalle}</div>
@@ -42,13 +47,13 @@ export function CatalogoMateriales({ inicial = "medio" }: { inicial?: NivelCatal
       </div>
       {lista.length === 0 && <p className="mt-6 text-center text-sm text-stone-500">Todavía no hay productos de este nivel en esta zona.</p>}
       {CATEGORIAS_MEDIA.filter((c) => cats.includes(c.id)).map((c) => {
-        const items = lista.filter((x) => x.categoria === c.id);
+        const items = lista.filter(({ x }) => x.categoria === c.id);
         if (!items.length) return null;
         return (
           <div key={c.id} className="mt-5">
             <h3 className="font-semibold">{c.icono} {c.texto}</h3>
             <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {items.map((x) => <FichaMaterial key={x.id} x={x} />)}
+              {items.map(({ x, n }) => <FichaMaterial key={n + x.id} x={x} etiqueta={nivel === "todas" ? ETIQUETA[n] : undefined} />)}
             </div>
           </div>
         );
