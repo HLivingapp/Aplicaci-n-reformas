@@ -18,6 +18,8 @@ import { intentosReformista } from "@/lib/encargos";
 import { Boton, inputCls, Tarjeta } from "./ui";
 import type { FichaRed } from "@/lib/red";
 import { PUNTOS, puntosVisibilidad, TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
+import { conNube } from "@/lib/modo";
+import { leerPresupuestoParaTarifa } from "@/lib/ia-nube";
 
 /** Tarifas del reformista: con ellas la app calcula su presupuesto a cada cliente de su zona. */
 export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: string; tarifaGuardada?: TarifaReformista }) {
@@ -34,12 +36,53 @@ export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: str
         </p>
         <p className="mt-2 rounded-lg bg-amber-100 p-2 text-sm font-semibold text-amber-950">💡 {AVISO_TARIFAS}.<span className="mt-0.5 block text-xs font-normal">{LETRA_PEQUENA_TARIFAS}</span></p>
       </div>
+      {conNube && <LeerPresupuestoIA alLeer={(n) => { setT({ ...t, ...n }); setGuardado(false); }} />}
       <EditorTarifas valor={t} onChange={(n) => { setT({ ...t, ...n }); setGuardado(false); }} />
       <div className="flex items-center gap-3">
         <Boton onClick={() => { guardarTarifa(reformistaId, t); setGuardado(true); }}>Guardar mis tarifas</Boton>
         {guardado && <span className="text-sm text-emerald-700">✓ Guardadas. Los clientes ya ven tus precios.</span>}
       </div>
     </Tarjeta>
+  );
+}
+
+/** Sube un presupuesto tuyo en PDF y la IA propone tus tarifas por capítulo (luego las revisas y guardas). */
+function LeerPresupuestoIA({ alLeer }: { alLeer: (t: Pick<TarifaReformista, "general" | "capitulos">) => void }) {
+  const [estado, setEstado] = useState<"inicio" | "leyendo" | "hecho">("inicio");
+  const [notas, setNotas] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-sm">
+      <p className="font-medium text-indigo-950">🤖 ¿Prefieres no rellenarlo a mano?</p>
+      <p className="mt-0.5 text-indigo-900">Sube un presupuesto tuyo reciente en PDF y la IA calcula tus tarifas por capítulo comparándolas con la referencia. Después las revisas antes de guardar. Tapa antes los datos de tu cliente: el PDF no se guarda.</p>
+      <label className="mt-2 inline-flex cursor-pointer items-center rounded-lg bg-indigo-700 px-3 py-1.5 font-medium text-white hover:bg-indigo-800">
+        {estado === "leyendo" ? "Leyendo el presupuesto…" : "Subir presupuesto (PDF)"}
+        <input
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          disabled={estado === "leyendo"}
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            e.target.value = "";
+            if (!f) return;
+            setEstado("leyendo");
+            setError(null);
+            try {
+              const r = await leerPresupuestoParaTarifa(f);
+              alLeer(r.tarifa);
+              setNotas(r.notas);
+              setEstado("hecho");
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "No se ha podido leer el presupuesto.");
+              setEstado("inicio");
+            }
+          }}
+        />
+      </label>
+      {estado === "hecho" && <p className="mt-2 text-indigo-950">✓ Tarifas propuestas abajo. {notas}</p>}
+      {error && <p className="mt-2 text-red-700">{error}</p>}
+    </div>
   );
 }
 

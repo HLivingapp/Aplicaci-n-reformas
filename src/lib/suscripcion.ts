@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { avisarCambio, registrarPago } from "./nube";
+import { guardarPlanNube } from "./ia-nube";
+import { conNube } from "./modo";
 
 /**
  * Planes para clientes. El presupuesto orientativo y la comunidad son gratis; la red de profesionales
@@ -81,6 +83,7 @@ export function guardarSuscripcion(plan: Plan) {
     avisarCambio(CLAVE);
     const info = PLANES.find((p) => p.id === plan);
     if (info?.precio) registrarPago("suscripcion", info.precio, plan);
+    if (conNube) void guardarPlanNube(plan).catch(() => undefined);
   } catch {
     /* sin almacenamiento */
   }
