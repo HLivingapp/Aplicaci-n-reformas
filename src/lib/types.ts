@@ -429,6 +429,10 @@ export interface PerfilProfesional {
 export interface TarifaReformista {
   general: number;
   capitulos: Record<string, number>;
+  /** Precio propio por partida (sin IVA, por unidad), deducido de sus presupuestos reales */
+  partidas?: Record<string, number>;
+  /** De cuántos presupuestos y partidas sale el tarifario */
+  origen?: { presupuestos: number; partidas: number };
   actualizado: string;
 }
 
