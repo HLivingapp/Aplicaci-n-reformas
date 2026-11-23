@@ -11,6 +11,7 @@ import { recordarProfesional } from "@/lib/foro-cliente";
 import Link from "next/link";
 import { MisEncargos, MisFotosTrabajos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
 import { TarifarioPresupuestos } from "@/components/TarifarioPresupuestos";
+import { PanelReformista } from "@/components/PanelReformista";
 import { useEncargos } from "@/components/ComparativaRed";
 import { InvitaClientes } from "@/components/InvitaClientes";
 import { codigo as codigoRed } from "@/lib/red";
@@ -99,23 +100,10 @@ export default function PortalReformista() {
   const pendientes = reqs.filter((r) => !r.ok).length;
   // Los reformistas invitados por su cliente ven esa obra aunque aún no estén homologados
   const tieneInvitados = encargos.some((e) => e.reformistaId === p.id && e.origen === "invitado");
-  return (
-    <main className="mx-auto max-w-2xl space-y-4 px-4 pb-16 pt-6">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <div className="text-xs text-stone-500">Homologación de reformistas</div>
-          <h1 className="text-xl font-semibold">{p.razonSocial}</h1>
-        </div>
-        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADOS[p.estado].cls}`}>{ESTADOS[p.estado].texto}</span>
-      </div>
-
-      {nuevo && (
-        <div className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
-          <div className="font-semibold">Cuestionario recibido.</div>
-          Guarda este enlace: es privado y te sirve para subir tus documentos y ver cómo va la revisión. Puedes volver cuando quieras.
-        </div>
-      )}
-
+  const docsTab = {
+    id: "documentos", icono: "📄", texto: "Documentos", aviso: pendientes,
+    contenido: (
+      <>
       <Tarjeta>
         <h2 className="mb-2 font-semibold">{pendientes ? `Te faltan ${pendientes} requisitos` : p.estado === "aprobado" ? "Homologado: todo en regla" : "Todo enviado"}</h2>
         <ul className="space-y-1 text-sm">
@@ -128,21 +116,6 @@ export default function PortalReformista() {
         </ul>
         <p className="mt-2 text-xs text-stone-500">En cuanto completes todo quedas homologado automáticamente, bajo tu declaración responsable. Hacemos comprobaciones aleatorias y te avisaremos antes de que caduque algún documento.</p>
       </Tarjeta>
-
-      <MisPuntos reformistaId={p.id} />
-      <InvitaClientes tipo="reformista" id={p.id} codigo={codigoRed(p.id)} />
-      {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} faltanDocs={reqs.filter((r) => (r.clave === "rc" || r.clave === "corriente") && !r.ok).map((r) => r.texto)} />}
-      <MisFotosTrabajos reformistaId={p.id} />
-      <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />
-      <TarifarioPresupuestos reformistaId={p.id} token={token} />
-
-      {p.estado === "aprobado" && !pendientes && (
-        <Tarjeta>
-          <h2 className="font-semibold">Foro de reformas</h2>
-          <p className="mt-1 text-sm text-stone-600">Responde dudas de gente que está reformando su casa. Tus respuestas llevan el sello de profesional homologado y tu empresa sigue siendo anónima. Es la mejor forma de que te conozcan antes de pedir presupuesto.</p>
-          <Link href="/comunidad" onClick={() => recordarProfesional(token)} className="mt-3 inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">Responder en el foro</Link>
-        </Tarjeta>
-      )}
 
       <Tarjeta className="space-y-4">
         <h2 className="font-semibold">Documentos</h2>
@@ -176,6 +149,48 @@ export default function PortalReformista() {
         })}
         <p className="text-xs text-stone-500">PDF, JPG o PNG de hasta 10 MB. Se guardan en servidores de la UE y solo los ve nuestro equipo.</p>
       </Tarjeta>
+      </>
+    ),
+  };
+  const foroTab = (
+    <>
+      {p.estado === "aprobado" && !pendientes && (
+        <Tarjeta>
+          <h2 className="font-semibold">Foro de reformas</h2>
+          <p className="mt-1 text-sm text-stone-600">Responde dudas de gente que está reformando su casa. Tus respuestas llevan el sello de profesional homologado y tu empresa sigue siendo anónima. Es la mejor forma de que te conozcan antes de pedir presupuesto.</p>
+          <Link href="/comunidad" onClick={() => recordarProfesional(token)} className="mt-3 inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">Responder en el foro</Link>
+        </Tarjeta>
+      )}
+
+    </>
+  );
+  return (
+    <main className="mx-auto max-w-2xl space-y-4 px-4 pb-16 pt-2">
+            {nuevo && (
+        <div className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
+          <div className="font-semibold">Cuestionario recibido.</div>
+          Guarda este enlace: es privado y te sirve para subir tus documentos y ver cómo va la revisión. Puedes volver cuando quieras.
+        </div>
+      )}
+      <PanelReformista
+        reformistaId={p.id}
+        titulo={p.razonSocial}
+        estado={<span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADOS[p.estado].cls}`}>{ESTADOS[p.estado].texto}</span>}
+        cabecera={pendientes > 0 ? <a href="#documentos" className="mt-3 block rounded-xl bg-amber-400/90 p-2 text-sm font-semibold text-stone-900">⚠️ Te faltan {pendientes} requisitos para homologarte → Documentos</a> : undefined}
+        pestanas={[
+          ...(pendientes ? [docsTab] : []),
+          {
+            id: "clientes", icono: "🤝", texto: "Clientes",
+            contenido: (p.estado === "aprobado" && !pendientes) || tieneInvitados
+              ? <MisEncargos reformistaId={p.id} faltanDocs={reqs.filter((r) => (r.clave === "rc" || r.clave === "corriente") && !r.ok).map((r) => r.texto)} />
+              : <Tarjeta><p className="text-sm text-stone-600">Cuando estés homologado, aquí verás los clientes que te eligen, tus visitas y tus obras.</p></Tarjeta>,
+          },
+          { id: "tarifas", icono: "📑", texto: "Tarifas", contenido: <><MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} /><TarifarioPresupuestos reformistaId={p.id} token={token} /></> },
+          { id: "ficha", icono: "📸", texto: "Mi ficha", contenido: <><MisPuntos reformistaId={p.id} /><MisFotosTrabajos reformistaId={p.id} />{foroTab}</> },
+          { id: "invitar", icono: "💌", texto: "Invitar", contenido: <InvitaClientes tipo="reformista" id={p.id} codigo={codigoRed(p.id)} /> },
+          ...(pendientes ? [] : [docsTab]),
+        ]}
+      />
     </main>
   );
 }
