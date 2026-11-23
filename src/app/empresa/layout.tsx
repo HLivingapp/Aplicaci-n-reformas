@@ -16,6 +16,7 @@ const NAV = [
   { href: "/empresa/galeria", texto: "Fotos", icono: "🖼️" },
   { href: "/empresa/materiales", texto: "Materiales", icono: "🧱" },
   { href: "/empresa/proveedores", texto: "Proveedores", icono: "🤝" },
+  { href: "/empresa/conocimiento", texto: "IA: saber", icono: "📚" },
   { href: "/empresa/ajustes", texto: "Ajustes", icono: "⚙️" },
 ];
 
