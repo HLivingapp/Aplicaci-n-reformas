@@ -37,6 +37,7 @@ export function MisTarifas({ reformistaId, tarifaGuardada }: { reformistaId: str
         <p className="mt-2 rounded-lg bg-amber-100 p-2 text-sm font-semibold text-amber-950">💡 {AVISO_TARIFAS}.<span className="mt-0.5 block text-xs font-normal">{LETRA_PEQUENA_TARIFAS}</span></p>
       </div>
       {conNube && <LeerPresupuestoIA alLeer={(n) => { setT({ ...t, ...n }); setGuardado(false); }} />}
+      {t.origen && <p className="rounded-lg bg-teal-50 p-2 text-xs text-teal-900">📑 Tienes precio propio en {t.origen.partidas} partidas, sacado de {t.origen.presupuestos} presupuestos tuyos. Los % de abajo se aplican al resto.</p>}
       <EditorTarifas valor={t} onChange={(n) => { setT({ ...t, ...n }); setGuardado(false); }} />
       <div className="flex items-center gap-3">
         <Boton onClick={() => { guardarTarifa(reformistaId, t); setGuardado(true); }}>Guardar mis tarifas</Boton>

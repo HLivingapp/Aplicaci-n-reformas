@@ -88,3 +88,35 @@ export async function asistenteObra(historial: TurnoChat[]): Promise<RespuestaIA
   }
   return { texto: texto.trim(), fuentes: [...fuentes].slice(0, 6).map(([url, titulo]) => ({ url, titulo })), creado: new Date().toISOString() };
 }
+
+const SISTEMA_PRESUPUESTO = `Extraes las líneas de obra de un presupuesto de reforma español para crear el tarifario del reformista.
+Devuelve SOLO líneas de texto separadas por tabuladores, una por partida, con este formato exacto:
+descripción<TAB>unidad<TAB>cantidad<TAB>precio unitario sin IVA<TAB>importe
+- Unidades: m2, ml, ud, pa, kg, h o m3. Números con coma decimal y sin separador de miles ni símbolo €.
+- Incluye solo partidas de obra con unidad, cantidad y precio. Omite cabeceras, totales, IVA, condiciones y formas de pago.
+- RGPD: nunca copies nombres de personas, direcciones, códigos postales, teléfonos, emails, NIF/DNI ni referencias catastrales. Si una descripción los menciona, quítalos.
+- Si no hay partidas legibles, no devuelvas nada.`;
+
+export type DocumentoPresupuesto = { mediaType: "application/pdf" | "image/jpeg" | "image/png"; base64: string } | { texto: string };
+
+/** Lee un presupuesto (PDF, foto o texto) y devuelve sus líneas en texto tabulado, sin datos del cliente. */
+export async function extraerLineasPresupuesto(doc: DocumentoPresupuesto): Promise<string> {
+  const client = new Anthropic();
+  const contenido =
+    "texto" in doc
+      ? [{ type: "text" as const, text: doc.texto.slice(0, 60000) }]
+      : doc.mediaType === "application/pdf"
+        ? [{ type: "document" as const, source: { type: "base64" as const, media_type: doc.mediaType, data: doc.base64 } }]
+        : [{ type: "image" as const, source: { type: "base64" as const, media_type: doc.mediaType, data: doc.base64 } }];
+  const r = await client.beta.messages.create({
+    model: "claude-opus-5-5",
+    max_tokens: 8000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "low" },
+    system: SISTEMA_PRESUPUESTO,
+    messages: [{ role: "user", content: [...contenido, { type: "text" as const, text: "Extrae las partidas de este presupuesto." }] }],
+  });
+  if (r.stop_reason === "refusal") throw new Error("No se ha podido leer este presupuesto.");
+  return r.content.map((b) => (b.type === "text" ? b.text : "")).join("").trim();
+}
