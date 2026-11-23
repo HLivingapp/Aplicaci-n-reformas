@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ESTADO_PROVEEDOR } from "@/components/Proveedor";
+import { EntrevistaProveedor } from "@/components/EntrevistaProveedor";
 import { Boton, Campo, inputCls, Tarjeta, Titulo, Vacio } from "@/components/ui";
 import { hoy, euros } from "@/lib/calc";
 import { conBaseDeDatos } from "@/lib/modo";
-import { aplicarREA, avisos, cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc } from "@/lib/proveedores";
+import { aplicarREA, avisos, HABILITACIONES, OPCIONES_HABILITACION, TRAMOS_FACTURACION, cumpleRequisitos, DOCUMENTOS, documentosExigidos, ESPECIALIDADES, requisitos, situacionDoc } from "@/lib/proveedores";
 import { useDatos } from "@/lib/store";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import type { DocumentoProveedor, Proveedor } from "@/lib/types";
@@ -168,6 +169,22 @@ export default function FichaProveedor() {
             <p className="text-sm"><span className="text-stone-500">Zonas:</span> {p.zonas.join(", ") || "—"}</p>
             <p className="mt-1 text-sm"><span className="text-stone-500">Especialidades:</span> {p.especialidades.map(especialidad).join(", ") || "—"}</p>
             {p.presentacion && <p className="mt-2 whitespace-pre-line text-sm text-stone-600">{p.presentacion}</p>}
+          </Tarjeta>
+
+          <Tarjeta>
+            <h2 className="mb-2 font-semibold">Lo que importa para contratar</h2>
+            <ul className="space-y-1 text-sm">
+              <li><span className="text-stone-500">REA:</span> {p.rea.inscrito ? `inscrito (${p.rea.numero || "sin número"})` : "no inscrito"}</li>
+              {HABILITACIONES.map((h) => (
+                <li key={h.clave}><span className="text-stone-500">{h.corto}:</span> {OPCIONES_HABILITACION.find((o) => o.valor === p.perfil?.habilitaciones?.[h.clave])?.texto ?? "sin dato"}</li>
+              ))}
+              <li><span className="text-stone-500">Facturación {p.perfil?.facturacion?.ejercicio ?? ""}:</span> {TRAMOS_FACTURACION.find((t) => t.valor === p.perfil?.facturacion?.tramo)?.texto ?? "sin dato"} <span className="text-xs text-stone-400">(compruébalo con sus cuentas)</span></li>
+            </ul>
+          </Tarjeta>
+
+          <Tarjeta>
+            <h2 className="mb-2 font-semibold">Entrevistas a sus clientes</h2>
+            <EntrevistaProveedor entrevistas={p.entrevistas ?? []} guardar={(lista) => cambiar((x) => void (x.entrevistas = lista))} />
           </Tarjeta>
         </div>
 

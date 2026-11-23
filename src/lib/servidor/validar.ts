@@ -2,7 +2,7 @@ import { limpiarMateriales } from "../materiales";
 import { limpiarDetalle } from "../detalle-reforma";
 import { reformaVacia, viviendaVacia } from "../proyecto";
 import type { ContactoCliente } from "../publico";
-import { CERTIFICACIONES, CURSOS_PREVENCION, ESPECIALIDADES, INICIOS, nifValido, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ZONAS, type AltaProveedor } from "../proveedores";
+import { CERTIFICACIONES, CURSOS_PREVENCION, ESPECIALIDADES, HABILITACIONES, INICIOS, OPCIONES_HABILITACION, TRAMOS_FACTURACION, nifValido, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ZONAS, type AltaProveedor } from "../proveedores";
 import type { DatosReforma, GrupoMaterial, Vivienda } from "../types";
 
 const texto = (x: unknown, max: number) => (typeof x === "string" ? x.slice(0, max) : "");
@@ -83,5 +83,12 @@ function validarPerfil(x: unknown): AltaProveedor["perfil"] {
     certificaciones: lista(p.certificaciones, 20, valores(CERTIFICACIONES)),
     otrasCertificaciones: texto(p.otrasCertificaciones, 500).trim(),
     disponibilidad: { inicio, obrasSimultaneas: Math.round(numero(p.disponibilidad?.obrasSimultaneas, 1, 100)), visitas: texto(p.disponibilidad?.visitas, 200).trim() },
+    habilitaciones: Object.fromEntries(
+      HABILITACIONES.map((h) => [h.clave, OPCIONES_HABILITACION.find((o) => o.valor === (p.habilitaciones as Record<string, unknown> | undefined)?.[h.clave])?.valor ?? ""]),
+    ) as NonNullable<AltaProveedor["perfil"]["habilitaciones"]>,
+    facturacion: {
+      ejercicio: Math.round(numero(p.facturacion?.ejercicio, 2000, 2100)),
+      tramo: TRAMOS_FACTURACION.find((t) => t.valor === p.facturacion?.tramo)?.valor ?? "",
+    },
   };
 }

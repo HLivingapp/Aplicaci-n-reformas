@@ -7,7 +7,7 @@ import { RESPONSABLE, TEXTO_DATOS_PROFESIONAL, TITULAR } from "./legal";
 import { hoy } from "./calc";
 import { nuevoId, nuevoToken } from "./id";
 import { mismoNombre, type ResultadoREA } from "./rea";
-import type { Datos, DocumentoProveedor, ObraReferencia, PerfilProfesional, Proveedor, TipoDocProveedor } from "./types";
+import type { Datos, DocumentoProveedor, Habilitacion, ObraReferencia, PerfilProfesional, Proveedor, TipoDocProveedor } from "./types";
 
 export const TEXTO_CONSENTIMIENTO_PROVEEDOR =
   `Acepto que ${RESPONSABLE.razonSocial}, titular de la app, trate los datos y documentos que aporto para homologarme como proveedor, comprobar su validez y ponerme en contacto con clientes, según la política de privacidad. Declaro que la información es veraz.`;
@@ -279,6 +279,27 @@ export const CURSOS_PREVENCION = [
 export const CERTIFICACIONES = [
   "Instalador eléctrico habilitado (REBT)", "Instalador de gas", "Instalador térmico (RITE)", "Gases fluorados", "Fontanería (instalador autorizado)", "ISO 9001", "ISO 14001", "ISO 45001", "Passivhaus",
 ].map((t) => ({ valor: t, texto: t }));
+/** Boletines y legalizaciones que importan para contratar */
+export const HABILITACIONES = [
+  { clave: "electrico", texto: "Boletín eléctrico (CIE)", corto: "Boletín eléctrico" },
+  { clave: "agua", texto: "Boletín de agua (fontanería)", corto: "Boletín de agua" },
+  { clave: "gas", texto: "Boletín de gas", corto: "Boletín de gas" },
+  { clave: "aerotermia", texto: "Legalización de aerotermia (RITE)", corto: "Legalizar aerotermia" },
+] as const;
+export const OPCIONES_HABILITACION: { valor: Exclude<Habilitacion, "">; texto: string; cliente: string }[] = [
+  { valor: "propia", texto: "Sí, con habilitación propia", cliente: "Sí, lo emite él" },
+  { valor: "colaborador", texto: "Sí, con un instalador colaborador", cliente: "Sí, con instalador colaborador" },
+  { valor: "no", texto: "No", cliente: "No" },
+];
+export const TRAMOS_FACTURACION = [
+  { valor: "<150k", texto: "Menos de 150.000 €" },
+  { valor: "150-500k", texto: "150.000 – 500.000 €" },
+  { valor: "500k-1M", texto: "500.000 – 1 millón €" },
+  { valor: "1-3M", texto: "1 – 3 millones €" },
+  { valor: ">3M", texto: "Más de 3 millones €" },
+];
+export const habilitacionesVacias = (): NonNullable<PerfilProfesional["habilitaciones"]> => ({ electrico: "", agua: "", gas: "", aerotermia: "" });
+
 export const INICIOS: { valor: PerfilProfesional["disponibilidad"]["inicio"]; texto: string }[] = [
   { valor: "inmediata", texto: "Inmediata" },
   { valor: "2-4 semanas", texto: "En 2-4 semanas" },
@@ -296,6 +317,8 @@ export const perfilVacio = (): PerfilProfesional => ({
   certificaciones: [],
   otrasCertificaciones: "",
   disponibilidad: { inicio: "", obrasSimultaneas: 1, visitas: "" },
+  habilitaciones: habilitacionesVacias(),
+  facturacion: { ejercicio: new Date().getFullYear() - 1, tramo: "" },
 });
 
 export const altaVacia = (): AltaProveedor => ({

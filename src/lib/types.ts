@@ -381,6 +381,24 @@ export interface Proveedor {
   tarifa?: TarifaReformista;
   /** Datos del formulario de alta: experiencia, cuentas, prevención, formación, certificaciones y disponibilidad */
   perfil?: PerfilProfesional;
+  /** Entrevistas a sus clientes al terminar la obra (las hace el equipo; se publican sin datos del cliente) */
+  entrevistas?: EntrevistaCliente[];
+}
+
+/** Quién emite el boletín o hace la legalización: el propio reformista, un instalador colaborador o nadie. */
+export type Habilitacion = "propia" | "colaborador" | "no" | "";
+
+/** Opinión documentada: entrevista al cliente al terminar la obra, en lugar de reseñas con estrellas. */
+export interface EntrevistaCliente {
+  id: string;
+  fecha: string;
+  /** Qué obra fue, sin dirección ni nombre (p. ej. «Reforma integral de 90 m² en Chamberí») */
+  obra: string;
+  loMejor: string;
+  enQueFalla: string;
+  cumplioPlazo: boolean | null;
+  cumplioPresupuesto: boolean | null;
+  recomendaria: "si" | "con_reservas" | "no";
 }
 
 /** Lo que declara el reformista en el alta (22/11/2026). Parte se enseña al cliente en su ficha. */
@@ -401,6 +419,10 @@ export interface PerfilProfesional {
   otrasCertificaciones: string;
   /** Disponibilidad habitual para empezar obra y para visitas */
   disponibilidad: { inicio: "inmediata" | "2-4 semanas" | "1-2 meses" | "mas de 2 meses" | ""; obrasSimultaneas: number; visitas: string };
+  /** Boletines y legalizaciones que puede emitir (23/11/2026) */
+  habilitaciones?: { electrico: Habilitacion; agua: Habilitacion; gas: Habilitacion; aerotermia: Habilitacion };
+  /** Facturación anual del último ejercicio, por tramos, para ver su volumen real */
+  facturacion?: { ejercicio: number; tramo: string };
 }
 
 /** Tarifas del reformista: % sobre el precio de referencia, general y por capítulo. */
