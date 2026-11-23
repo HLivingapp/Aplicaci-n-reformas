@@ -1,6 +1,7 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { esLegal, ocultarContacto, type RespuestaIA, type Tema } from "../foro";
+import { bloquesConocimiento, buscarConocimiento, INSTRUCCIONES_CONOCIMIENTO } from "./conocimiento";
 
 /**
  * Asistente IA de la comunidad: opina en temas técnicos y de legalizaciones urbanísticas en Madrid,
@@ -13,12 +14,15 @@ Respondes en español, en un tono cercano y claro para particulares, en 120-250 
 - Temas de legalización urbanística en el municipio de Madrid (licencias, declaraciones responsables, ICIO y tasas, cambios de uso, cerramientos de terraza, comunidad de propietarios, edificios protegidos): básate solo en lo que encuentres en las fuentes oficiales con la búsqueda web, y cita la norma por su nombre. Si no lo encuentras o depende del caso, dilo.
 - Temas técnicos de obra (humedades, materiales, instalaciones, aerotermia, plazos): explica causas probables y qué comprobar, y cita el Código Técnico de la Edificación o el reglamento que aplique cuando sea relevante.
 - Termina siempre recordando que es una orientación y que un profesional homologado o el Ayuntamiento deben confirmarlo en su caso.
-- No pidas ni repitas datos personales, direcciones ni contactos. No recomiendes empresas concretas.`;
+- No pidas ni repitas datos personales, direcciones ni contactos. No recomiendes empresas concretas.${INSTRUCCIONES_CONOCIMIENTO}`;
 
 export const iaConfigurada = () => Boolean(process.env.ANTHROPIC_API_KEY);
 
 export async function preguntarIA(t: Tema): Promise<RespuestaIA> {
   const client = new Anthropic();
+  const pregunta = `Tema del foro (${t.categoria}): ${ocultarContacto(t.titulo)}\n\n${ocultarContacto(t.texto)}`;
+  // Foro público: solo documentos públicos (CTE, normativa), nunca precios ni procesos internos
+  const contexto = bloquesConocimiento(await buscarConocimiento(`${t.titulo} ${t.texto}`, { soloPublicos: true }));
   const r = await client.beta.messages.create({
     model: "claude-opus-5-5",
     max_tokens: 4000,
@@ -35,7 +39,7 @@ export async function preguntarIA(t: Tema): Promise<RespuestaIA> {
         user_location: { type: "approximate", city: "Madrid", region: "Madrid", country: "ES", timezone: "Europe/Madrid" },
       },
     ],
-    messages: [{ role: "user", content: `Tema del foro (${t.categoria}): ${ocultarContacto(t.titulo)}\n\n${ocultarContacto(t.texto)}` }],
+    messages: [{ role: "user", content: [...contexto, { type: "text", text: pregunta }] }],
   });
   if (r.stop_reason === "refusal") throw new Error("El asistente no puede responder a esta pregunta.");
   let texto = "";
@@ -43,7 +47,10 @@ export async function preguntarIA(t: Tema): Promise<RespuestaIA> {
   for (const b of r.content) {
     if (b.type !== "text") continue;
     texto += b.text;
-    for (const c of b.citations ?? []) if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+    for (const c of b.citations ?? []) {
+      if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+      else if (c.type === "search_result_location" && c.source.startsWith("https://")) fuentes.set(c.source, c.title ?? c.source);
+    }
   }
   return { texto: texto.trim(), fuentes: [...fuentes].slice(0, 6).map(([url, titulo]) => ({ url, titulo })), creado: new Date().toISOString() };
 }
@@ -54,13 +61,16 @@ Ayudas con: revisar presupuestos de reforma (qué partidas faltan, qué conviene
 - En temas legales, básate en fuentes oficiales encontradas con la búsqueda web y cita la norma por su nombre. Si depende del caso, dilo.
 - En temas técnicos, cita el Código Técnico de la Edificación o el reglamento aplicable cuando sea relevante.
 - Cierra recordando, en una línea, que es una orientación y que un profesional homologado o el Ayuntamiento deben confirmarlo.
-- No pidas datos personales ni direcciones exactas. No recomiendes empresas concretas.`;
+- No pidas datos personales ni direcciones exactas. No recomiendes empresas concretas.${INSTRUCCIONES_CONOCIMIENTO}`;
 
 export type TurnoChat = { rol: "usuario" | "asistente"; texto: string };
 
 /** Asistente privado del plan Pro: conversación con búsqueda en fuentes oficiales. */
 export async function asistenteObra(historial: TurnoChat[]): Promise<RespuestaIA> {
   const client = new Anthropic();
+  const ultima = historial[historial.length - 1]?.texto ?? "";
+  // El asistente lo usan clientes: solo documentos públicos
+  const contexto = bloquesConocimiento(await buscarConocimiento(ultima, { soloPublicos: true }));
   const r = await client.beta.messages.create({
     model: "claude-opus-5-5",
     max_tokens: 6000,
@@ -76,7 +86,10 @@ export async function asistenteObra(historial: TurnoChat[]): Promise<RespuestaIA
         user_location: { type: "approximate", city: "Madrid", region: "Madrid", country: "ES", timezone: "Europe/Madrid" },
       },
     ],
-    messages: historial.map((t) => ({ role: t.rol === "usuario" ? ("user" as const) : ("assistant" as const), content: ocultarContacto(t.texto) })),
+    messages: historial.map((t, i) => ({
+      role: t.rol === "usuario" ? ("user" as const) : ("assistant" as const),
+      content: i === historial.length - 1 && contexto.length ? [...contexto, { type: "text" as const, text: ocultarContacto(t.texto) }] : ocultarContacto(t.texto),
+    })),
   });
   if (r.stop_reason === "refusal") throw new Error("El asistente no puede responder a esta pregunta.");
   let texto = "";
@@ -84,7 +97,10 @@ export async function asistenteObra(historial: TurnoChat[]): Promise<RespuestaIA
   for (const b of r.content) {
     if (b.type !== "text") continue;
     texto += b.text;
-    for (const c of b.citations ?? []) if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+    for (const c of b.citations ?? []) {
+      if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+      else if (c.type === "search_result_location" && c.source.startsWith("https://")) fuentes.set(c.source, c.title ?? c.source);
+    }
   }
   return { texto: texto.trim(), fuentes: [...fuentes].slice(0, 6).map(([url, titulo]) => ({ url, titulo })), creado: new Date().toISOString() };
 }
