@@ -182,6 +182,22 @@ Deno.serve(async (req) => {
       }
     };
 
+    // Fichas en Markdown: un apartado por «## …». Con `costes_aparte` (id de otro documento, interno),
+    // los apartados con importes van a ese documento y el principal queda solo con la parte técnica.
+    const idCostes = typeof body.costes_aparte === "string" ? body.costes_aparte : "";
+    const { data: docCostes } = idCostes
+      ? await admin.from("conocimiento_documentos").select("id, tipos_obra, publico").eq("id", idCostes).maybeSingle()
+      : { data: null };
+    if (docCostes?.publico) return await fallo("El documento de costes debe ser interno.");
+    let ordenCostes = 0;
+    const añadirCostes = (texto: string, sec: string | null) => {
+      for (const trozo of trocear(limpiar(texto))) {
+        filas.push({ documento: docCostes!.id, orden: ++ordenCostes, pagina: null, seccion: sec, texto: trozo, tipos_obra: docCostes!.tipos_obra });
+      }
+    };
+    if (docCostes) await admin.from("conocimiento_fragmentos").delete().eq("documento", docCostes.id);
+    const CON_IMPORTES = /€|\bimporte\b|\(coste\)|precio a cliente|\bcoste\b[^\n]*\d/i;
+
     let total = 1;
     let siguiente: number | null = null;
     if (formato === "pdf" || (!formato && bytes[0] === 0x25)) {
@@ -209,7 +225,16 @@ Deno.serve(async (req) => {
         }
       }
     } else {
-      añadir(new TextDecoder().decode(bytes), null, prefijo || null);
+      const texto = new TextDecoder().decode(bytes);
+      if (formato === "md" || /^##\s/m.test(texto)) {
+        const titulo1 = texto.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? doc.titulo;
+        for (const parte of texto.split(/^(?=##\s)/m)) {
+          const h = parte.match(/^##\s+(.+)$/m)?.[1]?.trim().replace(/^\d+[.)]\s*/, "");
+          const sec = `${prefijo || titulo1}${h ? ` · ${h}` : ""}`.slice(0, 200);
+          if (docCostes && CON_IMPORTES.test(parte)) añadirCostes(parte, sec);
+          else añadir(parte, null, sec);
+        }
+      } else añadir(texto, null, prefijo || null);
     }
 
     for (let i = 0; i < filas.length; i += 200) {
@@ -220,6 +245,7 @@ Deno.serve(async (req) => {
       .from("conocimiento_documentos")
       .update({ estado: siguiente ? "procesando" : "listo", paginas: total, notas: null })
       .eq("id", id);
+    if (docCostes) await admin.from("conocimiento_documentos").update({ estado: "listo", notas: null }).eq("id", docCostes.id);
     return json({ ok: true, total, siguiente, fragmentos: filas.length });
   } catch (e) {
     return await fallo(e instanceof Error ? e.message : "Error al procesar el documento");

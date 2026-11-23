@@ -27,3 +27,11 @@ se consulta con la clave pública). Los internos (precios, partidas, procesos) s
 - Nunca se suben documentos a este repositorio público: viven solo en Supabase (UE).
 - Quitar antes nombres y direcciones de clientes. De los catálogos de proveedores, solo enlaces.
 - Tarifas y precios detallados: solo como documentos **internos**.
+
+## Fichas de obra (Markdown)
+
+Las fichas `.md` se trocean por apartado (`## …`). Si se llama al importador con `costes_aparte` (id de un
+segundo documento **interno**), los apartados con importes (€, «coste», «importe»…) van a ese documento y el
+principal queda solo con la parte técnica, que puede ser pública. Así se cargaron las fichas 01-13 de
+«FICHAS DE CONOCIMIENTO» (planificación, demolición, albañilería, instalaciones, climatización, cocinas,
+baños, suelos, ventanas, legalización, compras, subcontratas y entrega).
