@@ -1,11 +1,13 @@
+import { TarjetaVideo } from "./portada/TarjetaVideo";
 import type { Beneficio } from "@/lib/beneficios";
 
 /** Tarjetas de beneficios, con detalle desplegable y nota de lo que está pendiente. */
 export function ListaBeneficios({ items, columnas = 3 }: { items: Beneficio[]; columnas?: 2 | 3 }) {
   return (
     <div className={`grid gap-4 sm:grid-cols-2 ${columnas === 3 ? "lg:grid-cols-3" : ""}`}>
-      {items.map((b) => (
-        <div key={b.t} className="rounded-3xl bg-white p-6 ring-1 ring-stone-200">
+      {items.map((b) => {
+        const contenido = (
+          <>
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-50 text-2xl ring-1 ring-stone-200">{b.i}</div>
           <h3 className="mt-3 text-lg font-semibold">{b.t}</h3>
           <p className="mt-1 text-stone-600">{b.d}</p>
@@ -17,8 +19,15 @@ export function ListaBeneficios({ items, columnas = 3 }: { items: Beneficio[]; c
             </ul>
           )}
           {b.pendiente && <p className="mt-2 text-xs text-stone-400">{b.pendiente}</p>}
-        </div>
-      ))}
+          {b.tema && <p className="mt-3 text-sm font-semibold text-teal-700 group-hover:underline">▶ Ver vídeo</p>}
+          </>
+        );
+        return b.tema && b.href ? (
+          <TarjetaVideo key={b.t} tema={b.tema} titulo={b.t} href={b.href} area={b.area ?? b.t} className="group block w-full rounded-3xl bg-white p-6 ring-1 ring-stone-200 transition hover:shadow-xl hover:ring-teal-600">{contenido}</TarjetaVideo>
+        ) : (
+          <div key={b.t} className="rounded-3xl bg-white p-6 ring-1 ring-stone-200">{contenido}</div>
+        );
+      })}
     </div>
   );
 }

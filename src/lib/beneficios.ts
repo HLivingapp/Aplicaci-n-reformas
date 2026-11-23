@@ -1,3 +1,4 @@
+import type { TemaPortada } from "./videos-portada";
 /**
  * Beneficios de contratar y trabajar a través de la app.
  * Pendiente de cerrar: acuerdo y coberturas exactas del seguro con MAPFRE; bancos colaboradores
@@ -10,12 +11,19 @@ export interface Beneficio {
   /** Detalle que se despliega */
   mas?: string[];
   pendiente?: string;
+  /** Área de la app a la que lleva la tarjeta (tras su mini vídeo) */
+  href?: string;
+  tema?: TemaPortada;
+  area?: string;
 }
 
 export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🛡️",
     t: "Seguro de promotor MAPFRE, gratis",
+    href: "/nuevo",
+    tema: "seguro",
+    area: "empezar mi reforma",
     d: "Si contratas tu obra por la app, te regalamos un seguro como promotor de la obra mientras dura la reforma.",
     mas: [
       "Responsabilidad civil como promotor: daños a vecinos, a la comunidad de vecinos o a terceros durante la obra",
@@ -27,36 +35,54 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🤖",
     t: "Asesoramiento urbanístico con IA",
+    href: "/tramites",
+    tema: "urbanismo",
+    area: "Trámites",
     d: "Licencia o declaración responsable, ICIO, permisos de la comunidad de vecinos, edificios protegidos: te orienta con la normativa de Madrid antes de empezar.",
     pendiente: "Incluido en el plan Pro.",
   },
   {
     i: "📐",
     t: "Estudios de arquitectura homologados",
+    href: "/red",
+    tema: "arquitectos",
+    area: "la red de profesionales",
     d: "Si tu reforma necesita proyecto, licencia o legalización, ves el precio de cada estudio o arquitecto para tu casa y lo contratas en la app.",
     pendiente: "Con el plan Básico.",
   },
   {
     i: "🏦",
     t: "Reforma en tu hipoteca",
+    href: "/hipoteca#reforma-en-hipoteca",
+    tema: "hipoteca",
+    area: "Hipoteca",
     d: "Financia la reforma con un préstamo o con tu hipoteca: te enseñamos las opciones de Unicaja, Kutxabank y Caja Rural de Soria, y simulas la cuota desde tu presupuesto.",
     pendiente: "Sujeto a la aprobación del banco.",
   },
   {
     i: "🏠",
     t: "Tasación Aesval online",
+    href: "/hipoteca",
+    tema: "hipoteca",
+    area: "Hipoteca",
     d: "Pide desde la app la tasación oficial que te pide el banco para la hipoteca o para financiar la reforma.",
     pendiente: "Precio y acuerdo con Aesval pendientes de cerrar.",
   },
   {
     i: "🤝",
     t: "Invita a tu reformista",
+    href: "/red",
+    tema: "invita",
+    area: "la red de profesionales",
     d: "¿Ya tienes reformista? Invítalo a la app: ni tú ni él pagáis reserva ni comisión, y tenéis contrato, pagos por fases y avances igualmente.",
     pendiente: "El seguro de promotor gratis solo va con reformistas de la app.",
   },
   {
     i: "🔑",
     t: "Ayuda con el aval ICO para la entrada",
+    href: "/hipoteca#aval-ico",
+    tema: "hipoteca",
+    area: "Hipoteca",
     d: "Si compras tu primera vivienda, te orientamos para pedir el aval ICO: el Estado avala hasta el 20 % del préstamo para que no tengas que reunir toda la entrada.",
     mas: ["Para menores de 36 años y familias con menores a cargo, con límites de ingresos y de precio de la vivienda", "Se pide a través de los bancos adheridos, que son quienes lo conceden"],
     pendiente: "Te acompañamos en la solicitud; la concesión depende del banco y de los requisitos vigentes.",
@@ -64,6 +90,9 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "✍️",
     t: "Contrato, pagos por fases y seguimiento",
+    href: "/nuevo",
+    tema: "contrato",
+    area: "empezar mi reforma",
     d: "Contrato estándar firmado en la app, pagos por hitos confirmados por las dos partes y los avances de tu obra con fotos.",
   },
 ];

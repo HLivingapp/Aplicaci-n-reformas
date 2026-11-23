@@ -9,6 +9,8 @@ import { AntesDespues } from "@/components/portada/AntesDespues";
 import { Calculadora } from "@/components/portada/Calculadora";
 import { GaleriaObra } from "@/components/portada/GaleriaObra";
 import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
+import { TarjetaVideo } from "@/components/portada/TarjetaVideo";
+import type { TemaPortada } from "@/lib/videos-portada";
 
 const NOMBRE = APP.nombre;
 
@@ -16,27 +18,36 @@ const PASOS = [
   {
     n: "1",
     t: "Escribe tu dirección",
+    href: "/nuevo",
+    tema: "paso-1" as TemaPortada,
+    area: "calcular mi presupuesto",
     d: "Consultamos el Catastro y rellenamos los metros, el año del edificio y la planta. Tú solo nos cuentas qué quieres cambiar.",
   },
   {
     n: "2",
     t: "Míralo al momento, aquí mismo",
+    href: "/nuevo",
+    tema: "paso-2" as TemaPortada,
+    area: "calcular mi presupuesto",
     d: "Partida a partida, en la app y sin esperar a que te llegue un email. Elige acabados básicos, medios o premium y ve cómo cambia el precio.",
   },
   {
     n: "3",
     t: "Compara reformistas y quedad para una visita",
+    href: "/red",
+    tema: "paso-3" as TemaPortada,
+    area: "la red de reformistas",
     d: "Los reformistas homologados han cargado sus tarifas: con el plan Básico (5 €/mes) ves el precio de cada uno para tu casa, eliges los que más te interesan y quedáis para una visita. Después te envían el presupuesto final y firmas el contrato en la app.",
   },
 ];
 
 const VENTAJAS = [
-  { i: "📋", t: "Precio claro desde el principio", d: "Nada de «depende». Ves cada partida, qué incluye y qué no, antes de que nadie pise tu casa." },
-  { i: "✅", t: "Reformistas homologados", d: "Comprobamos su certificado al corriente de pago, su seguro RSC (responsabilidad civil) y su prevención de riesgos laborales. Ves su currículum, fotos de sus trabajos y si está inscrito en el REA." },
-  { i: "🎨", t: "Tú eliges los acabados", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
-  { i: "✍️", t: "Contrato y seguimiento en la app", d: "Tras la visita, el reformista mete la cifra acordada y firmáis el contrato estándar en la app, con plazos, hitos de pago y fases de obra." },
-  { i: "📆", t: "Fases y plazos claros", d: "Sabes qué se hace cada semana y cuándo toca cada pago, antes de empezar." },
-  { i: "🔒", t: "Tus datos, protegidos", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
+  { i: "📋", t: "Precio claro desde el principio", href: "/nuevo", tema: "presupuesto" as TemaPortada, area: "calcular mi presupuesto", d: "Nada de «depende». Ves cada partida, qué incluye y qué no, antes de que nadie pise tu casa." },
+  { i: "✅", t: "Reformistas homologados", href: "/red", tema: "red" as TemaPortada, area: "la red de reformistas", d: "Comprobamos su certificado al corriente de pago, su seguro RSC (responsabilidad civil) y su prevención de riesgos laborales. Ves su currículum, fotos de sus trabajos y si está inscrito en el REA." },
+  { i: "🎨", t: "Tú eliges los acabados", href: "/materiales", tema: "acabados" as TemaPortada, area: "Materiales", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
+  { i: "✍️", t: "Contrato y seguimiento en la app", href: "/nuevo", tema: "contrato" as TemaPortada, area: "empezar mi reforma", d: "Tras la visita, el reformista mete la cifra acordada y firmáis el contrato estándar en la app, con plazos, hitos de pago y fases de obra." },
+  { i: "📆", t: "Fases y plazos claros", href: "/nuevo", tema: "fases" as TemaPortada, area: "empezar mi reforma", d: "Sabes qué se hace cada semana y cuándo toca cada pago, antes de empezar." },
+  { i: "🔒", t: "Tus datos, protegidos", href: "/privacidad", tema: "datos" as TemaPortada, area: "Privacidad", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
 ];
 
 const PREGUNTAS = [
@@ -117,12 +128,12 @@ export default function Inicio() {
         <div className="relative border-t border-white/10 bg-white/[0.03]">
           <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6 text-sm md:grid-cols-4">
             {[
-              ["Partida a partida", "qué incluye y qué no"],
-              ["Al corriente de pago + seguro RSC + PRL", "comprobados en cada reformista"],
-              ["Contrato y pagos por hitos", "firmados en la app"],
-              ["Datos en la UE", "conforme al RGPD"],
-            ].map(([a, b]) => (
-              <div key={a}><div className="font-semibold text-white">{a}</div><div className="text-stone-400">{b}</div></div>
+              ["Partida a partida", "qué incluye y qué no", "/nuevo", "presupuesto", "calcular mi presupuesto"],
+              ["Al corriente de pago + seguro RSC + PRL", "comprobados en cada reformista", "/red", "red", "la red de reformistas"],
+              ["Contrato y pagos por hitos", "firmados en la app", "/nuevo", "contrato", "empezar mi reforma"],
+              ["Datos en la UE", "conforme al RGPD", "/privacidad", "datos", "Privacidad"],
+            ].map(([a, b, h, t, ar]) => (
+              <TarjetaVideo key={a} tema={t as TemaPortada} titulo={a} href={h} area={ar} className="group rounded-xl p-1 hover:bg-white/5"><div className="font-semibold text-white group-hover:underline">{a} ▶</div><div className="text-stone-400">{b}</div></TarjetaVideo>
             ))}
           </div>
         </div>
@@ -163,7 +174,7 @@ export default function Inicio() {
             </p>
             <ul className="mt-6 space-y-3 text-stone-700">
               {["Cada partida con su medición y lo que incluye", "Marcas y modelos de referencia («o similar»)", "Cambia acabados y ve el precio al momento"].map((x) => (
-                <li key={x} className="flex gap-3"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs text-white">✓</span>{x}</li>
+                <li key={x}><Link href={x.startsWith("Marcas") ? "/materiales" : empezar} className="flex gap-3 hover:text-teal-800 hover:underline"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs text-white">✓</span>{x}</Link></li>
               ))}
             </ul>
           </div>
@@ -177,10 +188,13 @@ export default function Inicio() {
         <h2 className="mt-3 text-center font-display text-4xl font-semibold tracking-tight sm:text-5xl">De la idea al reformista adecuado</h2>
         <ol className="mt-14 grid gap-6 md:grid-cols-3">
           {PASOS.map((p) => (
-            <li key={p.n} className="group relative overflow-hidden rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:-translate-y-1 hover:shadow-xl">
-              <div className="font-display text-7xl font-semibold text-teal-700/15 transition group-hover:text-teal-700/30">{p.n}</div>
-              <h3 className="mt-2 text-xl font-semibold">{p.t}</h3>
-              <p className="mt-2 text-stone-600">{p.d}</p>
+            <li key={p.n}>
+              <TarjetaVideo tema={p.tema} titulo={p.t} href={p.href} area={p.area} className="group relative block h-full w-full overflow-hidden rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:-translate-y-1 hover:shadow-xl hover:ring-teal-600">
+                <div className="font-display text-7xl font-semibold text-teal-700/15 transition group-hover:text-teal-700/30">{p.n}</div>
+                <h3 className="mt-2 text-xl font-semibold">{p.t}</h3>
+                <p className="mt-2 text-stone-600">{p.d}</p>
+                <p className="mt-3 text-sm font-semibold text-teal-700 group-hover:underline">▶ Ver vídeo</p>
+              </TarjetaVideo>
             </li>
           ))}
         </ol>
@@ -198,12 +212,12 @@ export default function Inicio() {
             <p className="mt-4 text-lg text-stone-300">Eliges los acabados, ves cómo cambia el precio y llegas al reformista sabiendo exactamente lo que quieres.</p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
-                ["🧾", "Presupuesto de referencia", "para comparar cualquier oferta"],
-                ["⚖️", "Comparador de ofertas", "capítulo a capítulo, con lo que falta"],
-                ["📆", "Fases y plazos", "calculados para tu reforma"],
-                ["💶", "Pagos por hitos", "confirmados por las dos partes"],
-              ].map(([i, a, b]) => (
-                <li key={a} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10"><div className="text-xl">{i}</div><div className="mt-1 font-semibold">{a}</div><div className="text-sm text-stone-400">{b}</div></li>
+                ["🧾", "Presupuesto de referencia", "para comparar cualquier oferta", "/nuevo", "presupuesto", "calcular mi presupuesto"],
+                ["⚖️", "Comparador de ofertas", "capítulo a capítulo, con lo que falta", "/suscripcion", "comparador", "los planes"],
+                ["📆", "Fases y plazos", "calculados para tu reforma", "/nuevo", "fases", "empezar mi reforma"],
+                ["💶", "Pagos por hitos", "confirmados por las dos partes", "/nuevo", "contrato", "empezar mi reforma"],
+              ].map(([i, a, b, h, t, ar]) => (
+                <li key={a}><TarjetaVideo tema={t as TemaPortada} titulo={a} href={h} area={ar} className="group block h-full w-full rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 transition hover:bg-white/10 hover:ring-amber-300/50"><div className="text-xl">{i}</div><div className="mt-1 font-semibold group-hover:underline">{a} ▶</div><div className="text-sm text-stone-400">{b}</div></TarjetaVideo></li>
               ))}
             </ul>
             <Link href={empezar} className="mt-8 inline-block rounded-2xl bg-amber-400 px-6 py-3.5 font-semibold text-stone-900 hover:bg-amber-300">Empezar mi reforma</Link>
@@ -219,11 +233,12 @@ export default function Inicio() {
           <p className="mt-3 max-w-2xl text-lg text-stone-600">Todo lo que normalmente se descubre a mitad de obra, lo ves antes de empezar.</p>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {VENTAJAS.map((v) => (
-              <div key={v.t} className="rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:bg-white hover:shadow-xl">
+              <TarjetaVideo key={v.t} tema={v.tema} titulo={v.t} href={v.href} area={v.area} className="group block w-full rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:bg-white hover:shadow-xl hover:ring-teal-600">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm ring-1 ring-stone-200">{v.i}</div>
                 <h3 className="mt-4 text-lg font-semibold">{v.t}</h3>
                 <p className="mt-1.5 text-stone-600">{v.d}</p>
-              </div>
+                <p className="mt-3 text-sm font-semibold text-teal-700 group-hover:underline">▶ Ver vídeo</p>
+              </TarjetaVideo>
             ))}
           </div>
         </div>
@@ -322,7 +337,7 @@ export default function Inicio() {
               "Tus avances de obra, visibles para tu cliente",
               "Financiación para tus clientes y ayuda con la memoria técnica",
             ].map((x) => (
-              <li key={x} className="flex gap-2 rounded-xl bg-white/5 p-3 text-stone-200 ring-1 ring-white/10"><span className="text-amber-300">✓</span>{x}</li>
+              <li key={x}><TarjetaVideo tema="profesionales" titulo={x} href="/reformistas" area="el alta de reformistas" className="flex h-full w-full gap-2 rounded-xl bg-white/5 p-3 text-stone-200 ring-1 ring-white/10 transition hover:bg-white/10 hover:ring-amber-300/50"><span className="text-amber-300">✓</span><span className="flex-1">{x}</span><span className="text-amber-300">▶</span></TarjetaVideo></li>
             ))}
           </ul>
           <div className="mt-6 flex flex-wrap gap-3">
