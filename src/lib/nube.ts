@@ -375,6 +375,9 @@ async function sincronizarAlEntrar() {
     }
     pendientes.add(CLAVE_DATOS);
     await subirConsentimiento();
+    // El plan (pago simulado hasta Stripe) también en Supabase, que es donde lo mira el asistente IA
+    const plan = leerJson<{ plan?: string } | null>("app-reformas:suscripcion", null)?.plan;
+    if (plan === "basico" || plan === "pro") await s.rpc("elegir_plan_simulado", { p: plan });
     await subirPendientes();
     ponerEstado("al_dia");
   } catch {

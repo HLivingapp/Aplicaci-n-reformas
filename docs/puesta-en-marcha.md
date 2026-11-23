@@ -30,6 +30,33 @@ pagos simulados, foro y profesionales (tablas preparadas; el alta de profesional
 Sin las variables, la web sigue como hasta ahora, guardando en el navegador. En *Mi cuenta* (`/cuenta`)
 cada persona puede descargar sus datos o borrar su cuenta.
 
+### 0.1 Asistente IA (Claude)
+
+Una sola clave de Anthropic para toda la plataforma, guardada **solo** como secreto de la Edge Function
+[`supabase/functions/asistente`](../supabase/functions/asistente/index.ts). La función comprueba el plan
+de cada persona (tabla `planes`) y lleva su consumo del mes (`uso_ia`):
+
+| Quién | Qué | Límite al mes |
+|---|---|---|
+| Plan Pro | Asistente de obra, con su proyecto como contexto y búsqueda en fuentes oficiales | 150 consultas |
+| Plan Básico | Prueba del asistente | 5 consultas |
+| Profesionales dados de alta | Leer un presupuesto suyo en PDF para proponer sus tarifas | 10 lecturas |
+| Todos juntos | Tope de seguridad (secreto `IA_TOPE_MES`) | 3.000 consultas |
+
+1. Crea la cuenta en [console.anthropic.com](https://console.anthropic.com) a nombre de la empresa,
+   añade la tarjeta (*Settings → Billing*) y pon un **tope de gasto mensual** (*Settings → Limits*).
+2. *API Keys → Create Key* (nombre: `reformamejor-supabase`). Copia la clave.
+3. En Supabase: *Edge Functions → Secrets → Add new secret*: nombre `ANTHROPIC_API_KEY`, valor la clave.
+   No la pegues en ningún otro sitio.
+4. Ejecuta [`supabase/migrations/20261123000000_ia.sql`](../supabase/migrations/20261123000000_ia.sql), luego
+   [`20261123000100_permisos.sql`](../supabase/migrations/20261123000100_permisos.sql) (permisos de tabla para la app) y
+   despliega la función `asistente` (desde el conector de Supabase o con `supabase functions deploy asistente`).
+5. Si existe la base de conocimiento (`buscar_conocimiento`), el asistente la usa sola y cita el CTE y la normativa.
+6. Opcional: secretos `IA_MODELO` (por defecto `claude-opus-5-5`) e `IA_TOPE_MES`.
+
+Hasta conectar Stripe, el plan se elige en la app (pago simulado), así que el tope de gasto de Anthropic y
+`IA_TOPE_MES` son los que limitan el coste.
+
 ## 1. Base de datos (Supabase)
 
 1. Crea una cuenta gratuita en [supabase.com](https://supabase.com) con el email de la empresa.

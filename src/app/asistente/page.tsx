@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { Muro } from "@/components/Muro";
 import type { RespuestaIA } from "@/lib/foro";
-import { conBaseDeDatos } from "@/lib/modo";
+import { conBaseDeDatos, nubeSinServidor } from "@/lib/modo";
+import { preguntarAsistenteNube } from "@/lib/ia-nube";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 
 type Turno = { rol: "usuario" | "asistente"; texto: string; fuentes?: RespuestaIA["fuentes"] };
@@ -73,7 +74,10 @@ export default function Asistente() {
     setError(null);
     setCargando(true);
     try {
-      if (conServidor) {
+      if (nubeSinServidor) {
+        const j = await preguntarAsistenteNube(historial.map(({ rol, texto }) => ({ rol, texto })));
+        setTurnos([...historial, { rol: "asistente", texto: j.respuesta.texto, fuentes: j.respuesta.fuentes }]);
+      } else if (conServidor) {
         const r = await fetch("/api/asistente", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ historial: historial.map(({ rol, texto }) => ({ rol, texto })) }) });
         const j = await r.json();
         if (!r.ok) throw new Error(j.error ?? "No se ha podido responder");
@@ -163,7 +167,7 @@ export default function Asistente() {
               />
               <button disabled={!texto.trim() || cargando} className="self-end rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Enviar</button>
             </form>
-            <p className="mt-2 text-center text-xs text-stone-400">Respuestas orientativas generadas por IA. No escribas datos personales.{!conServidor && " En la demo las respuestas son de ejemplo."}</p>
+            <p className="mt-2 text-center text-xs text-stone-400">Respuestas orientativas generadas por IA. No escribas datos personales.{!conServidor && !nubeSinServidor && " En la demo las respuestas son de ejemplo."}</p>
           </>
         )}
       </main>
