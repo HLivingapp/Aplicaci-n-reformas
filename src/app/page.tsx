@@ -8,6 +8,7 @@ import { conBaseDeDatos } from "@/lib/modo";
 import { AntesDespues } from "@/components/portada/AntesDespues";
 import { Calculadora } from "@/components/portada/Calculadora";
 import { GaleriaObra } from "@/components/portada/GaleriaObra";
+import { Reportajes } from "@/components/portada/Reportajes";
 import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
 import { TarjetaVideo } from "@/components/portada/TarjetaVideo";
 import type { TemaPortada } from "@/lib/videos-portada";
@@ -201,6 +202,7 @@ export default function Inicio() {
       </section>
 
       <GaleriaObra empezar={empezar} />
+      <Reportajes empezar={empezar} />
 
       {/* Antes y después */}
       <section className="bg-stone-950 text-white">
