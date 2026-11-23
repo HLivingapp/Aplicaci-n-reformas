@@ -48,9 +48,11 @@ de cada persona (tabla `planes`) y lleva su consumo del mes (`uso_ia`):
 2. *API Keys → Create Key* (nombre: `reformamejor-supabase`). Copia la clave.
 3. En Supabase: *Edge Functions → Secrets → Add new secret*: nombre `ANTHROPIC_API_KEY`, valor la clave.
    No la pegues en ningún otro sitio.
-4. Ejecuta [`supabase/migrations/20261123000000_ia.sql`](../supabase/migrations/20261123000000_ia.sql) y
+4. Ejecuta [`supabase/migrations/20261123000000_ia.sql`](../supabase/migrations/20261123000000_ia.sql), luego
+   [`20261123000100_permisos.sql`](../supabase/migrations/20261123000100_permisos.sql) (permisos de tabla para la app) y
    despliega la función `asistente` (desde el conector de Supabase o con `supabase functions deploy asistente`).
-5. Opcional: secretos `IA_MODELO` (por defecto `claude-opus-5-5`) e `IA_TOPE_MES`.
+5. Si existe la base de conocimiento (`buscar_conocimiento`), el asistente la usa sola y cita el CTE y la normativa.
+6. Opcional: secretos `IA_MODELO` (por defecto `claude-opus-5-5`) e `IA_TOPE_MES`.
 
 Hasta conectar Stripe, el plan se elige en la app (pago simulado), así que el tope de gasto de Anthropic y
 `IA_TOPE_MES` son los que limitan el coste.

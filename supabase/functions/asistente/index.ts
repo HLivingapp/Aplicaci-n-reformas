@@ -29,6 +29,7 @@ Ayudas con: revisar presupuestos de reforma (qué partidas faltan, qué conviene
 Referencia orientativa de precio de venta en Madrid, sin IVA, por m² construido: calidad básica 950 €, media 1.100 €, premium 1.450 €. Un baño completo de gama media ronda los 12.000 €. El IVA de reforma de vivienda suele ser el 10 %.
 - En temas legales, básate en fuentes oficiales encontradas con la búsqueda web y cita la norma por su nombre. Si depende del caso, dilo.
 - En temas técnicos, cita el Código Técnico de la Edificación o el reglamento aplicable cuando sea relevante.
+- Si te damos fragmentos de la base de conocimiento (CTE, normativa de Madrid…), apóyate en ellos primero y cítalos con su documento básico y sección. En reforma interior, rehabilitación y fachadas, ten siempre presente el CTE que aplique.
 - Si te damos el proyecto del cliente, úsalo para concretar tu respuesta; no repitas sus datos personales.
 - Cierra recordando, en una línea, que es una orientación y que un profesional homologado o el Ayuntamiento deben confirmarlo.
 - No pidas datos personales ni direcciones exactas. No recomiendes empresas concretas.`;
@@ -55,6 +56,31 @@ const ocultarContacto = (t: string) =>
     .replace(/(\+?34[\s.-]?)?[6789]([\s.-]?\d){8}/g, "[teléfono oculto]");
 
 type Turno = { rol: "usuario" | "asistente"; texto: string };
+type Fragmento = { titulo?: string; seccion?: string | null; pagina?: number | null; url?: string | null; texto?: string; fuente?: string | null };
+
+// Base de conocimiento (CTE, normativa de Madrid, legalizaciones…) con la sesión de la persona:
+// a un cliente solo le devuelve documentos públicos. Si falla o no existe, el asistente sigue sin ella.
+async function buscarConocimiento(token: string, consulta: string) {
+  try {
+    const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      auth: { persistSession: false },
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    const { data, error } = await sb.rpc("buscar_conocimiento", { consulta: consulta.slice(0, 1000), limite: 8 });
+    if (error || !Array.isArray(data)) return [];
+    return (data as Fragmento[])
+      .filter((f) => typeof f.texto === "string" && f.texto.trim())
+      .map((f) => ({
+        type: "search_result" as const,
+        source: f.url ? (f.pagina ? `${f.url}#page=${f.pagina}` : f.url) : `conocimiento:${f.fuente ?? f.titulo ?? "documento"}`,
+        title: [f.titulo, f.seccion].filter(Boolean).join(" · ").slice(0, 300) || "Documento técnico",
+        content: [{ type: "text" as const, text: f.texto!.slice(0, 6000) }],
+        citations: { enabled: true },
+      }));
+  } catch {
+    return [];
+  }
+}
 
 Deno.serve(async (req) => {
   const h = cors(req.headers.get("origin") ?? "");
@@ -109,6 +135,14 @@ Deno.serve(async (req) => {
         ? ocultarContacto(JSON.stringify({ proyecto: d.proyectos?.map((p) => ({ vivienda: p.vivienda, reforma: p.reforma })), presupuestos: d.presupuestos })).slice(0, 20000)
         : "";
 
+      const conocimiento = await buscarConocimiento(token, historial[historial.length - 1].texto);
+      const mensajes = historial.map((t, i) => ({
+        role: t.rol === "usuario" ? ("user" as const) : ("assistant" as const),
+        content: i === historial.length - 1 && conocimiento.length
+          ? [...conocimiento, { type: "text" as const, text: t.texto }]
+          : t.texto,
+      }));
+
       const r = await client.beta.messages.create({
         model: MODELO,
         max_tokens: 6000,
@@ -127,7 +161,7 @@ Deno.serve(async (req) => {
             user_location: { type: "approximate", city: "Madrid", region: "Madrid", country: "ES", timezone: "Europe/Madrid" },
           },
         ],
-        messages: historial.map((t) => ({ role: t.rol === "usuario" ? ("user" as const) : ("assistant" as const), content: t.texto })),
+        messages: mensajes,
       });
       await admin.rpc("sumar_uso_ia", { u: usuario.id, m: mes, md: modo, entrada: r.usage.input_tokens, salida: r.usage.output_tokens });
       if (r.stop_reason === "refusal") return json({ error: "El asistente no puede responder a esta pregunta." }, 422);
@@ -136,7 +170,10 @@ Deno.serve(async (req) => {
       for (const b of r.content) {
         if (b.type !== "text") continue;
         texto += b.text;
-        for (const c of b.citations ?? []) if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+        for (const c of b.citations ?? []) {
+          if (c.type === "web_search_result_location") fuentes.set(c.url, c.title ?? c.url);
+          else if (c.type === "search_result_location" && /^https?:/.test(c.source)) fuentes.set(c.source, c.title ?? c.source);
+        }
       }
       return json({
         respuesta: { texto: texto.trim(), fuentes: [...fuentes].slice(0, 6).map(([url, titulo]) => ({ url, titulo })), creado: new Date().toISOString() },
