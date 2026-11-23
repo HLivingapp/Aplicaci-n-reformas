@@ -83,14 +83,31 @@ export function partidasCapitulo(capitulo: string, t: Tarifas = tarifasPorDefect
   return t.precios.filter((p) => p.capitulo === capitulo).map((p) => ({ id: p.id, descripcion: p.descripcion, unidad: p.unidad, precio: ventaUnidad(t, p) }));
 }
 
+let cacheRef: Record<string, number> | null = null;
+/** Precio de venta de referencia por unidad de cada partida */
+const precioReferencia = () => {
+  if (!cacheRef) {
+    const t = tarifasPorDefecto();
+    cacheRef = Object.fromEntries(t.precios.map((p) => [p.id, ventaUnidad(t, p)]));
+  }
+  return cacheRef;
+};
+
 export const tarifaVacia = (): TarifaReformista => ({ general: 0, capitulos: {}, actualizado: new Date().toISOString() });
 
 const factor = (t: Pick<TarifaReformista, "general" | "capitulos">, capitulo: string) => 1 + (t.capitulos[capitulo] ?? t.general) / 100;
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 /** Presupuesto de un reformista: la referencia partida a partida con sus precios. */
-export function aplicarTarifa(e: Estimacion, t: Pick<TarifaReformista, "general" | "capitulos">): Estimacion {
-  const lineas = e.lineas.map((l) => ({ ...l, precio: r2(l.precio * factor(t, l.capitulo)) }));
+export function aplicarTarifa(e: Estimacion, t: Pick<TarifaReformista, "general" | "capitulos" | "partidas">): Estimacion {
+  // En las partidas que salen de sus presupuestos, su precio frente al de referencia (respeta la calidad y las mediciones);
+  // en el resto, su % por capítulo
+  const ref = t.partidas ? precioReferencia() : {};
+  const lineas = e.lineas.map((l) => {
+    const propio = t.partidas?.[l.tarifaId];
+    const k = propio && ref[l.tarifaId] ? propio / ref[l.tarifaId] : factor(t, l.capitulo);
+    return { ...l, precio: r2(l.precio * k) };
+  });
   const base = r2(lineas.reduce((s, l) => s + l.cantidad * l.precio, 0));
   return { ...e, lineas, base, minimo: base, maximo: base };
 }

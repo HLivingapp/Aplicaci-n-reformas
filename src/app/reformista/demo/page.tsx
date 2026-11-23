@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MisEncargos, MisFotosTrabajos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
+import { TarifarioPresupuestos } from "@/components/TarifarioPresupuestos";
 import { InvitaClientes } from "@/components/InvitaClientes";
 import { FICHAS_EJEMPLO } from "@/lib/red";
 
@@ -29,6 +30,7 @@ export default function AreaReformistaDemo() {
       <MisEncargos reformistaId={id} />
       <MisFotosTrabajos reformistaId={id} />
       <MisTarifas reformistaId={id} />
+      <TarifarioPresupuestos reformistaId={id} />
     </main>
   );
 }

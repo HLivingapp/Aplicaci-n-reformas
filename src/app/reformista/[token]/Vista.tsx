@@ -10,6 +10,7 @@ import { cargarProveedor, subirDocumento } from "@/lib/proveedores-cliente";
 import { recordarProfesional } from "@/lib/foro-cliente";
 import Link from "next/link";
 import { MisEncargos, MisFotosTrabajos, MisPuntos, MisTarifas } from "@/components/AreaReformista";
+import { TarifarioPresupuestos } from "@/components/TarifarioPresupuestos";
 import { useEncargos } from "@/components/ComparativaRed";
 import { InvitaClientes } from "@/components/InvitaClientes";
 import { codigo as codigoRed } from "@/lib/red";
@@ -133,6 +134,7 @@ export default function PortalReformista() {
       {((p.estado === "aprobado" && !pendientes) || tieneInvitados) && <MisEncargos reformistaId={p.id} faltanDocs={reqs.filter((r) => (r.clave === "rc" || r.clave === "corriente") && !r.ok).map((r) => r.texto)} />}
       <MisFotosTrabajos reformistaId={p.id} />
       <MisTarifas reformistaId={p.id} tarifaGuardada={p.tarifa} />
+      <TarifarioPresupuestos reformistaId={p.id} token={token} />
 
       {p.estado === "aprobado" && !pendientes && (
         <Tarjeta>
