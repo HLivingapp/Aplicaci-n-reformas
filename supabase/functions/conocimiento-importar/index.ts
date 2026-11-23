@@ -189,10 +189,16 @@ Deno.serve(async (req) => {
       ? await admin.from("conocimiento_documentos").select("id, tipos_obra, publico").eq("id", idCostes).maybeSingle()
       : { data: null };
     if (docCostes?.publico) return await fallo("El documento de costes debe ser interno.");
+    // Cabecera de cada fragmento de costes: cómo pasar de coste a precio de cliente. El texto vive en las
+    // notas del documento «Regla de precios…» (solo en Supabase, no en este repositorio público).
+    const { data: regla } = docCostes
+      ? await admin.from("conocimiento_documentos").select("notas").like("titulo", "Regla de precios%").limit(1).maybeSingle()
+      : { data: null };
+    const cabecera = regla?.notas ? `${regla.notas}\n\n` : "";
     let ordenCostes = 0;
     const añadirCostes = (texto: string, sec: string | null) => {
       for (const trozo of trocear(limpiar(texto))) {
-        filas.push({ documento: docCostes!.id, orden: ++ordenCostes, pagina: null, seccion: sec, texto: trozo, tipos_obra: docCostes!.tipos_obra });
+        filas.push({ documento: docCostes!.id, orden: ++ordenCostes, pagina: null, seccion: sec, texto: cabecera + trozo, tipos_obra: docCostes!.tipos_obra });
       }
     };
     if (docCostes) await admin.from("conocimiento_fragmentos").delete().eq("documento", docCostes.id);

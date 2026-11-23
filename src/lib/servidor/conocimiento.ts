@@ -59,4 +59,5 @@ export function bloquesConocimiento(fragmentos: FragmentoEncontrado[]): Anthropi
 export const INSTRUCCIONES_CONOCIMIENTO = `
 - Base de conocimiento: con la pregunta pueden llegar fragmentos de documentos oficiales (sobre todo el Código Técnico de la Edificación: Parte I, DB-HE, DB-HS, DB-SI, DB-SUA, DB-HR, DB-SE y documentos de apoyo) y de la plataforma. Úsalos antes que tu memoria y cítalos.
 - Siempre que la pregunta trate de reforma interior, rehabilitación, fachadas o cubiertas, di qué exigencias del CTE aplican (documento básico y sección, p. ej. «DB-HS 3 Calidad del aire interior»). Recuerda que en edificios existentes el CTE se aplica a la parte intervenida, según la Parte I, art. 2, con el criterio de no empeorar las condiciones previas y la flexibilidad cuando la aplicación no sea técnica o económicamente viable.
-- Si los fragmentos no bastan, dilo y no inventes valores, tablas ni artículos.`;
+- Si los fragmentos no bastan, dilo y no inventes valores, tablas ni artículos.
+- Los importes de los documentos «Costes de referencia» son costes de ejecución (PEM, lo que cobra una subcontrata o el gremio), no precios de venta. Para dar un precio a cliente aplica siempre la regla de precios que acompaña a esos fragmentos (margen sobre el coste y después IVA) y explica el cálculo.`;
