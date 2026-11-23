@@ -16,7 +16,7 @@ import { TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 import { anonimizar } from "@/lib/anonimizar";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
 import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
-import { altaVacia, CERTIFICACIONES, CURSOS_PREVENCION, INICIOS, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
+import { altaVacia, CERTIFICACIONES, HABILITACIONES, habilitacionesVacias, OPCIONES_HABILITACION, TRAMOS_FACTURACION, CURSOS_PREVENCION, INICIOS, SERVICIOS_PREVENCION, TIPOS_PROYECTO, ESPECIALIDADES, nifValido, OBRAS_MINIMAS, TEXTO_COMPROMISO_INVITADOS, TEXTO_COMPROMISO_VENTAS, TEXTO_CONSENTIMIENTO_PROVEEDOR, TEXTO_DECLARACION_RESPONSABLE, ZONAS, type AltaProveedor } from "@/lib/proveedores";
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = APP.nombre;
@@ -40,6 +40,8 @@ export default function AltaReformista() {
 
   const setP = <K extends keyof AltaProveedor["perfil"]>(k: K, v: AltaProveedor["perfil"][K]) => setA((x) => ({ ...x, perfil: { ...x.perfil, [k]: v } }));
   const pf = a.perfil;
+  const hab = pf.habilitaciones ?? habilitacionesVacias();
+  const fact = pf.facturacion ?? { ejercicio: new Date().getFullYear() - 1, tramo: "" };
   const obrasOk = a.obras.filter((o) => o.descripcion.trim() && o.contacto.trim()).length >= OBRAS_MINIMAS;
   const faltan = [
     !a.razonSocial.trim() && "nombre o razón social",
@@ -52,6 +54,8 @@ export default function AltaReformista() {
     !pf.proyectosEjecutados && "número de proyectos ejecutados",
     !pf.tiposProyecto.length && "tipo de proyectos",
     pf.cuentas.presentadas === null && "cuentas del último año",
+    !fact.tramo && "facturación anual",
+    HABILITACIONES.some((h) => !hab[h.clave]) && "boletines y legalizaciones",
     !pf.disponibilidad.inicio && "disponibilidad",
     !obrasOk && !invitacion && `${OBRAS_MINIMAS} obras de referencia`,
     !a.zonas.length && "zonas",
@@ -219,6 +223,28 @@ export default function AltaReformista() {
           <Boton variante="secundario" onClick={() => set("obras", [...a.obras, { descripcion: "", ano: new Date().getFullYear(), importe: 0, contacto: "" }])}>＋ Añadir otra obra</Boton>
         )}
         <p className="text-xs text-stone-500">Avisa a esas personas de que podemos llamarlas: sus datos solo los usamos para comprobar la obra.</p>
+      </Tarjeta>
+
+      <Tarjeta className="space-y-3">
+        <h2 className="font-semibold">Boletines, legalizaciones y volumen</h2>
+        <p className="text-sm text-stone-600">Es lo que más mira un cliente antes de contratar: si podrás darle los boletines y legalizar las instalaciones, y el volumen real de tu empresa.</p>
+        {HABILITACIONES.map((h) => (
+          <div key={h.clave} data-habilitacion={h.clave}>
+            <div className="mb-1.5 text-sm text-stone-700">{h.texto} *</div>
+            <div className="flex flex-wrap gap-2 text-sm">
+              {OPCIONES_HABILITACION.map((o) => (
+                <button key={o.valor} type="button" onClick={() => setP("habilitaciones", { ...hab, [h.clave]: o.valor })} className={`rounded-lg px-3 py-2 ${hab[h.clave] === o.valor ? "bg-stone-900 text-white" : "bg-stone-100"}`}>{o.texto}</button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <Campo etiqueta={`Facturación de ${fact.ejercicio} (sin IVA) *`}>
+          <select className={inputCls} value={fact.tramo} onChange={(e) => setP("facturacion", { ...fact, tramo: e.target.value })}>
+            <option value="">Elige un tramo</option>
+            {TRAMOS_FACTURACION.map((t) => <option key={t.valor} value={t.valor}>{t.texto}</option>)}
+          </select>
+        </Campo>
+        <p className="text-xs text-stone-500">El cliente ve el tramo, no la cifra exacta. Lo comprobamos con tus cuentas{a.tipo === "autonomo" ? " o tu declaración de la renta" : ""}.</p>
       </Tarjeta>
 
       <Tarjeta className="space-y-3">
