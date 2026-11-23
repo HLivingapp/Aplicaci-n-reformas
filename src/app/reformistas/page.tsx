@@ -11,7 +11,8 @@ import { fichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
-import { AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS, TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA } from "@/lib/comercializacion";
+import { AVISO_TARIFAS, COMERCIALIZACION, LETRA_PEQUENA_TARIFAS, miles, TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA, VISITAS } from "@/lib/comercializacion";
+import { MiniVideo } from "@/components/MiniVideo";
 import { TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 import { anonimizar } from "@/lib/anonimizar";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
@@ -20,6 +21,24 @@ import { altaVacia, CERTIFICACIONES, HABILITACIONES, habilitacionesVacias, OPCIO
 import { enviarAlta } from "@/lib/proveedores-cliente";
 
 const NOMBRE = APP.nombre;
+
+/** Bloques del área de reformistas. Cada uno tiene su mini vídeo en public/videos/mini/<video>.mp4 (aparece cuando existe). */
+const VENTAJAS_PRO = [
+  { i: "🎯", t: "Clientes que ya te han elegido", d: "Solo visitas a quien va en serio.", video: "rf-clientes", foto: "salon-amplio" },
+  { i: "💬", t: "Opiniones serias", d: "Entrevistamos a tus clientes, sin estrellas sueltas.", video: "rf-opiniones", foto: "bano" },
+  { i: "💶", t: "Cobros por hitos", d: "Contrato y pagos por fases en la app.", video: "rf-cobros", foto: "cocina" },
+  { i: "⭐", t: "Más visible", d: "Cada obra firmada te sube en los resultados.", video: "rf-visibilidad", foto: "vestidor" },
+];
+const PASOS_PRO = [
+  { i: "📝", t: "Alta y homologación", d: "10 minutos. Al momento si todo está en vigor.", video: "rf-homologacion" },
+  { i: "📑", t: "Tus tarifas", d: "Tus % por capítulo, o sube 20 presupuestos y sacamos tus precios.", video: "rf-tarifas" },
+  { i: "🤝", t: "Visita, firma y obra", d: "Te eligen, visitas, firmáis y llevas avances y cobros en la app.", video: "rf-avances" },
+];
+const VIDEO_BENEFICIO: Record<string, string> = {};
+for (const b of BENEFICIOS_PROFESIONAL) {
+  if (/invita/i.test(b.t)) VIDEO_BENEFICIO[b.t] = "rf-invita";
+  else if (/financiaci/i.test(b.t)) VIDEO_BENEFICIO[b.t] = "rf-financiacion";
+}
 const OPCIONES_ZONA = ZONAS.map((z) => ({ valor: z, texto: z.replace("Madrid - ", "") }));
 
 export default function AltaReformista() {
@@ -80,14 +99,29 @@ export default function AltaReformista() {
 
   return (
     <main className="mx-auto max-w-2xl space-y-4 px-4 pb-16 pt-6">
-      <div className="flex items-center gap-3">
+      <section className="relative -mx-4 -mt-6 overflow-hidden bg-stone-950 px-4 pb-8 pt-6 text-white sm:rounded-b-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={publico("/icon.svg")} alt="" className="h-10 w-10" />
-        <div>
-          <div className="text-xs text-stone-500">{NOMBRE}</div>
-          <h1 className="text-xl font-semibold">Homologación de reformistas</h1>
+        <img src={publico("/fotos/obra/cocina-salon.webp")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/70 via-stone-950/60 to-stone-950" />
+        <div className="relative">
+          <div className="flex items-center gap-2 text-sm text-stone-300">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={publico("/icon.svg")} alt="" className="h-7 w-7" /> {NOMBRE} · para reformistas
+          </div>
+          <h1 className="mt-6 font-display text-4xl font-semibold leading-tight tracking-tight">Clientes que te buscan para hacerles la obra</h1>
+          <p className="mt-3 text-stone-200">Con su reforma definida y tu precio ya visto.</p>
+          {/* Así lo ves en la app */}
+          <div className="mt-5 rounded-2xl bg-white p-4 text-stone-900 shadow-2xl">
+            <div className="flex items-center gap-2 text-xs font-semibold text-teal-700"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100">🔔</span> Un cliente te ha elegido</div>
+            <div className="mt-2 text-sm font-semibold">Reforma integral · 85 m² · Chamberí</div>
+            <div className="mt-1 flex items-baseline justify-between text-sm"><span className="text-stone-500">Tu presupuesto (con tus tarifas)</span><span className="font-display text-xl font-semibold">92.400 €</span></div>
+            <div className="mt-2 flex gap-2 text-xs"><span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">✓ Visita pedida</span><span className="rounded-full bg-stone-100 px-2 py-0.5">Jueves 10:00</span></div>
+          </div>
+          <a href="#alta" className="mt-6 block rounded-2xl bg-amber-400 px-6 py-4 text-center text-lg font-semibold text-stone-900 hover:bg-amber-300">Darme de alta gratis</a>
+          <p className="mt-2 text-center text-xs text-stone-300">Homologación automática · sin permanencia</p>
         </div>
-      </div>
+      </section>
+
       {invitacion && (
         <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
           <div className="font-semibold">🤝 {invitacion.datos.cliente} te ha invitado a llevar su reforma con la app</div>
@@ -96,28 +130,93 @@ export default function AltaReformista() {
           </p>
         </div>
       )}
-      <p className="text-sm text-stone-600">
-        Trabaja con clientes que ya tienen su reforma definida. Para aparecer en la app revisamos tu documentación: prevención de riesgos laborales (inscripción en el REA si la tienes; no es obligatoria para todos), seguro RSC (responsabilidad civil), certificado al corriente de pago, cuentas depositadas y obras que podamos comprobar. Primero rellena este cuestionario;
-        después te daremos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
-      </p>
-      <div className="grid gap-2 text-sm sm:grid-cols-3">
-        {[
-          ["🎯", "Te conseguimos visitas cualificadas para que termines de vender tu reforma", `Solo vas a casa de clientes que ya han visto tu precio, te han elegido y han pagado para pedir visitas: van en serio. Sin cuotas por contacto: cada visita cuesta ${TEXTO_VISITA_REFORMISTA.replace(" por cada visita a la que vas", "")} y, si el cliente firma en la app, el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}).`],
-          ["📋", "Tus tarifas trabajan por ti", `Cargas tus tarifas una vez y la app calcula tu presupuesto a cada cliente. Solo vas a las visitas de quien ya te ha elegido. ${AVISO_TARIFAS}. ${LETRA_PEQUENA_TARIFAS}`],
-          ["⭐", "Puntos de visibilidad", `${TEXTO_VISIBILIDAD} Los clientes que traes no pagan nada y te suman puntos.`],
-          ...BENEFICIOS_PROFESIONAL.filter((b) => !b.t.startsWith("Clientes que")).map((b) => [b.i, b.t, b.d]),
-        ].map(([i, t, d]) => (
-          <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div></div>
+      <section className="grid grid-cols-2 gap-3" aria-label="Ventajas">
+        {VENTAJAS_PRO.map((v) => (
+          <div key={v.video} className="overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200">
+            <div className="relative h-28">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={publico(`/fotos/obra/${v.foto}.webp`)} alt="" loading="lazy" className="h-full w-full object-cover" />
+              <span className="absolute bottom-2 left-2 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl shadow">{v.i}</span>
+            </div>
+            <div className="p-3">
+              <h2 className="font-semibold">{v.t}</h2>
+              <p className="text-sm text-stone-600">{v.d}</p>
+              <MiniVideo tema={v.video} titulo={v.t} />
+            </div>
+          </div>
         ))}
+      </section>
+
+      <section aria-label="Cómo funciona">
+        <h2 className="text-lg font-semibold">Cómo funciona</h2>
+        <ol className="mt-3 space-y-2">
+          {PASOS_PRO.map((x, i) => (
+            <li key={x.video} className="flex gap-3 rounded-2xl bg-white p-4 ring-1 ring-stone-200">
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-2xl">{x.i}<span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal-700 text-[11px] font-semibold text-white">{i + 1}</span></span>
+              <div>
+                <div className="font-semibold">{x.t}</div>
+                <p className="text-sm text-stone-600">{x.d}</p>
+                <MiniVideo tema={x.video} titulo={x.t} />
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section aria-label="Obras">
+        <h2 className="text-lg font-semibold">Obras como las tuyas</h2>
+        <div className="-mx-4 mt-2 flex snap-x gap-2 overflow-x-auto px-4 pb-1">
+          {["salon", "ducha", "cocina-salon", "pasillo", "bano-lavabo"].map((f) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={f} src={publico(`/fotos/obra/${f}.webp`)} alt="Reforma terminada" loading="lazy" className="h-40 w-56 shrink-0 snap-start rounded-2xl object-cover" />
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-2xl bg-teal-700 p-5 text-white" aria-label="Precio">
+        <h2 className="text-lg font-semibold">Precio claro: pagas cuando hay negocio</h2>
+        <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">5 €<span className="text-sm font-normal">/mes</span></div>Suscripción, sin permanencia</li>
+          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">{VISITAS.reformista} €</div>Por visita confirmada a un cliente que ya te ha elegido</li>
+          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">{COMERCIALIZACION.pct} %</div>Solo si firma en la app (mín. {miles(COMERCIALIZACION.minimo)} €)</li>
+        </ul>
+        <p className="mt-3 text-sm text-teal-50">Los clientes que traes tú no pagan nada y a ti tampoco te cuestan nada.</p>
+        <MiniVideo tema="rf-pagos" titulo="Cuánto pagas y cuándo" oscuro />
+        <a href="#alta" className="mt-4 block rounded-xl bg-white px-5 py-3 text-center font-semibold text-teal-800 hover:bg-teal-50">Darme de alta gratis</a>
+      </section>
+
+      <div className="space-y-2">
+        <details className="rounded-2xl border border-stone-200 bg-white p-4 text-sm">
+          <summary className="cursor-pointer font-semibold">Qué pedimos para homologarte</summary>
+          <p className="mt-2 text-stone-600">
+            Prevención de riesgos laborales (inscripción en el REA si la tienes; no es obligatoria para todos), seguro RSC (responsabilidad civil), certificado al corriente de pago, cuentas depositadas y obras que podamos comprobar. Primero rellenas el cuestionario; después te damos un enlace privado para subir los documentos. Si todo está completo y en vigor, quedas homologado al momento.
+          </p>
+          <MiniVideo tema="rf-homologacion" titulo="Cómo te homologas" />
+        </details>
+        <details className="rounded-2xl border border-stone-200 bg-white p-4 text-sm">
+          <summary className="cursor-pointer font-semibold">Todas las ventajas y condiciones</summary>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {[
+              ["🎯", "Visitas cualificadas", `Solo vas a casa de clientes que ya han visto tu precio, te han elegido y han pagado para pedir visitas. Cada visita cuesta ${TEXTO_VISITA_REFORMISTA.replace(" por cada visita a la que vas", "")} y, si el cliente firma en la app, el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}).`, "rf-clientes"],
+              ["📋", "Tus tarifas trabajan por ti", `${AVISO_TARIFAS}. ${LETRA_PEQUENA_TARIFAS}`, "rf-tarifas"],
+              ["⭐", "Puntos de visibilidad", `${TEXTO_VISIBILIDAD} Los clientes que traes no pagan nada y te suman puntos.`, "rf-visibilidad"],
+              ...BENEFICIOS_PROFESIONAL.filter((x) => !x.t.startsWith("Clientes que")).map((x) => [x.i, x.t, x.d, VIDEO_BENEFICIO[x.t] ?? ""]),
+            ].map(([i, t, d, v]) => (
+              <div key={t} className="rounded-xl bg-amber-50 p-3"><div className="font-semibold">{i} {t}</div><div className="mt-1 text-stone-600">{d}</div>{v && <MiniVideo tema={v} titulo={t} />}</div>
+            ))}
+          </div>
+        </details>
       </div>
 
+      <div id="alta" className="scroll-mt-4" />
       <Tarjeta className="space-y-3 border-teal-200">
-        <h2 className="font-semibold">Declaración responsable y compromiso de ventas</h2>
+        <h2 className="font-semibold">Empieza tu alta: declaración responsable y compromiso de ventas</h2>
         <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
         <p className="text-sm text-stone-700"><b>Ventas que llegan por la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
         <p className="text-sm text-stone-700"><b>Clientes tuyos y clientes de la app.</b> {TEXTO_COMPROMISO_INVITADOS}</p>
         <p className="text-sm text-stone-700"><b>Datos de los clientes.</b> {TEXTO_DATOS_PROFESIONAL}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
+        <MiniVideo tema="rf-compromiso" titulo="Tu compromiso con la app" />
         <label className="flex items-start gap-2 text-sm font-medium">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-teal-700" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />
           <span>Lo declaro y acepto estas condiciones</span>
