@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { accesoPagado, accesoPerdidoPorFalta, alCambiar, COBRO, garantiaAcceso, GRATIS_CLIENTE, INCLUYE_ACCESO, METODOS_PAGO, pagarAcceso, precio, PRECIO_ACCESO, TEXTO_GARANTIA, type MetodoPago } from "@/lib/encargos";
+import { accesoPagado, accesoPerdidoPorFalta, alCambiar, COBRO, garantiaAcceso, GRATIS_CLIENTE, INCLUYE_ACCESO, METODOS_PAGO, pagarAcceso, precio, PRECIO_ACCESO, CONDICION_DEVOLUCION, type MetodoPago } from "@/lib/encargos";
 import { incluye, useSuscripcion } from "@/lib/suscripcion";
 
 /** ¿Ha pagado este cliente el acceso único a la red (fichas, tarifas, chat y citas)? */
@@ -54,16 +54,16 @@ export function PagoAcceso({ titulo = "Ve quién es cada uno, su precio y habla 
         ))}
         <button onClick={() => pagarAcceso(metodo, importe)} className="ml-auto rounded-xl bg-teal-700 px-5 py-2.5 font-semibold text-white hover:bg-teal-800">Pagar {precio(importe)} con {metodo}</button>
       </div>
-      <p className="mt-3 rounded-lg bg-emerald-50 p-2 text-xs font-medium text-emerald-900">🛡️ {TEXTO_GARANTIA}</p>
       <p className="mt-2 text-xs text-stone-500">
         Un solo pago, sin permanencia. No pagas nada más por pedir citas ni sobre la obra.{!suscrito && <> Con una suscripción (desde 4,95 €/mes) lo pagas a {precio(COBRO.accesoSuscrito)}.</>} Demo: el pago es simulado, no se cobra nada.
       </p>
+      <p className="mt-1 text-[11px] leading-snug text-stone-400">Condiciones: pago único por cliente, no reembolsable salvo un caso: {CONDICION_DEVOLUCION.charAt(0).toLowerCase() + CONDICION_DEVOLUCION.slice(1)} Si faltas a una cita sin avisar, el acceso se pierde y hay que volver a pagarlo.</p>
     </div>
   );
 }
 
 
-/** Estado de la garantía de al menos una cita, para el cliente que ya pagó. */
+/** Solo avisa si se aplicó la devolución por no tener ninguna cita aceptada (la condición va en letra pequeña, sin destacarla). */
 export function GarantiaAcceso() {
   const [g, setG] = useState<ReturnType<typeof garantiaAcceso>>(null);
   useEffect(() => {
@@ -72,12 +72,7 @@ export function GarantiaAcceso() {
     return alCambiar(f);
   }, []);
   if (!g) return null;
-  if (g.estado === "cumplida") return null;
+  if (g.estado !== "devuelta") return null;
   if (g.estado === "devuelta")
-    return <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-950">↩️ Ningún proveedor aceptó una cita contigo en {COBRO.diasGarantia} días: te hemos devuelto {precio(g.importe)}. Puedes volver a pagar el acceso cuando quieras.</p>;
-  return (
-    <p className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-900" data-garantia>
-      🛡️ Garantía activa: si en {g.dias} día{g.dias === 1 ? "" : "s"} ningún proveedor acepta una cita contigo, te devolvemos el dinero automáticamente.
-    </p>
-  );
+  return <p className="rounded-xl bg-stone-100 p-3 text-xs text-stone-700">Ningún proveedor aceptó una cita contigo en {COBRO.diasGarantia} días, así que te hemos devuelto {precio(g.importe)}. Puedes volver a pagar el acceso cuando quieras.</p>;
 }

@@ -18,8 +18,16 @@ export interface InfoPlan {
   precio: number;
   lema: string;
   incluye: string[];
+  /** Lo que no lleva (se muestra tachado, en gris). */
+  noIncluye?: string[];
+  /** Precio del año entero si hay opción anual. */
+  anual?: number;
   destacado?: boolean;
 }
+
+/** Descuento del pago anual (solo plan Pro). */
+export const DESCUENTO_ANUAL = 30;
+const anual = (mes: number) => Math.round(mes * 12 * (1 - DESCUENTO_ANUAL / 100) * 100) / 100;
 
 export const PLANES: InfoPlan[] = [
   {
@@ -42,16 +50,18 @@ export const PLANES: InfoPlan[] = [
       "Tasación y seguro de promotor contratables online",
       "Acceso a los proveedores de tu zona a 19,90 € en vez de 29,90 €",
     ],
+    noIncluye: ["Asistente IA de obra (solo en el plan Pro)"],
     destacado: true,
   },
   {
     id: "pro",
     nombre: "Pro",
     precio: 29.95,
+    anual: anual(29.95),
     lema: "Todo lo del Básico y un asistente IA especializado en obra",
     incluye: [
       "Todo lo del plan Básico",
-      "Asistente IA de obra privado, sin límite razonable de preguntas",
+      "🤖 Asistente IA de obra privado, especializado en reformas, sin límite razonable de preguntas",
       "Revisa presupuestos: qué falta, qué está caro y qué preguntar",
       "Legalizaciones en Madrid: licencia o declaración responsable, ICIO, comunidad de vecinos",
       "Dudas técnicas: humedades, aerotermia, ventanas, plazos y garantías",
@@ -60,13 +70,20 @@ export const PLANES: InfoPlan[] = [
 ];
 
 /** 4,95 € */
-export const precioPlan = (p: Pick<InfoPlan, "precio">) => `${p.precio.toFixed(p.precio % 1 ? 2 : 0).replace(".", ",")} €`;
+export const precioPlan = (p: Pick<InfoPlan, "precio">) => importe(p.precio);
+export const importe = (n: number) => `${n.toFixed(n % 1 ? 2 : 0).replace(".", ",")} €`;
+/** Con pago anual: lo que sale al mes (251,58 € / 12 = 20,97 €). */
+export const precioMesAnual = (p: InfoPlan) => (p.anual ? importe(Math.round((p.anual / 12) * 100) / 100) : precioPlan(p));
+export const ahorroAnual = (p: InfoPlan) => (p.anual ? Math.round((p.precio * 12 - p.anual) * 100) / 100 : 0);
+
+export type Periodo = "mes" | "año";
 
 const CLAVE = "app-reformas:suscripcion";
 
 export interface Suscripcion {
   plan: Plan;
   desde?: string;
+  periodo?: Periodo;
 }
 
 export function leerSuscripcion(): Suscripcion {
@@ -79,13 +96,14 @@ export function leerSuscripcion(): Suscripcion {
   return { plan: "gratis" };
 }
 
-export function guardarSuscripcion(plan: Plan) {
-  const s: Suscripcion = { plan, desde: plan === "gratis" ? undefined : new Date().toISOString() };
+export function guardarSuscripcion(plan: Plan, periodo: Periodo = "mes") {
+  const info = PLANES.find((p) => p.id === plan);
+  const anualOk = periodo === "año" && !!info?.anual;
+  const s: Suscripcion = { plan, desde: plan === "gratis" ? undefined : new Date().toISOString(), periodo: plan === "gratis" ? undefined : anualOk ? "año" : "mes" };
   try {
     localStorage.setItem(CLAVE, JSON.stringify(s));
     avisarCambio(CLAVE);
-    const info = PLANES.find((p) => p.id === plan);
-    if (info?.precio) registrarPago("suscripcion", info.precio, plan);
+    if (info?.precio) registrarPago("suscripcion", anualOk ? info.anual! : info.precio, anualOk ? `${plan}-anual` : plan);
     if (conNube) void guardarPlanNube(plan).catch(() => undefined);
   } catch {
     /* sin almacenamiento */

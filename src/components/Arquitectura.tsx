@@ -8,10 +8,12 @@ import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
 import { alCambiar } from "@/lib/encargos";
 import {
-  descartarEncargoEstudio, enviarPropuesta, ESTADO_ESTUDIO, firmarPropuestaCliente, firmarPropuestaEstudio, guardarTarifaEstudio, leerEncargosEstudio, leerEstudios, precioServicio, SERVICIOS, solicitarEstudio,
+  descartarEncargoEstudio, enviarPropuesta, mensajeEstudio, pedirContactoCliente, ESTADO_ESTUDIO, firmarPropuestaCliente, firmarPropuestaEstudio, guardarTarifaEstudio, leerEncargosEstudio, leerEstudios, precioServicio, SERVICIOS, solicitarEstudio,
   type EncargoEstudio, type Estudio, type Servicio, type TarifaEstudio,
 } from "@/lib/estudios";
 import { PagoAcceso, useAcceso } from "./PagoAcceso";
+import { PRECIO_CONTACTO_ARQ, COBRO } from "@/lib/comercializacion";
+import { leerLocal } from "@/lib/store";
 import { Boton, inputCls, Tarjeta } from "./ui";
 
 const IVA = 21;
@@ -28,7 +30,7 @@ function useDatosEstudios() {
   return { estudios, encargos };
 }
 
-/** Para el cliente: el precio de cada estudio para su proyecto, licencia o legalización, y la propuesta para firmar. */
+/** Para el cliente: el precio de cada estudio para su proyecto, licencia o legalización, y el chat con los que le interesen. */
 export function ServiciosArquitectura({ proyectoId, cliente, zona, m2 }: { proyectoId: string; token?: string; cliente: string; zona: string; m2: number }) {
   const suscrito = useAcceso();
   const { estudios, encargos } = useDatosEstudios();
@@ -43,7 +45,7 @@ export function ServiciosArquitectura({ proyectoId, cliente, zona, m2 }: { proye
     <section className="space-y-3">
       <div>
         <h2 className="text-lg font-semibold">¿Necesitas arquitecto?</h2>
-        <p className="text-sm text-stone-600">Proyecto, licencia, declaración responsable o legalización: estudios y arquitectos homologados han cargado sus precios. Elige el servicio y compara.</p>
+        <p className="text-sm text-stone-600">Proyecto, licencia, declaración responsable o legalización: estudios y arquitectos homologados han cargado sus precios. Elige el servicio, compara y chatea con los que te interesen. Cuando un arquitecto quiere seguir contigo, pide tu contacto y desde ahí habláis directamente.</p>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {SERVICIOS.map((x) => (
@@ -76,11 +78,13 @@ export function ServiciosArquitectura({ proyectoId, cliente, zona, m2 }: { proye
                 </div>
               </div>
               {suscrito && !enc && (
-                <button onClick={() => solicitarEstudio(e, { servicio, proyectoId, cliente, zona, m2, nota })} className="mt-3 rounded-full border border-teal-700 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">Pedir propuesta</button>
+                <button onClick={() => solicitarEstudio(e, { servicio, proyectoId, cliente, zona, m2, nota })} className="mt-3 rounded-full border border-teal-700 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">💬 Chatear con {e.tipo === "estudio" ? "este estudio" : "este arquitecto"}</button>
               )}
               {enc && (
                 <div className="mt-3 space-y-2">
                   <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${ESTADO_ESTUDIO[enc.estado].cls}`}>{enc.firmas?.cliente && enc.estado === "propuesta" ? "Firmado por ti" : ESTADO_ESTUDIO[enc.estado].texto}</span>
+                  {enc.contacto && <p className="rounded-lg bg-sky-50 p-2 text-xs text-sky-900">✓ {e.tipo === "estudio" ? "El estudio" : "El arquitecto"} ya tiene tu teléfono y tu email: a partir de aquí os comunicáis directamente.</p>}
+                  <ChatEstudio e={enc} parte="cliente" />
                   {enc.propuesta && <PropuestaEstudio e={enc} parte="cliente" />}
                 </div>
               )}
@@ -89,12 +93,48 @@ export function ServiciosArquitectura({ proyectoId, cliente, zona, m2 }: { proye
           );
         })}
       </ul>
-      {suscrito && <input className={inputCls} placeholder="Nota para el estudio al pedir propuesta (opcional): qué quieres hacer, plazos…" value={nota} onChange={(x) => setNota(x.target.value)} />}
+      {suscrito && <input className={inputCls} placeholder="Primer mensaje para el arquitecto (opcional): qué quieres hacer, plazos…" value={nota} onChange={(x) => setNota(x.target.value)} />}
     </section>
   );
 }
 
-/** Propuesta del estudio con las condiciones del contrato y la firma de cada parte. */
+/** Chat cliente–arquitecto. Hasta que el arquitecto pide el contacto, teléfonos, emails y webs se ocultan. */
+function ChatEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | "estudio" }) {
+  const [texto, setTexto] = useState("");
+  const [aviso, setAviso] = useState("");
+  const chat = e.chat ?? [];
+  const libre = !!e.contacto || e.origen === "invitado";
+  const enviar = () => {
+    const n = mensajeEstudio(e.id, parte, texto);
+    setTexto("");
+    setAviso(n ? `Hemos ocultado ${n} dato${n > 1 ? "s" : ""} de contacto. ${parte === "estudio" ? `Para tener el contacto del cliente, pídelo (${PRECIO_CONTACTO_ARQ}).` : "Cuando el arquitecto pida tu contacto, se lo damos."}` : "");
+  };
+  const otro = parte === "cliente" ? `Arquitecto ${e.codigo}` : "Cliente";
+  return (
+    <div className="rounded-xl border border-stone-200 bg-white text-sm" data-chat-estudio>
+      <div className="border-b border-stone-100 px-3 py-2 font-medium">💬 Chat{chat.length ? ` (${chat.length})` : ""}</div>
+      <div className="space-y-2 p-3">
+        <ul className="max-h-56 space-y-1.5 overflow-y-auto">
+          {chat.map((m, i) => (
+            <li key={i} className={`max-w-[85%] rounded-xl px-3 py-1.5 ${m.de === parte ? "ml-auto bg-teal-700 text-white" : "bg-stone-100 text-stone-900"}`}>
+              <div className="text-[10px] opacity-70">{m.de === parte ? "Tú" : otro} · {new Date(m.fecha).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</div>
+              {m.texto}
+            </li>
+          ))}
+          {!chat.length && <li className="text-xs text-stone-400">Aún no hay mensajes.</li>}
+        </ul>
+        {!libre && <p className="text-[11px] text-stone-500">🔒 Teléfonos, emails y webs se ocultan hasta que el arquitecto pide el contacto del cliente.</p>}
+        {aviso && <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ {aviso}</p>}
+        <div className="flex gap-2">
+          <input className={`${inputCls} flex-1`} placeholder="Escribe un mensaje" value={texto} onChange={(x) => setTexto(x.target.value)} onKeyDown={(x) => x.key === "Enter" && texto.trim() && enviar()} />
+          <button type="button" onClick={enviar} disabled={!texto.trim()} className="rounded-lg bg-teal-700 px-3 text-sm font-semibold text-white disabled:opacity-40">Enviar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Propuesta del estudio con las condiciones del contrato y la firma de cada parte (opcional: la relación ya es directa). */
 function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | "estudio" }) {
   const p = e.propuesta!;
   const invitado = e.origen === "invitado";
@@ -143,8 +183,18 @@ export function AreaEstudio({ estudioId }: { estudioId: string }) {
     <div className="space-y-4">
       <InvitaClientes tipo="estudio" id={est.id} codigo={est.codigo} />
       <Tarjeta className="space-y-3">
-        <h2 className="font-semibold">Encargos de clientes</h2>
-        {!mios.length && <p className="text-sm text-stone-500">Todavía no te ha pedido propuesta nadie. Cuando un cliente te elija, lo verás aquí con su vivienda y tu precio calculado.</p>}
+        <h2 className="font-semibold">Clientes que te escriben</h2>
+        <p className="text-xs text-stone-500">Chatear es gratis. Cuando quieras seguir con un cliente, pide su contacto: pagas {PRECIO_CONTACTO_ARQ}, acabe o no en encargo, y desde ahí la relación es directa. Sin comisión sobre tus honorarios.</p>
+        {mios.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 rounded-2xl bg-stone-900 p-3 text-white" data-estadisticas-estudio>
+            {[
+              [String(mios.filter((x) => x.origen !== "invitado").length), "conversaciones"],
+              [String(mios.filter((x) => x.contacto && x.origen !== "invitado").length), "contactos pedidos"],
+              [`${(mios.filter((x) => x.contacto && x.origen !== "invitado").length * COBRO.contactoArquitecto).toLocaleString("es-ES")} €`, "invertidos en contactos"],
+            ].map(([n, t]) => <div key={t}><div className="font-display text-2xl font-semibold">{n}</div><div className="text-xs text-stone-300">{t}</div></div>)}
+          </div>
+        )}
+        {!mios.length && <p className="text-sm text-stone-500">Todavía no te ha escrito nadie. Cuando un cliente quiera hablar contigo, te avisamos por email y WhatsApp y lo verás aquí con su vivienda y tu precio calculado.</p>}
         {mios.map((e) => <EncargoEstudioFila key={e.id} e={e} />)}
         <AvisoMemoriaTecnica />
       </Tarjeta>
@@ -168,6 +218,7 @@ export function AreaEstudio({ estudioId }: { estudioId: string }) {
 }
 
 function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
+  const [propuestaAbierta, setPropuestaAbierta] = useState(!!e.propuesta);
   const [importe, setImporte] = useState(String(e.propuesta?.importe ?? e.precioCalculado));
   const [plazo, setPlazo] = useState(e.propuesta?.plazoSemanas ?? 4);
   const [alcance, setAlcance] = useState(e.propuesta?.alcance ?? "");
@@ -179,14 +230,32 @@ function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
         <div>
           <div className="font-medium">{e.cliente} · {e.zona} · {servicio.texto}</div>
           <div className="text-xs text-stone-500">{e.m2} m² · tu precio calculado {euros(e.precioCalculado)} sin IVA</div>
-          {e.nota && <div className="mt-1 text-xs text-stone-600">Nota: {e.nota}</div>}
+          {e.aviso && <div className="mt-1 text-xs text-stone-400">📧 Email y 💬 WhatsApp enviados el {new Date(e.aviso).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</div>}
         </div>
         <div className="flex flex-wrap gap-1">
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${e.origen === "invitado" ? "bg-violet-50 text-violet-800 ring-1 ring-violet-200" : "bg-teal-50 text-teal-800 ring-1 ring-teal-200"}`}>{e.origen === "invitado" ? "Cliente tuyo (le invitaste)" : "Cliente de la app"}</span>
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${ESTADO_ESTUDIO[e.estado].cls}`}>{ESTADO_ESTUDIO[e.estado].texto}</span>
         </div>
       </div>
-      {(e.estado === "solicitado" || (e.estado === "propuesta" && !e.firmas?.cliente)) && (
+      <div className="mt-3"><ChatEstudio e={e} parte="estudio" /></div>
+      {e.contacto || e.origen === "invitado" ? (
+        <ContactoCliente e={e} />
+      ) : (
+        e.estado !== "descartado" && (
+          <div className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-950">
+            <p>Cuando quieras seguir con este cliente, pide su contacto: pagas {PRECIO_CONTACTO_ARQ}, acabe o no en encargo. Desde ahí la relación es directa.</p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <Boton onClick={() => pedirContactoCliente(e.id)}>Pedir el contacto del cliente ({PRECIO_CONTACTO_ARQ})</Boton>
+              {e.estado === "solicitado" && <button onClick={() => descartarEncargoEstudio(e.id)} className="text-stone-600 underline">No me interesa</button>}
+            </div>
+            <p className="mt-1 text-amber-800">Demo: pago simulado, no se cobra nada.</p>
+          </div>
+        )
+      )}
+      {(e.contacto || e.origen === "invitado") && !propuestaAbierta && e.estado !== "descartado" && e.estado !== "firmado" && (
+        <button onClick={() => setPropuestaAbierta(true)} className="mt-2 text-xs text-teal-700 underline">Opcional: enviar propuesta y contrato estándar por la app</button>
+      )}
+      {propuestaAbierta && (e.estado === "contacto" || e.estado === "solicitado" || (e.estado === "propuesta" && !e.firmas?.cliente)) && (
         <div className="mt-3 space-y-2">
           <div className="grid gap-2 sm:grid-cols-2">
             <label className="text-xs text-stone-600">Honorarios sin IVA<input type="number" className={`${inputCls} mt-1`} value={importe} onChange={(x) => setImporte(x.target.value)} /></label>
@@ -195,11 +264,32 @@ function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
           <textarea rows={2} className={inputCls} placeholder={`Alcance (por defecto: ${servicio.detalle})`} value={alcance} onChange={(x) => setAlcance(x.target.value)} />
           <div className="flex gap-2">
             <Boton disabled={!cifra} onClick={() => enviarPropuesta(e.id, { importe: cifra, plazoSemanas: plazo, alcance })}>{e.propuesta ? "Actualizar propuesta" : "Enviar propuesta y contrato"}</Boton>
-            {e.estado === "solicitado" && <button onClick={() => descartarEncargoEstudio(e.id)} className="text-xs text-stone-500 underline">No puedo</button>}
           </div>
         </div>
       )}
       {e.propuesta && e.estado !== "descartado" && <div className="mt-3"><PropuestaEstudio e={e} parte="estudio" /></div>}
+    </div>
+  );
+}
+
+/** Contacto del cliente, una vez pedido (en la demo sale de los datos del proyecto en este navegador). */
+function ContactoCliente({ e }: { e: EncargoEstudio }) {
+  const [c, setC] = useState<{ telefono?: string; email?: string } | null>(null);
+  useEffect(() => {
+    try {
+      const d = leerLocal();
+      const pr = d.proyectos.find((x) => x.id === e.proyectoId);
+      const cl = pr && d.clientes.find((x) => x.id === pr.clienteId);
+      setC(cl ? { telefono: cl.telefono, email: cl.email } : {});
+    } catch {
+      setC({});
+    }
+  }, [e.proyectoId]);
+  return (
+    <div className="mt-3 rounded-xl bg-sky-50 p-3 text-xs text-sky-950" data-contacto>
+      <div className="font-semibold">✓ Contacto de {e.cliente}{e.origen === "invitado" ? "" : ` (pagado: ${PRECIO_CONTACTO_ARQ})`}</div>
+      <div className="mt-1">📞 {c?.telefono || "teléfono enviado a tu email"} · ✉️ {c?.email || "email enviado a tu email"}</div>
+      <p className="mt-1 text-sky-800">A partir de aquí la relación es directa con el cliente.</p>
     </div>
   );
 }

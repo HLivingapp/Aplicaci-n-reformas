@@ -38,9 +38,9 @@ export default function AvisoLegal() {
         <h2 className="mb-2 font-semibold">Qué se paga y quién lo cobra</h2>
         <p>
           Ver cuántos profesionales hay en la zona y el presupuesto medio es gratis. Para ver la ficha ampliada y las tarifas de cada profesional, chatear con ellos y pedirles cita, el cliente paga una
-          cuota única de {PRECIO_ACCESO} ({PRECIO_ACCESO_SUSCRITO} si tiene una suscripción de servicios), con tarjeta o Bizum. Garantía: si en {COBRO.diasGarantia} días desde el pago ningún
+          cuota única de {PRECIO_ACCESO} ({PRECIO_ACCESO_SUSCRITO} si tiene una suscripción de servicios), con tarjeta o Bizum. Si en {COBRO.diasGarantia} días desde el pago ningún
           profesional acepta una cita con él, se le devuelve la cuota. Cada profesional paga {PRECIO_CITA} cuando acepta una cita presencial con un cliente de la app, venda o no. Si marca que el
-          cliente no se presentó y este no lo desmiente en 48 horas, recupera la cita como crédito para la siguiente. Los cobra {R.razonSocial}. No se cobra nada cuando el cliente invita a su
+          cliente no se presentó y este no lo desmiente en 48 horas, recupera la cita como crédito para la siguiente. Los arquitectos y estudios no hacen visita: chatean con el cliente y pagan 99 € cuando piden su contacto, acabe o no en encargo; desde ahí la relación es directa. Lo cobra {R.razonSocial}. No se cobra nada cuando el cliente invita a su
           propio profesional o el profesional trae a su cliente.
         </p>
       </section>

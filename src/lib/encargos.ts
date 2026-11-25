@@ -293,7 +293,7 @@ export function clientePenalizado(desdeIso?: string) {
 
 const CLAVE_ACCESO = "app-reformas:acceso-cliente";
 export interface AccesoCliente { fecha: string; metodo: MetodoPago; importe: number; devuelto?: string }
-/** Acceso del cliente a la red (pago único de 29,90 €, o 19,90 € con suscripción), o undefined. Sin acceso si se le devolvió por la garantía o si faltó a una cita sin avisar. */
+/** Acceso del cliente a la red (pago único de 29,90 €, o 19,90 € con suscripción), o undefined. Sin acceso si se le devolvió por no tener ninguna cita o si faltó a una cita sin avisar. */
 export const accesoPagado = () => {
   const a = leer<AccesoCliente | null>(CLAVE_ACCESO, null);
   return a && !a.devuelto && !clientePenalizado(a.fecha) ? a : undefined;
@@ -311,7 +311,7 @@ export function pagarAcceso(metodo: MetodoPago, importe: number) {
 }
 
 /**
- * Garantía de al menos una cita: si en 30 días desde el pago ningún proveedor ha aceptado una cita con el cliente,
+ * Condición de pago (en letra pequeña): si en 30 días desde el pago ningún proveedor ha aceptado una cita con el cliente,
  * se le devuelve la cuota (simulado en la demo; en real, devolución automática por la pasarela).
  */
 export function garantiaAcceso(): { estado: "en_plazo"; dias: number } | { estado: "cumplida" } | { estado: "devuelta"; importe: number } | null {
@@ -320,7 +320,8 @@ export function garantiaAcceso(): { estado: "en_plazo"; dias: number } | { estad
   if (a.devuelto) return { estado: "devuelta", importe: a.importe };
   if (clientePenalizado(a.fecha)) return null;
   const desde = new Date(a.fecha).getTime();
-  if (leerEncargos().some((e) => e.origen !== "invitado" && citaAceptada(e) && new Date(e.visita.pagoReformista ?? e.creado).getTime() >= desde)) return { estado: "cumplida" };
+  // Las citas a las que el proveedor faltó sin avisar no cuentan: es para los clientes a los que les han fallado los proveedores
+  if (leerEncargos().some((e) => e.origen !== "invitado" && citaAceptada(e) && estadoReformistaNoVino(e) !== "confirmada" && new Date(e.visita.pagoReformista ?? e.creado).getTime() >= desde)) return { estado: "cumplida" };
   const dias = COBRO.diasGarantia - Math.floor((Date.now() - desde) / 864e5);
   if (dias > 0) return { estado: "en_plazo", dias };
   registrarPago("devolucion_acceso", a.importe, a.metodo);

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { COBRO, PRECIO_ACCESO, PRECIO_ACCESO_SUSCRITO, PRECIO_CITA, TEXTO_GARANTIA } from "@/lib/comercializacion";
+import { COBRO, PRECIO_ACCESO, PRECIO_ACCESO_SUSCRITO, PRECIO_CITA, TEXTO_RED_PROVEEDORES } from "@/lib/comercializacion";
 import { APP } from "@/lib/marca";
 import { BENEFICIOS_CLIENTE } from "@/lib/beneficios";
 import { ListaBeneficios } from "@/components/Beneficios";
@@ -53,7 +53,7 @@ const VENTAJAS = [
 
 const PREGUNTAS = [
   { q: "¿Cuánto cuesta el presupuesto?", a: `Nada. Te unes gratis con tu email y ves tu presupuesto orientativo en la app al momento, sin que te lo manden por correo. También ves gratis cuántos reformistas homologados hay en tu zona y el presupuesto medio con sus tarifas.` },
-  { q: "¿Qué pago para ver a los reformistas y quedar con ellos?", a: `Un pago único de ${PRECIO_ACCESO} (${PRECIO_ACCESO_SUSCRITO} si tienes suscripción), con tarjeta o Bizum. Con él ves la ficha y el precio de cada reformista para tu casa, chateas con ellos y les pides cita en tu casa, hasta ${COBRO.maxCitas}. ${TEXTO_GARANTIA}` },
+  { q: "¿Qué pago para ver a los reformistas y quedar con ellos?", a: `Un pago único de ${PRECIO_ACCESO} (${PRECIO_ACCESO_SUSCRITO} si tienes suscripción), con tarjeta o Bizum. Con él ves la ficha y el precio de cada reformista para tu casa, chateas con ellos y les pides cita en tu casa, hasta ${COBRO.maxCitas}.` },
   { q: "¿Qué reformistas me proponéis?", a: "Los 3 homologados con mejor encaje para tu casa: que trabajen en tu zona y con más puntos de visibilidad, que se ganan vendiendo a clientes de la app y con buenas valoraciones de otros clientes." },
   { q: "¿Y si no puedo ir a la cita?", a: "Avísalo en la app con el motivo y no pasa nada. Si faltas sin avisar, pierdes tu acceso y tienes que volver a pagarlo para pedir más citas. Lo mismo vale para los reformistas: si faltan sin avisar, pierden la cita, sale un aviso en su ficha y pueden quedar suspendidos." },
   { q: "¿Cobráis algo sobre la obra?", a: "No. La obra la contratas y la pagas directamente al reformista que elijas. La app no cobra ningún porcentaje sobre ella." },
@@ -307,8 +307,8 @@ export default function Inicio() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
             { n: "Gratis", p: "0 €", d: "Tu presupuesto partida a partida al momento, cuántos reformistas hay en tu zona y el presupuesto medio. Y el foro.", cls: "border-stone-200" },
-            { n: "Acceso a los reformistas", p: `${PRECIO_ACCESO} una vez`, d: `Ficha y precio de cada reformista para tu casa, chat y citas. ${PRECIO_ACCESO_SUSCRITO} si tienes suscripción. Si ninguno acepta una cita contigo en ${COBRO.diasGarantia} días, te lo devolvemos.`, cls: "border-teal-600 ring-2 ring-teal-100" },
-            { n: "Suscripción", p: "desde 4,95 €/mes", d: "Básico: hipoteca, ayudas, seguimiento de obra y contrato. Pro (29,95 €/mes): además, asistente IA especializado en obra.", cls: "border-indigo-300" },
+            { n: "Acceso a los reformistas", p: `${PRECIO_ACCESO} una vez`, d: `${TEXTO_RED_PROVEEDORES} ${PRECIO_ACCESO_SUSCRITO} si tienes suscripción.`, cls: "border-teal-600 ring-2 ring-teal-100" },
+            { n: "Suscripción", p: "desde 4,95 €/mes", d: "Básico: hipoteca, ayudas, seguimiento de obra y contrato. Pro (29,95 €/mes, o un 30 % menos pagando el año): además, asistente IA especializado en obra. La IA solo va en el Pro.", cls: "border-indigo-300" },
           ].map((x) => (
             <Link key={x.n} href="/suscripcion" className={`rounded-2xl border bg-white p-5 hover:shadow-sm ${x.cls}`}>
               <div className="font-semibold">{x.n}</div>

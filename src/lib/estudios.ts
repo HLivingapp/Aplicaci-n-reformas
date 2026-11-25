@@ -2,11 +2,14 @@
 import { TITULAR } from "./legal";
 
 import { nuevoId } from "./id";
-import { avisarCambio } from "./nube";
+import { avisarCambio, registrarPago } from "./nube";
+import { anonimizar } from "./anonimizar";
+import { COBRO } from "./comercializacion";
 
 /**
- * Estudios de arquitectura y arquitectos autónomos: alta, tarifas por servicio, encargos de
- * clientes, propuesta y contrato en la app. Sin comisión sobre los honorarios (25/11/2026).
+ * Estudios de arquitectura y arquitectos autónomos: alta y tarifas por servicio. El cliente (con el acceso único)
+ * ve la ficha y el precio de cada uno y chatea con ellos. Cuando el arquitecto pide el contacto del cliente paga 99 €,
+ * acabe o no en encargo; desde ahí la relación es directa. Sin comisión sobre los honorarios (25/11/2026).
  * Demostración: todo se guarda en este navegador.
  */
 
@@ -39,7 +42,8 @@ export interface Estudio {
   encargosEnApp: number;
 }
 
-export type EstadoEncargoEstudio = "solicitado" | "propuesta" | "firmado" | "descartado";
+export type EstadoEncargoEstudio = "solicitado" | "contacto" | "propuesta" | "firmado" | "descartado";
+export interface MensajeEstudio { de: "cliente" | "estudio"; texto: string; fecha: string; ocultos?: number }
 
 export interface EncargoEstudio {
   id: string;
@@ -56,6 +60,12 @@ export interface EncargoEstudio {
   nota: string;
   propuesta?: { importe: number; plazoSemanas: number; alcance: string; fecha: string };
   firmas?: { cliente?: string; estudio?: string };
+  /** Chat cliente–arquitecto. Los contactos se ocultan hasta que el arquitecto pide (y paga) el contacto del cliente. */
+  chat?: MensajeEstudio[];
+  /** El arquitecto pidió el contacto del cliente y pagó 99 € (simulado en la demo) */
+  contacto?: string;
+  /** Aviso al arquitecto de la conversación nueva (email y WhatsApp; simulado) */
+  aviso?: string;
   /** «invitado»: cliente propio del estudio, que le invitó a la app. Sin coste. */
   origen?: "app" | "invitado";
 }
@@ -143,7 +153,29 @@ function cambiar(id: string, f: (e: EncargoEstudio) => EncargoEstudio) {
 export function solicitarEstudio(est: Estudio, d: Pick<EncargoEstudio, "servicio" | "proyectoId" | "cliente" | "zona" | "m2" | "nota">) {
   const ya = leerEncargosEstudio().some((x) => x.estudioId === est.id && x.proyectoId === d.proyectoId && x.servicio === d.servicio && x.estado !== "descartado");
   if (ya) return;
-  guardar({ ...d, id: nuevoId(), estudioId: est.id, codigo: est.codigo, precioCalculado: precioServicio(est.tarifa, d.servicio, d.m2) ?? 0, creado: new Date().toISOString(), estado: "solicitado" });
+  const ahora = new Date().toISOString();
+  guardar({
+    ...d, id: nuevoId(), estudioId: est.id, codigo: est.codigo, precioCalculado: precioServicio(est.tarifa, d.servicio, d.m2) ?? 0, creado: ahora, estado: "solicitado", aviso: ahora,
+    chat: d.nota.trim() ? [{ de: "cliente", texto: anonimizar(d.nota).texto, fecha: ahora }] : [],
+  });
+}
+
+/** Mensaje en el chat. Hasta que el arquitecto pide el contacto, teléfonos, emails y webs se ocultan. */
+export function mensajeEstudio(id: string, de: MensajeEstudio["de"], texto: string): number {
+  const e = leerEncargosEstudio().find((x) => x.id === id);
+  if (!e) return 0;
+  const { texto: limpio, ocultos } = e.contacto || e.origen === "invitado" ? { texto: texto.trim(), ocultos: 0 } : anonimizar(texto);
+  if (!limpio) return 0;
+  cambiar(id, (x) => ({ ...x, chat: [...(x.chat ?? []), { de, texto: limpio, fecha: new Date().toISOString(), ...(ocultos && { ocultos }) }] }));
+  return ocultos;
+}
+
+/** El arquitecto pide el contacto del cliente: paga 99 € (simulado), acabe o no en encargo. Desde aquí, relación directa. */
+export function pedirContactoCliente(id: string) {
+  const e = leerEncargosEstudio().find((x) => x.id === id);
+  if (!e || e.contacto) return;
+  if (e.origen !== "invitado") registrarPago("contacto_arquitecto", COBRO.contactoArquitecto, id);
+  cambiar(id, (x) => ({ ...x, estado: x.estado === "solicitado" ? "contacto" : x.estado, contacto: new Date().toISOString() }));
 }
 
 /** Encargo de un cliente que ha invitado el propio estudio: sin coste. */
@@ -171,7 +203,8 @@ export const firmarPropuestaEstudio = (id: string) => cambiar(id, (e) => ({ ...e
 export const descartarEncargoEstudio = (id: string) => cambiar(id, (e) => ({ ...e, estado: "descartado" }));
 
 export const ESTADO_ESTUDIO: Record<EstadoEncargoEstudio, { texto: string; cls: string }> = {
-  solicitado: { texto: "Solicitado", cls: "bg-amber-100 text-amber-900" },
+  solicitado: { texto: "Conversación abierta", cls: "bg-amber-100 text-amber-900" },
+  contacto: { texto: "Contacto compartido", cls: "bg-sky-100 text-sky-900" },
   propuesta: { texto: "Propuesta recibida", cls: "bg-teal-100 text-teal-900" },
   firmado: { texto: "Contrato firmado", cls: "bg-emerald-100 text-emerald-800" },
   descartado: { texto: "Descartado", cls: "bg-stone-200 text-stone-600" },
@@ -179,4 +212,4 @@ export const ESTADO_ESTUDIO: Record<EstadoEncargoEstudio, { texto: string; cls: 
 
 /** Compromiso del estudio con los clientes que llegan por la app. Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_ESTUDIO =
-  `Me comprometo a responder a los clientes que me pidan propuesta a través de la app y a acudir a las citas que acepte o avisar antes con el motivo. ${TITULAR} no cobra comisión sobre mis honorarios.`;
+  `Pagaré 99 € cada vez que pida el contacto de un cliente que me llegue por la app, acabe o no en encargo. Me comprometo a responder en el chat a los clientes que me escriban. ${TITULAR} no cobra comisión sobre mis honorarios y, una vez compartido el contacto, la relación con el cliente es directa.`;

@@ -258,7 +258,7 @@ function CitaCliente({ e }: { e: Encargo }) {
   const rnv = estadoReformistaNoVino(e);
   if (e.cancelaCliente) return <p className="mt-3 rounded-xl bg-stone-100 p-3 text-xs text-stone-700">Cancelaste la cita avisando: «{e.cancelaCliente.motivo}». Sin penalización.</p>;
   if (rnv === "pendiente") return <p className="mt-3 rounded-xl bg-stone-100 p-3 text-xs text-stone-700">Has avisado de que el reformista no vino. Tiene {HORAS_DESMENTIR} h para explicarlo; si no, cuenta como falta en su ficha.</p>;
-  if (rnv === "confirmada") return <p className="mt-3 rounded-xl bg-red-50 p-3 text-xs text-red-900">El reformista no vino ni avisó: cuenta como falta en su ficha. Esta cita no gasta tu garantía.</p>;
+  if (rnv === "confirmada") return <p className="mt-3 rounded-xl bg-red-50 p-3 text-xs text-red-900">El reformista no vino ni avisó: cuenta como falta en su ficha.</p>;
   if (e.estado === "visita_pedida" && e.cancelaReformista)
     return <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-950">El reformista ha avisado de que no puede ir: «{e.cancelaReformista.motivo}». Te propondrá otra fecha.</p>;
   if (e.estado !== "visita_fijada" || estadoNoPresento(e)) return null;

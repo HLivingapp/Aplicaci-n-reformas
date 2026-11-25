@@ -290,7 +290,7 @@ export function anotarMiProyecto(token: string) {
 }
 
 /** Registra un pago simulado (acceso del cliente, cita del proveedor, suscripción, servicio). Sin sesión no hace nada. */
-export function registrarPago(concepto: "acceso_cliente" | "devolucion_acceso" | "cita_proveedor" | "suscripcion" | "servicio", euros: number, referencia?: string) {
+export function registrarPago(concepto: "acceso_cliente" | "devolucion_acceso" | "cita_proveedor" | "contacto_arquitecto" | "suscripcion" | "servicio", euros: number, referencia?: string) {
   if (!conNube || !sesionActual) return;
   void supabaseNavegador()
     .from("pagos")
