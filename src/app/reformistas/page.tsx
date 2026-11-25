@@ -11,7 +11,7 @@ import { fichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
 import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
-import { AVISO_TARIFAS, COMERCIALIZACION, LETRA_PEQUENA_TARIFAS, miles, TEXTO_RESERVA, TEXTO_VISITA_REFORMISTA, VISITAS } from "@/lib/comercializacion";
+import { AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS, PRECIO_CITA } from "@/lib/comercializacion";
 import { MiniVideo } from "@/components/MiniVideo";
 import { TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 import { anonimizar } from "@/lib/anonimizar";
@@ -24,15 +24,15 @@ const NOMBRE = APP.nombre;
 
 /** Bloques del área de reformistas. Cada uno tiene su mini vídeo en public/videos/mini/<video>.mp4 (aparece cuando existe). */
 const VENTAJAS_PRO = [
-  { i: "🎯", t: "Clientes que ya te han elegido", d: "Solo visitas a quien va en serio.", video: "rf-clientes", foto: "salon-amplio" },
+  { i: "🎯", t: "Clientes que ya te han elegido", d: "Han pagado por ver tu precio y te piden cita.", video: "rf-clientes", foto: "salon-amplio" },
   { i: "💬", t: "Opiniones serias", d: "Entrevistamos a tus clientes, sin estrellas sueltas.", video: "rf-opiniones", foto: "bano" },
-  { i: "💶", t: "Cobros por hitos", d: "Contrato y pagos por fases en la app.", video: "rf-cobros", foto: "cocina" },
-  { i: "⭐", t: "Más visible", d: "Cada obra firmada te sube en los resultados.", video: "rf-visibilidad", foto: "vestidor" },
+  { i: "📊", t: "Tus números de venta", d: "% vendido de tus citas y coste por venta.", video: "rf-cobros", foto: "cocina" },
+  { i: "⭐", t: "Más visible", d: "Cada obra vendida te sube en los resultados.", video: "rf-visibilidad", foto: "vestidor" },
 ];
 const PASOS_PRO = [
   { i: "📝", t: "Alta y homologación", d: "10 minutos. Al momento si todo está en vigor.", video: "rf-homologacion" },
   { i: "📑", t: "Tus tarifas", d: "Tus % por capítulo, o sube 20 presupuestos y sacamos tus precios.", video: "rf-tarifas" },
-  { i: "🤝", t: "Visita, firma y obra", d: "Te eligen, visitas, firmáis y llevas avances y cobros en la app.", video: "rf-avances" },
+  { i: "🤝", t: "Chat, cita y venta", d: `Te avisamos por email y WhatsApp, chateas gratis y pagas ${PRECIO_CITA} al aceptar la cita.`, video: "rf-avances" },
 ];
 const VIDEO_BENEFICIO: Record<string, string> = {};
 for (const b of BENEFICIOS_PROFESIONAL) {
@@ -87,7 +87,7 @@ export default function AltaReformista() {
     setError(null);
     try {
       const token = await enviarAlta(a, declaro, acepto);
-      // Demostración: la obra del cliente que le ha invitado aparece en su área, sin reserva ni fee
+      // Demostración: la obra del cliente que le ha invitado aparece en su área, sin coste para ninguno
       const p = invitacion && !conBaseDeDatos ? leerLocal().proveedores.find((x) => x.token === token) : undefined;
       if (invitacion && p) aceptarInvitacion(invitacion.codigo, fichaRed(p));
       router.push(`/reformista/${token}?nuevo`);
@@ -126,7 +126,7 @@ export default function AltaReformista() {
         <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
           <div className="font-semibold">🤝 {invitacion.datos.cliente} te ha invitado a llevar su reforma con la app</div>
           <p className="mt-1">
-            Al ser tu cliente, en esta obra no pagáis nada ninguno de los dos: ni reserva ni fee. Rellena tu alta y la obra aparecerá en tu área para meter el presupuesto acordado y firmar el contrato en la app. Para generar el contrato tendrás que subir tu seguro RSC (responsabilidad civil) y los certificados al corriente de pago.
+            Al ser tu cliente, en esta obra no pagáis nada ninguno de los dos. Rellena tu alta y la obra aparecerá en tu área; si queréis, podéis usar el contrato estándar de la app. Para generar el contrato tendrás que subir tu seguro RSC (responsabilidad civil) y los certificados al corriente de pago.
           </p>
         </div>
       )}
@@ -174,12 +174,13 @@ export default function AltaReformista() {
       </section>
 
       <section className="rounded-2xl bg-teal-700 p-5 text-white" aria-label="Precio">
-        <h2 className="text-lg font-semibold">Precio claro: pagas cuando hay negocio</h2>
+        <h2 className="text-lg font-semibold">Precio claro: pagas solo por citas con clientes interesados</h2>
         <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
           <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">5 €<span className="text-sm font-normal">/mes</span></div>Suscripción, sin permanencia</li>
-          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">{VISITAS.reformista} €</div>Por visita confirmada a un cliente que ya te ha elegido</li>
-          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">{COMERCIALIZACION.pct} %</div>Solo si firma en la app (mín. {miles(COMERCIALIZACION.minimo)} €)</li>
+          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">{PRECIO_CITA}</div>Por cita presencial que aceptas, con un cliente que ya ha pagado por ver tu precio y te ha elegido</li>
+          <li className="rounded-xl bg-white/10 p-3"><div className="text-2xl font-semibold">0 %</div>Sin comisión sobre la obra. Chat con el cliente gratis</li>
         </ul>
+        <p className="mt-3 text-sm text-teal-50">Si el cliente no se presenta y no lo desmiente en 48 h, recuperas la cita. Si faltas tú sin avisar, la pierdes y sale un aviso en tu ficha.</p>
         <p className="mt-3 text-sm text-teal-50">Los clientes que traes tú no pagan nada y a ti tampoco te cuestan nada.</p>
         <MiniVideo tema="rf-pagos" titulo="Cuánto pagas y cuándo" oscuro />
         <a href="#alta" className="mt-4 block rounded-xl bg-white px-5 py-3 text-center font-semibold text-teal-800 hover:bg-teal-50">Darme de alta gratis</a>
@@ -197,7 +198,8 @@ export default function AltaReformista() {
           <summary className="cursor-pointer font-semibold">Todas las ventajas y condiciones</summary>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {[
-              ["🎯", "Visitas cualificadas", `Solo vas a casa de clientes que ya han visto tu precio, te han elegido y han pagado para pedir visitas. Cada visita cuesta ${TEXTO_VISITA_REFORMISTA.replace(" por cada visita a la que vas", "")} y, si el cliente firma en la app, el fee es la reserva que él paga al firmar (${TEXTO_RESERVA}).`, "rf-clientes"],
+              ["🎯", "Citas cualificadas", `Solo vas a casa de clientes que han pagado por ver tu ficha y tu precio y te han pedido cita. Te avisamos por email y WhatsApp, chateas gratis y pagas ${PRECIO_CITA} al aceptar la cita, vendas o no. Sin comisión sobre la obra.`, "rf-clientes"],
+              ["📊", "Tus estadísticas de venta", "En tu panel ves qué % de tus citas vendes, cuánto te cuesta cada venta, cuánto vendes por cada euro en citas y cómo respondes en el chat.", "rf-cobros"],
               ["📋", "Tus tarifas trabajan por ti", `${AVISO_TARIFAS}. ${LETRA_PEQUENA_TARIFAS}`, "rf-tarifas"],
               ["⭐", "Puntos de visibilidad", `${TEXTO_VISIBILIDAD} Los clientes que traes no pagan nada y te suman puntos.`, "rf-visibilidad"],
               ...BENEFICIOS_PROFESIONAL.filter((x) => !x.t.startsWith("Clientes que")).map((x) => [x.i, x.t, x.d, VIDEO_BENEFICIO[x.t] ?? ""]),
@@ -212,7 +214,7 @@ export default function AltaReformista() {
       <Tarjeta className="space-y-3 border-teal-200">
         <h2 className="font-semibold">Empieza tu alta: declaración responsable y compromiso de ventas</h2>
         <p className="text-sm text-stone-700">{TEXTO_DECLARACION_RESPONSABLE}</p>
-        <p className="text-sm text-stone-700"><b>Ventas que llegan por la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
+        <p className="text-sm text-stone-700"><b>Citas con clientes de la app.</b> {TEXTO_COMPROMISO_VENTAS}</p>
         <p className="text-sm text-stone-700"><b>Clientes tuyos y clientes de la app.</b> {TEXTO_COMPROMISO_INVITADOS}</p>
         <p className="text-sm text-stone-700"><b>Datos de los clientes.</b> {TEXTO_DATOS_PROFESIONAL}</p>
         <p className="text-xs text-stone-400">Texto pendiente de revisión legal.</p>
@@ -373,9 +375,9 @@ export default function AltaReformista() {
           <textarea rows={3} className={inputCls} value={a.presentacion} onChange={(e) => set("presentacion", e.target.value)} />
         </Campo>
         {anonimizar(a.presentacion, a).ocultos > 0 ? (
-          <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ Tu presentación tiene datos que te identifican (nombre, teléfono, email, web o redes). Los clientes la verán así: «{anonimizar(a.presentacion, a).texto}». Tu nombre y contactos solo se comparten cuando el cliente firma.</p>
+          <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ Tu presentación tiene datos que te identifican (nombre, teléfono, email, web o redes). Los clientes la verán así: «{anonimizar(a.presentacion, a).texto}». Tu nombre y contactos solo se comparten cuando aceptas la cita.</p>
         ) : (
-          <p className="text-xs text-stone-500">No pongas tu nombre ni contactos: tu ficha es anónima hasta que el cliente firma, y los ocultamos automáticamente.</p>
+          <p className="text-xs text-stone-500">No pongas tu nombre ni contactos: tu ficha es anónima hasta que aceptas la cita, y los ocultamos automáticamente.</p>
         )}
       </Tarjeta>
 

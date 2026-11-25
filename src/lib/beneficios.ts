@@ -20,17 +20,17 @@ export interface Beneficio {
 export const BENEFICIOS_CLIENTE: Beneficio[] = [
   {
     i: "🛡️",
-    t: "Seguro de promotor MAPFRE, gratis",
+    t: "Seguro de promotor MAPFRE, online",
     href: "/nuevo",
     tema: "seguro",
     area: "empezar mi reforma",
-    d: "Si contratas tu obra por la app, te regalamos un seguro como promotor de la obra mientras dura la reforma.",
+    d: "Contrata desde la app un seguro como promotor de la obra mientras dura la reforma.",
     mas: [
       "Responsabilidad civil como promotor: daños a vecinos, a la comunidad de vecinos o a terceros durante la obra",
       "Defensa jurídica y reclamación de daños",
       "Asesoramiento legal telefónico durante la obra",
     ],
-    pendiente: "Coberturas y condiciones según la póliza, pendientes de cerrar con MAPFRE. Si traes a tu propio reformista, puedes contratarlo online con coste.",
+    pendiente: "Precio, coberturas y condiciones según la póliza, pendientes de cerrar con MAPFRE.",
   },
   {
     i: "🤖",
@@ -74,8 +74,7 @@ export const BENEFICIOS_CLIENTE: Beneficio[] = [
     href: "/red",
     tema: "invita",
     area: "la red de profesionales",
-    d: "¿Ya tienes reformista? Invítalo a la app: ni tú ni él pagáis reserva ni comisión, y tenéis contrato, pagos por fases y avances igualmente.",
-    pendiente: "El seguro de promotor gratis solo va con reformistas de la app.",
+    d: "¿Ya tienes reformista? Invítalo a la app: ni tú ni él pagáis nada, y tenéis contrato estándar, pagos por fases y avances igualmente.",
   },
   {
     i: "🔑",
@@ -122,7 +121,7 @@ export const BENEFICIOS_PROFESIONAL: Beneficio[] = [
   {
     i: "🤝",
     t: "Invita a tus clientes: no te costará ni un euro",
-    d: "Desde tu área mandas un enlace a tus propios clientes y lleváis la obra con la app: en esas obras no pagas fee ni comisión, ni tu cliente reserva. Solo pagas el fee (la reserva del cliente) en los clientes que te llegan por la app.",
+    d: "Desde tu área mandas un enlace a tus propios clientes y lleváis la obra con la app: con ellos no pagas citas y tu cliente no paga acceso. Solo pagas la cita (150 €) con los clientes que te llegan por la app.",
   },
   {
     i: "📋",

@@ -7,7 +7,6 @@ import { Chips } from "@/components/Chips";
 import { Boton, Campo, inputCls, Tarjeta } from "@/components/ui";
 import { publico } from "@/lib/base";
 import { BENEFICIOS_PROFESIONAL } from "@/lib/beneficios";
-import { TEXTO_RESERVA } from "@/lib/comercializacion";
 import { TEXTO_DATOS_PROFESIONAL } from "@/lib/legal";
 import { altaEstudio, SERVICIOS, TEXTO_COMPROMISO_ESTUDIO, type TarifaEstudio } from "@/lib/estudios";
 import { ZONAS } from "@/lib/proveedores";
@@ -57,7 +56,7 @@ export default function AltaArquitectos() {
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-2">
         {[
-          ["💶", "Solo pagas si firmas", `Sin cuotas por contacto. El fee es la reserva que paga el cliente al firmar en la app (${TEXTO_RESERVA}) y se descuenta de tus honorarios.`],
+          ["💶", "Sin comisión", "No cobramos nada sobre tus honorarios. El cliente ya ha pagado por ver tu precio cuando te pide la propuesta."],
           ["📐", "Encargos con la vivienda definida", "Llegan con m², distribución, presupuesto de obra y lo que el cliente quiere hacer."],
           ...BENEFICIOS_PROFESIONAL.filter((b) => b.t.startsWith("Menos impagos") || b.t.startsWith("Financiación") || b.t.startsWith("Memoria") || b.t.startsWith("Invita")).map((b) => [b.i, b.t, b.d]),
         ].map(([i, t, d]) => (

@@ -17,7 +17,7 @@ import { supabaseNavegador } from "./supabase/navegador";
  *  · datos_usuario     → lo personal: borrador del presupuesto, materiales elegidos (moodboard), suscripción…
  *  · proyectos_cliente → proyectos y presupuestos del cliente (lo que ve en su enlace privado)
  *  · encargos          → visitas, presupuesto final, contrato y avances, compartidos entre cliente y profesional
- *  · pagos             → pagos simulados (visitas, reserva, suscripción) hasta conectar Stripe
+ *  · pagos             → pagos simulados (acceso del cliente, citas, suscripción) hasta conectar Stripe
  *  · perfiles          → email, teléfono opcional y consentimientos con su fecha
  * Las políticas RLS hacen que cada uno solo pueda leer y escribir lo suyo.
  */
@@ -289,8 +289,8 @@ export function anotarMiProyecto(token: string) {
   avisarCambio(CLAVE_DATOS);
 }
 
-/** Registra un pago simulado (visitas, reserva, suscripción). Sin sesión no hace nada. */
-export function registrarPago(concepto: "visitas_cliente" | "visita_profesional" | "reserva" | "suscripcion" | "devolucion_visitas" | "servicio", euros: number, referencia?: string) {
+/** Registra un pago simulado (acceso del cliente, cita del proveedor, suscripción, servicio). Sin sesión no hace nada. */
+export function registrarPago(concepto: "acceso_cliente" | "devolucion_acceso" | "cita_proveedor" | "suscripcion" | "servicio", euros: number, referencia?: string) {
   if (!conNube || !sesionActual) return;
   void supabaseNavegador()
     .from("pagos")

@@ -16,11 +16,11 @@ export const RESPONSABLE = {
   actualizada: "22 de noviembre de 2026",
 };
 
-/** «VIVIENDA HL CENTRO S.L., titular de ReformaMejor»: quien cobra la reserva y firma con los profesionales. */
+/** «VIVIENDA HL CENTRO S.L., titular de ReformaMejor»: quien cobra el acceso de los clientes y las citas de los profesionales. */
 export const TITULAR = `${RESPONSABLE.razonSocial}, titular de ${APP.nombre}`;
 
 /** Comercializadora en todos los contratos de la app. */
-export const TEXTO_COMERCIALIZADORA = `${RESPONSABLE.razonSocial} (CIF ${RESPONSABLE.cif}), titular de ${APP.nombre}, actúa como comercializadora: pone en contacto a las partes y gestiona la contratación en la app, pero no es parte de la obra o del encargo ni responde de su ejecución.`;
+export const TEXTO_COMERCIALIZADORA = `${RESPONSABLE.razonSocial} (CIF ${RESPONSABLE.cif}), titular de ${APP.nombre}, pone en contacto a las partes y les facilita este modelo de contrato, pero no es parte de la obra o del encargo, no cobra nada sobre su importe ni responde de su ejecución.`;
 
 /** Tratamiento de datos de clientes por los profesionales. Pendiente de revisión por el abogado (acuerdo RGPD completo). */
 export const TEXTO_DATOS_PROFESIONAL = `Los datos de los clientes que recibo a través de ${APP.nombre} me los facilita ${RESPONSABLE.razonSocial}. Me comprometo a usarlos solo para preparar y ejecutar su reforma o encargo, a mantenerlos en secreto y protegidos, a no cederlos a terceros, a avisar de inmediato de cualquier fuga de datos y a borrarlos cuando ya no los necesite, según el RGPD.`;

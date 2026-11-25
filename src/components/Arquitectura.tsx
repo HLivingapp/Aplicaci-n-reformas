@@ -6,14 +6,12 @@ import { InvitaClientes } from "./InvitaClientes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { euros } from "@/lib/calc";
-import { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA } from "@/lib/comercializacion";
 import { alCambiar } from "@/lib/encargos";
 import {
   descartarEncargoEstudio, enviarPropuesta, ESTADO_ESTUDIO, firmarPropuestaCliente, firmarPropuestaEstudio, guardarTarifaEstudio, leerEncargosEstudio, leerEstudios, precioServicio, SERVICIOS, solicitarEstudio,
   type EncargoEstudio, type Estudio, type Servicio, type TarifaEstudio,
 } from "@/lib/estudios";
-import { incluye, useSuscripcion } from "@/lib/suscripcion";
-import { Muro } from "./Muro";
+import { PagoAcceso, useAcceso } from "./PagoAcceso";
 import { Boton, inputCls, Tarjeta } from "./ui";
 
 const IVA = 21;
@@ -31,9 +29,8 @@ function useDatosEstudios() {
 }
 
 /** Para el cliente: el precio de cada estudio para su proyecto, licencia o legalización, y la propuesta para firmar. */
-export function ServiciosArquitectura({ proyectoId, token, cliente, zona, m2 }: { proyectoId: string; token: string; cliente: string; zona: string; m2: number }) {
-  const s = useSuscripcion();
-  const suscrito = s ? incluye(s.plan, "basico") : false;
+export function ServiciosArquitectura({ proyectoId, cliente, zona, m2 }: { proyectoId: string; token?: string; cliente: string; zona: string; m2: number }) {
+  const suscrito = useAcceso();
   const { estudios, encargos } = useDatosEstudios();
   const [servicio, setServicio] = useState<Servicio>("declaracion");
   const [nota, setNota] = useState("");
@@ -54,11 +51,11 @@ export function ServiciosArquitectura({ proyectoId, token, cliente, zona, m2 }: 
         ))}
       </div>
       <p className="text-xs text-stone-500">{SERVICIOS.find((x) => x.id === servicio)?.detalle} Precio calculado para {m2} m².</p>
-      {!suscrito && <Muro plan="basico" volver={`/p/${token}`} titulo="Compara estudios de arquitectura">Con el plan Básico ves quién es cada estudio, su precio para tu casa, y le pides la propuesta.</Muro>}
+      {!suscrito && <PagoAcceso titulo="Compara estudios de arquitectura: quién es cada uno y su precio para tu casa" />}
       {mios.filter((x) => x.origen === "invitado").map((enc) => (
         <div key={enc.id} className="space-y-2 rounded-2xl border border-violet-200 bg-violet-50/60 p-4 text-sm">
           <div className="font-semibold">Tu arquitecto {enc.codigo} · {SERVICIOS.find((x) => x.id === enc.servicio)?.texto}</div>
-          <p className="text-xs text-stone-600">Te ha invitado él a la app: sin reserva. <span className={`ml-1 rounded-full px-2 py-0.5 font-medium ${ESTADO_ESTUDIO[enc.estado].cls}`}>{ESTADO_ESTUDIO[enc.estado].texto}</span></p>
+          <p className="text-xs text-stone-600">Te ha invitado él a la app: sin coste. <span className={`ml-1 rounded-full px-2 py-0.5 font-medium ${ESTADO_ESTUDIO[enc.estado].cls}`}>{ESTADO_ESTUDIO[enc.estado].texto}</span></p>
           {enc.propuesta && <PropuestaEstudio e={enc} parte="cliente" />}
         </div>
       ))}
@@ -101,8 +98,6 @@ export function ServiciosArquitectura({ proyectoId, token, cliente, zona, m2 }: 
 function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | "estudio" }) {
   const p = e.propuesta!;
   const invitado = e.origen === "invitado";
-  const reserva = invitado ? 0 : reservaApp(p.importe);
-  const minimo = !invitado && reserva > (p.importe * COMERCIALIZACION.pct) / 100;
   const servicio = SERVICIOS.find((x) => x.id === e.servicio)!;
   const puedeFirmar = parte === "cliente" ? !e.firmas?.cliente && e.estado === "propuesta" : !!e.firmas?.cliente && !e.firmas?.estudio;
   return (
@@ -113,15 +108,9 @@ function PropuestaEstudio({ e, parte }: { e: EncargoEstudio; parte: "cliente" | 
         <li><b>Honorarios:</b> {euros(p.importe)} + IVA ({IVA} %) = {euros(conIva(p.importe))}</li>
         <li><b>Plazo:</b> {p.plazoSemanas} semanas</li>
         <li><b>Alcance:</b> {p.alcance || servicio.detalle}</li>
-        <li><b>Pagos:</b> {invitado ? "cliente invitado por el arquitecto: sin reserva en la app; los honorarios se pagan directamente al arquitecto." : <>al firmar, reserva en la app de {euros(reserva)} ({TEXTO_RESERVA}), que se descuenta de los honorarios; el resto, directamente al arquitecto a la entrega.</>}</li>
+        <li><b>Pagos:</b> los honorarios se pagan directamente al arquitecto. La app no cobra nada sobre ellos.</li>
       </ul>
-      {parte === "estudio" && invitado && <p className="rounded-lg bg-violet-50 p-2 text-xs text-violet-900">Cliente tuyo: le invitaste tú, así que en este encargo no pagas fee.</p>}
-      {parte === "estudio" && !invitado && (
-        <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
-          Fee de comercialización: la reserva del cliente, {euros(reserva)}. Se descuenta de lo que cobras.
-          {minimo && <b> Ojo: en este encargo se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(p.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % de los honorarios.</b>}
-        </p>
-      )}
+      {parte === "estudio" && <p className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">Sin comisión: la app no cobra nada sobre tus honorarios{invitado ? " (y este cliente lo trajiste tú)" : ""}.</p>}
       <div className="grid gap-1 text-xs text-stone-500 sm:grid-cols-2">
         <span>Cliente: {e.firmas?.cliente ? "✅ firmado" : "pendiente"}</span>
         <span>Arquitecto: {e.firmas?.estudio ? "✅ firmado" : "pendiente"}</span>
@@ -204,9 +193,6 @@ function EncargoEstudioFila({ e }: { e: EncargoEstudio }) {
             <label className="text-xs text-stone-600">Plazo (semanas)<input type="number" min={1} className={`${inputCls} mt-1`} value={plazo} onChange={(x) => setPlazo(Math.max(1, Number(x.target.value)))} /></label>
           </div>
           <textarea rows={2} className={inputCls} placeholder={`Alcance (por defecto: ${servicio.detalle})`} value={alcance} onChange={(x) => setAlcance(x.target.value)} />
-          {e.origen !== "invitado" && cifra > 0 && reservaApp(cifra) > (cifra * COMERCIALIZACION.pct) / 100 && (
-            <p className="rounded-lg bg-amber-100 p-2 text-xs text-amber-900">⚠ Encargo pequeño: el fee mínimo es de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(cifra).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % de los honorarios. Puedes enviar la propuesta igualmente.</p>
-          )}
           <div className="flex gap-2">
             <Boton disabled={!cifra} onClick={() => enviarPropuesta(e.id, { importe: cifra, plazoSemanas: plazo, alcance })}>{e.propuesta ? "Actualizar propuesta" : "Enviar propuesta y contrato"}</Boton>
             {e.estado === "solicitado" && <button onClick={() => descartarEncargoEstudio(e.id)} className="text-xs text-stone-500 underline">No puedo</button>}

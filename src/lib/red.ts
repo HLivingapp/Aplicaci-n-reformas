@@ -24,7 +24,7 @@ export interface FichaRed {
   obrasEnApp: number;
   /** Facturación de obras firmadas en la app (sin IVA), para los puntos de visibilidad */
   facturacionApp?: number;
-  /** Clientes que ha traído a la app o que le han invitado (sin reserva ni pago de visitas) */
+  /** Clientes que ha traído a la app o que le han invitado (sin acceso ni citas de pago) */
   clientesTraidos?: number;
   /** Inscrito en el REA (no es obligatorio para todos; el cliente lo ve) */
   rea?: boolean;

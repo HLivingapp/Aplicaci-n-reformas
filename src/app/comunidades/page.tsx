@@ -55,7 +55,6 @@ export default function Comunidades() {
     [zona, especialidades],
   );
   const alterna = (lista: string[], v: string) => (lista.includes(v) ? lista.filter((x) => x !== v) : [...lista, v]);
-  const reserva = Math.max(importe * 0.03, 1000);
 
   return (
     <div className="min-h-dvh bg-stone-50">
@@ -166,7 +165,7 @@ export default function Comunidades() {
               </label>
               <div className="mt-3 text-3xl font-semibold">{euros(importe / viviendas)}</div>
               <div className="text-xs text-stone-400">por vivienda, a partes iguales entre {viviendas}. Si vuestros estatutos reparten por coeficiente de participación, cada vecino paga según el suyo.</div>
-              <div className="mt-3 border-t border-white/10 pt-3 text-xs text-stone-300">Reserva al firmar en la app: 3 % del presupuesto, mínimo 1.000 € ({euros(reserva)}).</div>
+              <div className="mt-3 border-t border-white/10 pt-3 text-xs text-stone-300">Sin comisión: la app no cobra nada sobre el precio de la obra.</div>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-white p-4">
               <div className="font-semibold">Lo que vais a necesitar</div>

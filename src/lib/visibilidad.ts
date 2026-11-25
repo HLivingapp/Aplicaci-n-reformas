@@ -5,17 +5,19 @@ import type { FichaRed } from "./red";
  * - Suben por facturación en la app, por valoración de clientes y por traer clientes (o venir invitado por un cliente).
  * - Cuando un cliente pide presupuestos, la app le propone los 3 reformistas con mejor encaje
  *   por cercanía (zona de trabajo) y puntos de visibilidad.
- * Las obras entre cliente y reformista que se traen el uno al otro no pagan nada (ni visitas ni reserva) y suman puntos.
+ * Las obras entre cliente y reformista que se traen el uno al otro no pagan nada (ni acceso ni cita) y suman puntos.
  */
 export const PUNTOS = {
-  /** Puntos por cada 1.000 € (sin IVA) facturados en la app */
+  /** Puntos por cada 1.000 € (sin IVA) vendidos a clientes de la app */
   porMilFacturado: 1,
   /** Puntos por cada valoración, según la nota: (nota − 3) × 10, solo si es mayor que 3 */
   porValoracion: 10,
   /** Puntos por cada cliente que trae a la app (o que le invita a ella) */
   porClienteTraido: 25,
-  /** Puntos que se restan cada vez que intenta compartir datos de contacto en el chat antes de firmar */
+  /** Puntos que se restan cada vez que intenta compartir datos de contacto en el chat antes de aceptar la cita */
   porIntentoContacto: -50,
+  /** Puntos que se restan por cada falta a una cita sin avisar (últimos 90 días) */
+  porFalta: -100,
   /** Peso de la cercanía frente a los puntos */
   zonaExacta: 1000,
   zonaCercana: 400,
@@ -31,11 +33,11 @@ export interface DesglosePuntos {
   total: number;
 }
 
-export function puntosVisibilidad(f: Pick<FichaRed, "facturacionApp" | "valoraciones" | "clientesTraidos"> & { intentosContacto?: number }): DesglosePuntos {
+export function puntosVisibilidad(f: Pick<FichaRed, "facturacionApp" | "valoraciones" | "clientesTraidos"> & { intentosContacto?: number; faltas?: number }): DesglosePuntos {
   const facturacion = Math.floor((f.facturacionApp ?? 0) / 1000) * PUNTOS.porMilFacturado;
   const valoraciones = Math.round((f.valoraciones ?? []).reduce((s, v) => s + Math.max(0, v.media - 3) * PUNTOS.porValoracion * v.n, 0));
   const clientes = (f.clientesTraidos ?? 0) * PUNTOS.porClienteTraido;
-  const penalizacion = (f.intentosContacto ?? 0) * PUNTOS.porIntentoContacto;
+  const penalizacion = (f.intentosContacto ?? 0) * PUNTOS.porIntentoContacto + (f.faltas ?? 0) * PUNTOS.porFalta;
   return { facturacion, valoraciones, clientes, penalizacion, total: Math.max(0, facturacion + valoraciones + clientes + penalizacion) };
 }
 
@@ -54,7 +56,7 @@ export function cercania(f: Pick<FichaRed, "zonas">, municipio: string, codigoPo
 }
 
 /** Encaje total para ordenar: cercanía + puntos de visibilidad. */
-export const encaje = (f: FichaRed & { intentosContacto?: number }, municipio: string, cp = "") => cercania(f, municipio, cp).puntos + puntosVisibilidad(f).total;
+export const encaje = (f: FichaRed & { intentosContacto?: number; faltas?: number }, municipio: string, cp = "") => cercania(f, municipio, cp).puntos + puntosVisibilidad(f).total;
 
 /** Los reformistas con mejor encaje para esta vivienda (por defecto, 3). */
 export function mejoresPara<T extends { ficha: FichaRed }>(lista: T[], municipio: string, cp = "", n = PUNTOS.propuestos): T[] {
@@ -63,6 +65,6 @@ export function mejoresPara<T extends { ficha: FichaRed }>(lista: T[], municipio
 
 export const TEXTO_VISIBILIDAD =
   `Cuando un cliente pide presupuestos, la app le propone los ${PUNTOS.propuestos} reformistas con mejor encaje por cercanía y puntos de visibilidad. ` +
-  `Los puntos suben con tu facturación en la app (${PUNTOS.porMilFacturado} por cada 1.000 €), con las valoraciones de tus clientes ` +
+  `Los puntos suben con lo que vendes a clientes de la app (${PUNTOS.porMilFacturado} por cada 1.000 €), con las valoraciones de tus clientes ` +
   `(hasta ${2 * PUNTOS.porValoracion} por valoración de 5 estrellas) y con cada cliente que traes a la app o que te invita (${PUNTOS.porClienteTraido}). ` +
-  `Cada intento de compartir teléfono, email o web con un cliente antes de firmar resta ${-PUNTOS.porIntentoContacto}.`;
+  `Cada intento de compartir teléfono, email o web con un cliente antes de aceptar la cita resta ${-PUNTOS.porIntentoContacto}, y cada falta a una cita sin avisar, ${-PUNTOS.porFalta}.`;
