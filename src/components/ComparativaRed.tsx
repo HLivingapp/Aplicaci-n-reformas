@@ -18,6 +18,7 @@ import { cercania, mejoresPara, PUNTOS, puntosVisibilidad } from "@/lib/visibili
 import { CurriculumReformista } from "./CurriculumReformista";
 import { ChatEncargo } from "./ChatEncargo";
 import { NoHomologados } from "./NoHomologados";
+import { borrarPropio, guardarPropio, insigniaVenta, leerPropios, registrarApariciones, resumenReformista, type PresupuestoPropio } from "@/lib/ventas";
 
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
@@ -47,6 +48,64 @@ export function useEncargos() {
   return lista;
 }
 
+type Orden = "precio" | "opiniones" | "respuesta" | "ratio";
+const ORDENES: [Orden, string][] = [["precio", "Precio"], ["opiniones", "Opiniones"], ["respuesta", "Responde antes"], ["ratio", "Más obras vendidas"]];
+
+/** El cliente apunta un presupuesto que ya tiene de fuera y lo ve al lado del medio de su zona y de los de la app. */
+function PresupuestosPropios({ proyectoId, medio, precios, suscrito }: { proyectoId: string; medio: number; precios: number[]; suscrito: boolean }) {
+  const [lista, setLista] = useState<PresupuestoPropio[]>([]);
+  const [importe, setImporte] = useState("");
+  const [de, setDe] = useState("");
+  const [abierto, setAbierto] = useState(false);
+  useEffect(() => setLista(leerPropios(proyectoId)), [proyectoId]);
+  if (!medio) return null;
+  const guardar = () => {
+    const n = Number(importe.replace(/\./g, "").replace(",", "."));
+    if (!n) return;
+    setLista(guardarPropio(proyectoId, { importe: n, de: de.trim() || "Presupuesto de fuera" }));
+    setImporte("");
+    setDe("");
+    setAbierto(false);
+  };
+  return (
+    <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-4 text-sm" data-propios>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div className="font-semibold">¿Ya tienes un presupuesto de otra empresa?</div>
+          <div className="text-xs text-stone-500">Apúntalo y te decimos si está caro frente a tu zona y cuántos reformistas de la app lo hacen por menos.</div>
+        </div>
+        {!abierto && <button type="button" onClick={() => setAbierto(true)} className="rounded-full border border-teal-700 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">+ Comparar el mío</button>}
+      </div>
+      {abierto && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <input className={`${inputCls} w-40`} inputMode="decimal" placeholder="Importe con IVA (€)" value={importe} onChange={(x) => setImporte(x.target.value)} />
+          <input className={`${inputCls} min-w-0 flex-1`} placeholder="De quién (opcional)" value={de} onChange={(x) => setDe(x.target.value)} />
+          <button type="button" onClick={guardar} className="rounded-xl bg-teal-700 px-4 py-2 font-semibold text-white hover:bg-teal-800">Comparar</button>
+        </div>
+      )}
+      {lista.map((p, i) => {
+        const dif = Math.round(((p.importe - medio) / medio) * 100);
+        const masBaratos = precios.filter((x) => x < p.importe).length;
+        return (
+          <div key={i} className={`mt-3 rounded-xl p-3 ${dif > 5 ? "bg-amber-50 text-amber-950" : "bg-emerald-50 text-emerald-950"}`} data-propio>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <b>{p.de}: {eurosRedondo(p.importe)}</b>
+              <button type="button" onClick={() => setLista(borrarPropio(proyectoId, i))} className="text-xs underline opacity-70">Quitar</button>
+            </div>
+            <div className="mt-1">
+              {dif > 0 ? `Un ${dif} % más caro` : dif < 0 ? `Un ${-dif} % más barato` : "Igual"} que el medio de tu zona ({eurosRedondo(medio)}).{" "}
+              {masBaratos > 0
+                ? <>{masBaratos} reformista{masBaratos > 1 ? "s" : ""} de la app {masBaratos > 1 ? "lo hacen" : "lo hace"} por menos{suscrito ? ": los tienes abajo." : `. Desbloquéalos con el acceso de ${PRECIO_ACCESO}.`}</>
+                : "Ningún reformista de los que te proponemos lo hace por menos: es un buen precio."}
+            </div>
+            <div className="mt-1 text-[11px] opacity-70">Compara también qué incluye: el de la app va partida a partida.</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 const media = (f: FichaRed) => (f.valoraciones?.length ? f.valoraciones.reduce((s, v) => s + v.media, 0) / f.valoraciones.length : null);
 const conIva = (n: number) => n * (1 + IVA_REFORMA / 100);
 
@@ -66,6 +125,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   const [preferencia, setPreferencia] = useState("");
   const [abierto, setAbierto] = useState<string | null>(null);
   const [verMas, setVerMas] = useState(false);
+  const [orden, setOrden] = useState<Orden>("precio");
   // Ven fichas, tarifas, chat y cita quienes han pagado el acceso único de 29,90 €
   const suscrito = useAcceso();
   const ref = useMemo(() => referencia(vivienda, reforma), [vivienda, reforma]);
@@ -80,8 +140,21 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
     );
     const top = mejoresPara(todas, municipio, cp, verMas ? COBRO.maxCitas : PUNTOS.propuestos);
     const conEncargo = todas.filter((o) => !top.includes(o) && encargos.some((e) => e.reformistaId === o.ficha.id));
-    return [...top, ...conEncargo].sort((a, b) => a.e.base - b.e.base);
-  }, [fichas, vivienda, reforma, municipio, cp, encargos, verMas]);
+    const res = new Map([...top, ...conEncargo].map((o) => [o.ficha.id, resumenReformista(o.ficha.id)]));
+    const clave = (o: OfertaRed) => {
+      const r = res.get(o.ficha.id)!;
+      if (orden === "opiniones") return -(media(o.ficha) ?? 0);
+      if (orden === "respuesta") return r.horas ?? 999;
+      if (orden === "ratio") return r.ratio ?? 999;
+      return o.e.base;
+    };
+    return [...top, ...conEncargo].sort((a, b) => clave(a) - clave(b) || a.e.base - b.e.base);
+  }, [fichas, vivienda, reforma, municipio, cp, encargos, verMas, orden]);
+  // Cada vez que un cliente ve la comparativa, los reformistas que aparecen suman una aparición (embudo de su panel)
+  const idsLista = lista.map((o) => o.ficha.id).sort().join(",");
+  useEffect(() => {
+    if (idsLista) registrarApariciones(idsLista.split(","));
+  }, [idsLista]);
   // Lo que ve gratis cualquier cliente: cuántos proveedores trabajan en su zona y el presupuesto medio con sus tarifas
   const zona = useMemo(() => {
     if (!fichas) return { n: 0, media: 0 };
@@ -133,6 +206,15 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
         </p>
       )}
       {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
+      <PresupuestosPropios proyectoId={proyectoId} medio={zona.media} precios={lista.map((o) => conIva(o.e.base))} suscrito={suscrito} />
+      {suscrito && lista.length > 1 && (
+        <div className="flex flex-wrap items-center gap-1.5 text-sm" data-orden>
+          <span className="text-xs text-stone-500">Ordenar por</span>
+          {ORDENES.map(([id, t]) => (
+            <button key={id} type="button" onClick={() => setOrden(id)} className={`rounded-full px-3 py-1 ${orden === id ? "bg-stone-900 text-white" : "bg-white ring-1 ring-stone-200"}`}>{t}</button>
+          ))}
+        </div>
+      )}
       {!suscrito && lista.length > 0 && <PagoAcceso />}
       {suscrito && <GarantiaAcceso />}
       <ul className="space-y-2">
@@ -187,6 +269,7 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
   const m = media(f);
   const capitulos = [...new Set(o.e.lineas.map((l) => l.capitulo))].map((c) => ({ c, importe: o.e.lineas.filter((l) => l.capitulo === c).reduce((s, l) => s + l.cantidad * l.precio, 0) }));
   const faltas = faltasReformista(f.id).faltas;
+  const insignia = insigniaVenta(f.id);
   return (
     <li className={`rounded-2xl border bg-white p-4 ${elegido ? "border-teal-600 ring-2 ring-teal-100" : "border-stone-200"}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -198,6 +281,7 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
           <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
             <span className="rounded-full bg-teal-50 px-2 py-0.5 text-teal-800 ring-1 ring-teal-200">📍 {cercania(f, municipio, cp).texto}</span>
             <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-900 ring-1 ring-amber-200">⭐ {puntosVisibilidad({ ...f, faltas }).total.toLocaleString("es-ES")} puntos de visibilidad</span>
+            {insignia && <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-800 ring-1 ring-emerald-200" data-insignia>🏅 {insignia}</span>}
             {faltas > 0 && <span className="rounded-full bg-red-50 px-2 py-0.5 text-red-800 ring-1 ring-red-200">⚠ Faltó a {faltas} cita{faltas > 1 ? "s" : ""} sin avisar (últimos 90 días)</span>}
           </div>
         </div>
