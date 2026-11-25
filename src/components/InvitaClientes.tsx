@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { rutaInvitacionPro, type InvitacionPro } from "@/lib/invita-pro";
 import { SERVICIOS, type Servicio } from "@/lib/estudios";
-import { TEXTO_RESERVA } from "@/lib/comercializacion";
+import { TEXTO_CITA_PROVEEDOR } from "@/lib/comercializacion";
 
 /** Área del profesional: enlace para invitar a sus propios clientes. Esas obras no tienen reserva ni fee. */
 export function InvitaClientes({ tipo, id, codigo }: Omit<InvitacionPro, "servicio">) {
@@ -26,8 +26,8 @@ export function InvitaClientes({ tipo, id, codigo }: Omit<InvitacionPro, "servic
     <div className="space-y-2 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
       <div className="text-base font-semibold">🤝 Invita a tus clientes: esas obras no te costarán ni un euro</div>
       <p>
-        Manda este enlace a tus propios clientes. Calculan su presupuesto en la app y la obra te llega directamente a ti, con contrato, pagos por hitos y avances. En esas obras no pagas fee ni
-        comisión, y tu cliente no paga reserva. Solo los clientes que te llegan por la app pagan la reserva ({TEXTO_RESERVA}), que es tu fee.
+        Manda este enlace a tus propios clientes. Calculan su presupuesto en la app y la obra te llega directamente a ti, con contrato, pagos por hitos y avances. Con ellos no pagas cita y tu cliente
+        no paga acceso. Con los clientes que te llegan por la app pagas {TEXTO_CITA_PROVEEDOR}. Nunca cobramos comisión sobre la obra.
       </p>
       {tipo === "estudio" && (
         <label className="block text-xs">

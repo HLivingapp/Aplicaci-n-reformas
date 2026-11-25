@@ -3,17 +3,16 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { euros, eurosRedondo } from "@/lib/calc";
-import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, TEXTO_RESERVA, intentosReformista, TEXTO_VISITA_CLIENTE, TEXTO_DESCUENTO_VISITA, VISITAS, pagarVisitasCliente, visitasPagadas, firmarCliente, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
+import { alCambiar, esInvitado, ESTADO_ENCARGO, invitarProveedor, leerInvitaciones, type Invitacion, intentosReformista, COBRO, PRECIO_ACCESO, firmarCliente, estadoNoPresento, desmentirNoPresento, HORAS_DESMENTIR, faltasReformista, REGLA_FALTA_CLIENTE, cancelarCitaCliente, marcarReformistaNoVino, estadoReformistaNoVino, IVA_REFORMA, leerEncargos, ofertas, pedirVisitas, referencia, type Encargo, type OfertaRed } from "@/lib/encargos";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_EJEMPLO, fichasRed, soloComunidades, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
-import { incluye, useSuscripcion } from "@/lib/suscripcion";
+import { GarantiaAcceso, PagoAcceso, useAcceso } from "./PagoAcceso";
 import type { DatosReforma, Vivienda } from "@/lib/types";
 import { ContratoEncargo } from "./ContratoEncargo";
 import { SeguimientoEncargo } from "./SeguimientoEncargo";
 import { SimuladorHipoteca } from "./SimuladorHipoteca";
 import { ServiciosContratables } from "./SeguroPromotor";
-import { Muro } from "./Muro";
 import { inputCls } from "./ui";
 import { cercania, mejoresPara, PUNTOS, puntosVisibilidad } from "@/lib/visibilidad";
 import { CurriculumReformista } from "./CurriculumReformista";
@@ -61,27 +60,34 @@ interface Props {
 
 /** El presupuesto de cada reformista homologado para esta casa, calculado con sus tarifas. */
 export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }: Props) {
-  const s = useSuscripcion();
   const fichas = useFichasRed();
   const encargos = useEncargos().filter((e) => e.proyectoId === proyectoId);
   const [elegidos, setElegidos] = useState<string[]>([]);
   const [preferencia, setPreferencia] = useState("");
   const [abierto, setAbierto] = useState<string | null>(null);
   const [verMas, setVerMas] = useState(false);
-  const [pagoVisitas, setPagoVisitas] = useState<string | undefined>();
-  useEffect(() => setPagoVisitas(visitasPagadas(proyectoId)), [proyectoId, encargos.length]);
-  const suscrito = s ? incluye(s.plan, "basico") : false;
+  // Ven fichas, tarifas, chat y cita quienes han pagado el acceso único de 29,90 €
+  const suscrito = useAcceso();
   const ref = useMemo(() => referencia(vivienda, reforma), [vivienda, reforma]);
   const municipio = vivienda.direccion.municipio || "Madrid";
   const cp = vivienda.direccion.codigoPostal ?? "";
   // La app propone los 3 reformistas con mejor encaje (cercanía + puntos de visibilidad); se mantienen los que ya tienen encargo.
   const lista = useMemo(() => {
     if (!fichas) return [];
-    const todas = ofertas(vivienda, reforma, fichas.map((f) => ({ ...f, intentosContacto: intentosReformista(f.id) })));
-    const top = mejoresPara(todas, municipio, cp, verMas ? VISITAS.maxVisitas : PUNTOS.propuestos);
+    // Los reformistas suspendidos por faltar a citas no reciben clientes nuevos (sí siguen los que ya tienen encargo)
+    const todas = ofertas(vivienda, reforma, fichas.map((f) => ({ ...f, intentosContacto: intentosReformista(f.id), faltas: faltasReformista(f.id).faltas }))).filter(
+      (o) => !faltasReformista(o.ficha.id).suspendidoHasta || encargos.some((e) => e.reformistaId === o.ficha.id),
+    );
+    const top = mejoresPara(todas, municipio, cp, verMas ? COBRO.maxCitas : PUNTOS.propuestos);
     const conEncargo = todas.filter((o) => !top.includes(o) && encargos.some((e) => e.reformistaId === o.ficha.id));
     return [...top, ...conEncargo].sort((a, b) => a.e.base - b.e.base);
   }, [fichas, vivienda, reforma, municipio, cp, encargos, verMas]);
+  // Lo que ve gratis cualquier cliente: cuántos proveedores trabajan en su zona y el presupuesto medio con sus tarifas
+  const zona = useMemo(() => {
+    if (!fichas) return { n: 0, media: 0 };
+    const enZona = ofertas(vivienda, reforma, fichas).filter((o) => cercania(o.ficha, municipio, cp).puntos > 0);
+    return { n: enZona.length, media: enZona.length ? enZona.reduce((t, o) => t + conIva(o.e.base), 0) / enZona.length : 0 };
+  }, [fichas, vivienda, reforma, municipio, cp]);
   const firmado = encargos.find((e) => e.estado === "firmado" || e.estado === "firmado_cliente");
 
   if (!fichas) return null;
@@ -89,13 +95,9 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
 
   const encargoDe = (id: string) => encargos.find((e) => e.reformistaId === id);
   const pedidas = encargos.filter((e) => e.origen !== "invitado").length;
-  const quedan = Math.max(0, VISITAS.maxVisitas - pedidas);
+  const quedan = Math.max(0, COBRO.maxCitas - pedidas);
   const alternar = (id: string) => setElegidos((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= quedan ? x : [...x, id]));
   const pedir = () => {
-    if (!pagoVisitas) {
-      pagarVisitasCliente(proyectoId);
-      setPagoVisitas(new Date().toISOString());
-    }
     pedirVisitas(lista.filter((o) => elegidos.includes(o.ficha.id)), datos, preferencia);
     setElegidos([]);
   };
@@ -103,26 +105,36 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
   return (
     <section id="reformistas" className="scroll-mt-4 space-y-3">
       <div>
-        <h2 className="text-lg font-semibold">El presupuesto de cada reformista para tu casa</h2>
+        <h2 className="text-lg font-semibold">Los reformistas de tu zona y su precio para tu casa</h2>
         <p className="text-sm text-stone-600">
-          Cada reformista homologado ha cargado sus tarifas en la app, así que ya ves lo que te costaría con cada uno, partida a partida. Elige con cuáles quieres quedar para una visita: pagas {TEXTO_VISITA_CLIENTE} y, después, te mandan aquí su presupuesto final y el contrato. Al firmar pagas en la app una reserva ({TEXTO_RESERVA}) que se descuenta del precio, y de ella se descuentan los {VISITAS.cliente} € de las visitas. Al pagarla te cotizamos y añadimos gratis un seguro de promotor con responsabilidad civil y defensa jurídica.
+          Cada reformista homologado ha cargado sus tarifas en la app, así que su presupuesto para tu casa sale al momento. Gratis ves cuántos hay en tu zona y el presupuesto medio. Con el acceso
+          único de {PRECIO_ACCESO} ves la ficha y el precio de cada uno, chateas con ellos y les pides cita en tu casa. Después contratas directamente con quien elijas: la app no cobra nada sobre la obra.
         </p>
       </div>
-      {lista.length > 0 && (
+      {zona.n > 0 && (
+        <div className="grid grid-cols-2 gap-2" data-zona>
+          <div className="rounded-2xl bg-stone-900 p-4 text-white">
+            <div className="font-display text-3xl font-semibold">{zona.n}</div>
+            <div className="text-xs text-stone-300">reformistas homologados trabajan en {municipio}</div>
+          </div>
+          <div className="rounded-2xl bg-teal-700 p-4 text-white">
+            <div className="font-display text-3xl font-semibold">{eurosRedondo(zona.media)}</div>
+            <div className="text-xs text-teal-100">presupuesto medio de tu reforma con sus tarifas (IVA incluido)</div>
+          </div>
+        </div>
+      )}
+      {lista.length > 0 && suscrito && (
         <p className="rounded-xl bg-teal-50 p-3 text-xs text-teal-900">
-          🎯 Te proponemos los {PUNTOS.propuestos} reformistas homologados con mejor encaje para tu casa: que trabajan en tu zona y tienen más puntos de visibilidad (obras facturadas en la app y valoraciones de otros clientes).
-          {suscrito && !verMas && (
-            <> Puedes pedir hasta {VISITAS.maxVisitas} visitas. <button type="button" onClick={() => setVerMas(true)} className="font-semibold underline">Ver {VISITAS.maxVisitas - PUNTOS.propuestos} más</button></>
+          🎯 Te proponemos los {PUNTOS.propuestos} reformistas homologados con mejor encaje para tu casa: que trabajan en tu zona y tienen más puntos de visibilidad (obras vendidas a clientes de la app y valoraciones).
+          {!verMas && (
+            <> Puedes pedir cita a {COBRO.maxCitas}. <button type="button" onClick={() => setVerMas(true)} className="font-semibold underline">Ver {COBRO.maxCitas - PUNTOS.propuestos} más</button></>
           )}
-          {suscrito && pedidas > 0 && <> Te quedan {quedan} de {VISITAS.maxVisitas} visitas.</>}
+          {pedidas > 0 && <> Te quedan {quedan} de {COBRO.maxCitas} citas.</>}
         </p>
       )}
       {!lista.length && <p className="rounded-xl bg-stone-50 p-4 text-sm text-stone-500">Todavía no hay reformistas homologados con tarifas en tu zona.</p>}
-      {!suscrito && lista.length > 0 && (
-        <Muro plan="basico" volver={`/p/${token}`} titulo={`Los ${lista.length} reformistas homologados con mejor encaje ya tienen precio para tu reforma`}>
-          Desde {eurosRedondo(conIva(lista[0].e.base))} hasta {eurosRedondo(conIva(lista[lista.length - 1].e.base))} con IVA. Suscríbete para ver quién es cada uno, comparar sus partidas y quedar para una visita.
-        </Muro>
-      )}
+      {!suscrito && lista.length > 0 && <PagoAcceso />}
+      {suscrito && <GarantiaAcceso />}
       <ul className="space-y-2">
         {lista.map((o) => (
           <Oferta
@@ -143,19 +155,12 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
       </ul>
       {suscrito && elegidos.length > 0 && (
         <div className="sticky bottom-20 rounded-2xl border border-teal-600 bg-white p-4 shadow-lg">
-          <div className="font-semibold">Pedir visita a {elegidos.length} reformista{elegidos.length > 1 ? "s" : ""}</div>
-          <p className="text-xs text-stone-500">Vendrán a ver tu casa, medir y ajustar el presupuesto. Tu teléfono solo lo verán ellos.</p>
+          <div className="font-semibold">Pedir cita a {elegidos.length} reformista{elegidos.length > 1 ? "s" : ""}</div>
+          <p className="text-xs text-stone-500">Les avisamos al momento por email y WhatsApp. Podéis chatear aquí y, cuando acepten la cita, vendrán a ver tu casa, medir y ajustar el presupuesto.</p>
           <input className={`${inputCls} mt-2`} placeholder="¿Cuándo te viene bien? (p. ej. tardes entre semana)" value={preferencia} onChange={(e) => setPreferencia(e.target.value)} />
-          {pagoVisitas ? (
-            <p className="mt-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">✓ Ya pagaste las visitas de esta reforma: puedes pedir hasta {VISITAS.maxVisitas} en total sin pagar de nuevo.</p>
-          ) : (
-            <div className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">
-              <div className="font-semibold">Pago de visitas: {VISITAS.cliente} €</div>
-              Lo pagas una sola vez y te da de 1 a {VISITAS.maxVisitas} visitas de reformistas para esta reforma. Así los reformistas saben que vas en serio y vienen a verte. {TEXTO_DESCUENTO_VISITA}
-              <div className="mt-1 text-amber-800">Demo: el pago es simulado, no se cobra nada.</div>
-            </div>
-          )}
-          <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">{pagoVisitas ? "Pedir visita" : `Pagar ${VISITAS.cliente} € y pedir visita`}</button>
+          <p className="mt-2 rounded-lg bg-emerald-50 p-2 text-xs text-emerald-900">✓ Ya tienes el acceso: pedir cita no te cuesta nada más.</p>
+          <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ {REGLA_FALTA_CLIENTE}</p>
+          <button onClick={pedir} className="mt-2 w-full rounded-xl bg-teal-700 py-2.5 font-semibold text-white hover:bg-teal-800">Avisar y pedir cita</button>
         </div>
       )}
       {!firmado && <NoHomologados zona={datos.zona} datos={datos} />}
@@ -168,7 +173,7 @@ export function ComparativaRed({ proyectoId, token, cliente, vivienda, reforma }
         </div>
       ))}
       <SimuladorHipoteca importe={conIva(ref.base)} />
-      <ServiciosContratables proyectoId={proyectoId} encargos={encargos} />
+      <ServiciosContratables proyectoId={proyectoId} />
     </section>
   );
 }
@@ -181,6 +186,7 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
   const dif = refBase ? Math.round(((o.e.base - refBase) / refBase) * 100) : 0;
   const m = media(f);
   const capitulos = [...new Set(o.e.lineas.map((l) => l.capitulo))].map((c) => ({ c, importe: o.e.lineas.filter((l) => l.capitulo === c).reduce((s, l) => s + l.cantidad * l.precio, 0) }));
+  const faltas = faltasReformista(f.id).faltas;
   return (
     <li className={`rounded-2xl border bg-white p-4 ${elegido ? "border-teal-600 ring-2 ring-teal-100" : "border-stone-200"}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -191,7 +197,8 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
           </div>
           <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
             <span className="rounded-full bg-teal-50 px-2 py-0.5 text-teal-800 ring-1 ring-teal-200">📍 {cercania(f, municipio, cp).texto}</span>
-            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-900 ring-1 ring-amber-200">⭐ {puntosVisibilidad(f).total.toLocaleString("es-ES")} puntos de visibilidad</span>
+            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-900 ring-1 ring-amber-200">⭐ {puntosVisibilidad({ ...f, faltas }).total.toLocaleString("es-ES")} puntos de visibilidad</span>
+            {faltas > 0 && <span className="rounded-full bg-red-50 px-2 py-0.5 text-red-800 ring-1 ring-red-200">⚠ Faltó a {faltas} cita{faltas > 1 ? "s" : ""} sin avisar (últimos 90 días)</span>}
           </div>
         </div>
         <div className="sm:text-right">
@@ -210,7 +217,7 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
           ) : (
             !bloqueado && (
               <button onClick={alElegir} className={`rounded-full px-3 py-1.5 text-sm font-medium ${elegido ? "bg-teal-700 text-white" : "border border-teal-700 text-teal-800 hover:bg-teal-50"}`}>
-                {elegido ? "✓ Me interesa" : "Me interesa"}
+                {elegido ? "✓ Pedir cita" : "Pedir cita"}
               </button>
             )
           )}
@@ -222,6 +229,13 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
         </div>
       )}
       {suscrito && cv && <CurriculumReformista f={f} />}
+      {encargo && estadoNoPresento(encargo) === "pendiente" && (
+        <div className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-950">
+          El reformista dice que no pudo hacer la cita porque no estabas. Si no es así, avísanos en {HORAS_DESMENTIR} h.{" "}
+          <button onClick={() => desmentirNoPresento(encargo.id)} className="font-semibold underline">Sí que estuve</button>
+        </div>
+      )}
+      {encargo && encargo.origen !== "invitado" && <CitaCliente e={encargo} />}
       {suscrito && encargo && encargo.origen !== "invitado" && <ChatEncargo e={encargo} parte="cliente" />}
       {suscrito && abierto && (
         <table className="mt-3 w-full text-xs">
@@ -237,7 +251,36 @@ function Oferta({ o, refBase, suscrito, encargo, municipio, cp, elegido, bloquea
   );
 }
 
-/** «Invita a tu proveedor»: el cliente trae a su propio reformista. Sin reserva ni fee para ninguno de los dos. */
+/** Cita aceptada: avisar si no puedes ir, o marcar que el reformista no vino. Con las reglas de faltas a la vista. */
+function CitaCliente({ e }: { e: Encargo }) {
+  const [motivo, setMotivo] = useState("");
+  const [cancelando, setCancelando] = useState(false);
+  const rnv = estadoReformistaNoVino(e);
+  if (e.cancelaCliente) return <p className="mt-3 rounded-xl bg-stone-100 p-3 text-xs text-stone-700">Cancelaste la cita avisando: «{e.cancelaCliente.motivo}». Sin penalización.</p>;
+  if (rnv === "pendiente") return <p className="mt-3 rounded-xl bg-stone-100 p-3 text-xs text-stone-700">Has avisado de que el reformista no vino. Tiene {HORAS_DESMENTIR} h para explicarlo; si no, cuenta como falta en su ficha.</p>;
+  if (rnv === "confirmada") return <p className="mt-3 rounded-xl bg-red-50 p-3 text-xs text-red-900">El reformista no vino ni avisó: cuenta como falta en su ficha. Esta cita no gasta tu garantía.</p>;
+  if (e.estado === "visita_pedida" && e.cancelaReformista)
+    return <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-950">El reformista ha avisado de que no puede ir: «{e.cancelaReformista.motivo}». Te propondrá otra fecha.</p>;
+  if (e.estado !== "visita_fijada" || estadoNoPresento(e)) return null;
+  return (
+    <div className="mt-3 rounded-xl border border-stone-200 p-3 text-xs" data-cita>
+      <p className="text-stone-600">⚠️ {REGLA_FALTA_CLIENTE}</p>
+      {cancelando ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          <input className={`${inputCls} min-w-0 flex-1`} placeholder="Motivo (lo verá el reformista)" value={motivo} onChange={(x) => setMotivo(x.target.value)} />
+          <button disabled={!motivo.trim()} onClick={() => cancelarCitaCliente(e.id, motivo.trim())} className="rounded-lg bg-stone-900 px-3 py-2 font-semibold text-white disabled:opacity-40">Avisar y cancelar</button>
+        </div>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-3">
+          <button onClick={() => setCancelando(true)} className="font-semibold text-teal-800 underline">No puedo ir: avisar</button>
+          <button onClick={() => marcarReformistaNoVino(e.id)} className="text-stone-600 underline">El reformista no vino</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** «Invita a tu proveedor»: el cliente trae a su propio reformista. Gratis para los dos. */
 function InvitaProveedor({ datos, invitados, bloqueado }: { datos: Invitacion["datos"]; invitados: Encargo[]; bloqueado: boolean }) {
   const [nombre, setNombre] = useState("");
   const [abierto, setAbierto] = useState(false);
@@ -262,8 +305,7 @@ function InvitaProveedor({ datos, invitados, bloqueado }: { datos: Invitacion["d
     <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-4 text-sm">
       <div className="font-semibold">🤝 ¿Ya tienes tu reformista? Invítalo a la app</div>
       <p className="mt-1 text-stone-700">
-        Trae a tu propio reformista o proveedor para esta reforma: ninguno de los dos paga reserva ni comisión, y seguís usando la app con contrato, pagos por fases y avances. El seguro de promotor no va
-        incluido gratis, pero puedes contratarlo online aquí mismo.
+        Trae a tu propio reformista o proveedor para esta reforma: ninguno de los dos paga nada, y podéis usar la app para el presupuesto, el contrato estándar, los pagos por fases y los avances.
       </p>
       {invitados.map((e) => (
         <p key={e.id} className="mt-2 text-xs text-violet-900">✓ Tu reformista {e.codigo} ya está en la app · {ESTADO_ENCARGO[e.estado].texto}</p>

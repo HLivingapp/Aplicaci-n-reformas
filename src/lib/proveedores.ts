@@ -17,11 +17,11 @@ export const TEXTO_DECLARACION_RESPONSABLE =
 
 /** Compromiso de declarar en la app las ventas que llegan por la app. Pendiente de revisión por el abogado. */
 export const TEXTO_COMPROMISO_VENTAS =
-  `Me comprometo a declarar íntegramente en la app todas las ventas, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, ${TITULAR} podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.`;
+  `Pagaré 150 € por cada cita presencial que acepte con un cliente que me llegue por la app, venda o no. Me comprometo a acudir a las citas que acepte o a avisar antes al cliente con el motivo. Si falto sin avisar, pierdo esa cita sin crédito, aparecerá un aviso en mi ficha durante 90 días y restaré puntos de visibilidad; con 2 faltas en 90 días, ${TITULAR} me dejará 30 días sin recibir clientes nuevos. Si el cliente no se presenta y no lo desmiente en 48 horas, recupero la cita como crédito. ${TITULAR} no cobra comisión sobre las obras.`;
 
 /** Clientes propios (invitación) frente a clientes que llegan por la app. Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_INVITADOS =
-  `Los clientes que yo traiga a la app, o que me inviten desde su cuenta, no pagan visitas ni reserva y no me generan fee; además me suman puntos de visibilidad. Por cada visita a un cliente que conozca a través de la app pagaré 150 € al confirmarla. Si ese cliente firma, pagará al firmar la reserva habitual (el 3 % del presupuesto sin IVA, con un mínimo de 1.000 €), que es mi fee de comercialización y cobra ${TITULAR}.`;
+  `Los clientes que yo traiga a la app, o que me inviten desde su cuenta, no pagan acceso y a mí no me cuestan citas; además me suman puntos de visibilidad.`;
 
 const LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
 

@@ -6,8 +6,8 @@ import { guardarPlanNube } from "./ia-nube";
 import { conNube } from "./modo";
 
 /**
- * Planes para clientes. El presupuesto orientativo y la comunidad son gratis; la red de profesionales
- * y el asistente IA privado van con suscripción mensual, sin permanencia.
+ * Planes para clientes (precios del titular, 25/11/2026): suscripción mensual a los servicios de la app, sin permanencia.
+ * Es aparte de la cuota única de acceso a los proveedores (29,90 €, o 19,90 € con suscripción): ver comercializacion.ts.
  * El cobro (Stripe, tarjeta) todavía no está conectado: en la demo la suscripción se simula en el navegador.
  */
 export type Plan = "gratis" | "basico" | "pro";
@@ -27,27 +27,27 @@ export const PLANES: InfoPlan[] = [
     nombre: "Gratis",
     precio: 0,
     lema: "Para saber cuánto cuesta tu reforma",
-    incluye: ["Presupuesto orientativo partida a partida, al momento en la app", "Acabados básico, medio o premium", "Foro de reformas: leer, preguntar y responder", "Una opinión del asistente IA en cada tema del foro"],
+    incluye: ["Presupuesto orientativo partida a partida, al momento en la app", "Cuántos reformistas hay en tu zona y el presupuesto medio", "Acabados básico, medio o premium", "Foro de reformas: leer, preguntar y responder"],
   },
   {
     id: "basico",
     nombre: "Básico",
-    precio: 5,
-    lema: "Suscríbete y accede a nuestra red de profesionales",
+    precio: 4.95,
+    lema: "Acceso a los servicios de la app para tu reforma",
     incluye: [
-      "Red de reformistas homologados de tu zona, con sello y fecha de la última comprobación",
-      "El presupuesto de cada reformista para tu casa, calculado con sus tarifas",
-      "Elige los que más te interesen y queda con ellos para una visita, sin dar tu teléfono a nadie más",
-      "Estudios de arquitectura homologados: precio de cada uno para tu proyecto, licencia o legalización",
-      "Presupuesto final tras la visita y contrato estándar firmado en la app, con seguro de promotor gratis (responsabilidad civil y defensa jurídica)",
-      "Seguimiento de la obra por fases, con fotos y valoraciones",
+      "Reforma en tu hipoteca: comparativa de entidades para financiar la obra",
+      "Ayudas y subvenciones para tu vivienda, con avisos",
+      "Seguimiento de la obra por fases, con fotos, avances y pagos por hitos",
+      "Contrato estándar de reforma listo para firmar con tu reformista",
+      "Tasación y seguro de promotor contratables online",
+      "Acceso a los proveedores de tu zona a 19,90 € en vez de 29,90 €",
     ],
     destacado: true,
   },
   {
     id: "pro",
     nombre: "Pro",
-    precio: 30,
+    precio: 29.95,
     lema: "Todo lo del Básico y un asistente IA especializado en obra",
     incluye: [
       "Todo lo del plan Básico",
@@ -58,6 +58,9 @@ export const PLANES: InfoPlan[] = [
     ],
   },
 ];
+
+/** 4,95 € */
+export const precioPlan = (p: Pick<InfoPlan, "precio">) => `${p.precio.toFixed(p.precio % 1 ? 2 : 0).replace(".", ",")} €`;
 
 const CLAVE = "app-reformas:suscripcion";
 

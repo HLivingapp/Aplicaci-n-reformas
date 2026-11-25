@@ -32,7 +32,7 @@ export function NoHomologados({ zona, datos }: { zona?: string; datos?: Invitaci
       </p>
       <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-950">⚠️ {AVISO_NO_HOMOLOGADO}</p>
       <p className="mt-2 text-xs text-stone-600">
-        Invitarle es gratis para ti: no pagas nada, ni reserva ni comisión, en esta reforma con él. Él tampoco paga nada en esta primera reforma: ni la homologación, ni la visita, ni comisión. Una vez homologado, su contacto deja de salir aquí y pasa a la red de homologados con las condiciones normales.
+        Invitarle es gratis para ti: no pagas nada en esta reforma con él. Él tampoco paga nada en esta primera reforma: ni la homologación ni la cita. Una vez homologado, su contacto deja de salir aquí y pasa a la red de homologados con las condiciones normales.
       </p>
       <ul className="mt-3 grid gap-3 md:grid-cols-2">
         {lista.map((p) => {

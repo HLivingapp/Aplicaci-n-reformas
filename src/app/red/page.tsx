@@ -4,11 +4,10 @@ import { puntosVisibilidad } from "@/lib/visibilidad";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
-import { Muro } from "@/components/Muro";
+import { PagoAcceso, useAcceso } from "@/components/PagoAcceso";
 import { conBaseDeDatos } from "@/lib/modo";
 import { FICHAS_COMUNIDADES, FICHAS_EJEMPLO, fichasRed, type FichaRed } from "@/lib/red";
 import { leerLocal } from "@/lib/store";
-import { incluye, useSuscripcion } from "@/lib/suscripcion";
 import { tarifaDe } from "@/lib/encargos";
 import { BotonLink } from "@/components/ui";
 import { NoHomologados } from "@/components/NoHomologados";
@@ -16,7 +15,6 @@ import { NoHomologados } from "@/components/NoHomologados";
 const conServidor = conBaseDeDatos && process.env.NEXT_PUBLIC_ESTATICA !== "1";
 
 export default function RedProfesionales() {
-  const s = useSuscripcion();
   const [fichas, setFichas] = useState<FichaRed[] | null>(null);
   const [zona, setZona] = useState("");
 
@@ -33,7 +31,7 @@ export default function RedProfesionales() {
 
   const zonas = useMemo(() => [...new Set((fichas ?? []).flatMap((f) => f.zonas))].sort(), [fichas]);
   const lista = (fichas ?? []).filter((f) => !zona || f.zonas.includes(zona)).sort((a, b) => puntosVisibilidad(b).total - puntosVisibilidad(a).total);
-  const suscrito = s ? incluye(s.plan, "basico") : false;
+  const suscrito = useAcceso();
 
 
   return (
@@ -43,18 +41,16 @@ export default function RedProfesionales() {
         <div className="mx-auto max-w-5xl px-4 pb-6 pt-10">
           <h1 className="text-3xl font-semibold tracking-tight">Red de reformistas homologados</h1>
           <p className="mt-2 max-w-2xl text-stone-600">
-            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, con certificado al corriente de pago y con seguro RSC (responsabilidad civil). Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más obras han hecho en la app.
+            Todos han pasado la homologación: inscritos en el Registro de Empresas Acreditadas, con certificado al corriente de pago y con seguro RSC (responsabilidad civil). Lo comprobamos automáticamente y aquí ves la fecha de la última comprobación. Aparecen primero los que más puntos de visibilidad tienen.
           </p>
           <p className="mt-2 max-w-2xl text-stone-600">Cada uno ha cargado sus tarifas, así que no tienes que pedir presupuestos uno a uno: calcula el tuyo y verás lo que te costaría con cada reformista.</p>
           <BotonLink href="/nuevo" className="mt-4">Calcular mi presupuesto gratis</BotonLink>
         </div>
       </section>
       <main className="mx-auto max-w-5xl px-4 pb-16">
-        {s && !suscrito && (
+        {!suscrito && (
           <div className="mb-5">
-            <Muro plan="basico" volver="/red" titulo="Suscríbete y accede a nuestra red de profesionales">
-              Cada reformista ha cargado sus tarifas: con tu presupuesto ves lo que te costaría con cada uno, eliges los que más te interesan y quedas con ellos para una visita.
-            </Muro>
+            <PagoAcceso titulo="Accede a la red: ficha, precio y chat con cada reformista, y pídeles cita" />
           </div>
         )}
 

@@ -12,18 +12,20 @@ import type { DatosReforma, TarifaReformista, Tarifas, Vivienda } from "./types"
  * Recorrido del cliente con los reformistas homologados:
  * 1. Cada reformista carga sus tarifas en su área (ajuste por capítulo respecto a la referencia).
  * 2. La app calcula el presupuesto de cada reformista para la casa del cliente y los compara.
- * 3. El cliente elige los que más le interesan y les pide una visita.
- * 4. Tras la visita, el reformista mete la cifra acordada y sus tarifas definitivas.
- * 5. La app genera el contrato estándar y ambos lo firman en la app (comisión del 3 % al reformista).
+ * 3. Gratis, el cliente ve cuántos hay en su zona y el presupuesto medio. Con el acceso único (29,90 €) ve cada ficha,
+ *    sus tarifas y su presupuesto, chatea y pide cita. Al reformista le llega aviso por email y WhatsApp.
+ * 4. El reformista acepta la cita presencial y paga 150 € (venda o no). Después marca si vendió (estadísticas).
+ * 5. Opcional: tras la visita mete la cifra acordada y la app genera un contrato estándar que pueden firmar.
+ *    La app no cobra nada sobre la obra.
  *
  * Demostración: todo se guarda en este navegador. Con la base de datos irá a Supabase.
  */
 
 export const IVA_REFORMA = 10;
 
-import { reservaApp, VISITAS } from "./comercializacion";
+import { COBRO, type MetodoPago } from "./comercializacion";
 import { anonimizar, type Identidad } from "./anonimizar";
-export { COMERCIALIZACION, pctReserva, reservaApp, TEXTO_RESERVA, umbralMinimo, VISITAS, TEXTO_VISITA_CLIENTE, TEXTO_VISITA_REFORMISTA, TEXTO_DESCUENTO_VISITA, AVISO_TARIFAS, LETRA_PEQUENA_TARIFAS } from "./comercializacion";
+export * from "./comercializacion";
 
 export type { TarifaReformista };
 
@@ -47,20 +49,31 @@ export interface Encargo {
   baseInicial: number;
   creado: string;
   estado: EstadoEncargo;
-  /** pagoReformista: fecha en que el reformista pagó la visita (150 €, simulado en la demo) */
-  visita: { preferencia: string; fecha?: string; nota?: string; pagoReformista?: string };
+  /** pagoReformista: fecha en que el reformista aceptó la cita y pagó los 150 € (simulado en la demo); conCredito: la pagó con un crédito por cliente que no se presentó */
+  visita: { preferencia: string; fecha?: string; nota?: string; pagoReformista?: string; conCredito?: boolean };
+  /** El reformista marca que el cliente no se presentó. Si el cliente no lo desmiente en 48 h, el reformista recibe un crédito de una cita y el cliente pierde su acceso. */
+  noPresento?: { fecha: string; desmentido?: string };
+  /** El cliente marca que el reformista no vino. Si no lo desmiente en 48 h, es una falta del reformista. */
+  reformistaNoVino?: { fecha: string; desmentido?: string };
+  /** Cancelaciones avisadas, con motivo (sin penalización) */
+  cancelaCliente?: { fecha: string; motivo: string };
+  cancelaReformista?: { fecha: string; motivo: string };
   final?: { importe: number; capitulos: Record<string, number>; plazoSemanas: number; notas: string; fecha: string; lineas: LineaEstimacion[] };
   firmas?: { cliente?: string; reformista?: string };
   /** Estado de cada hito de pago del contrato (mismo orden que HITOS) */
   pagos?: EstadoPago[];
   /** Avances de obra que publica el reformista y ve el cliente */
   avances?: { fecha: string; texto: string }[];
-  /** «app»: el cliente lo encontró en la app (reserva y fee). «invitado»: el cliente lo invitó (sin reserva ni fee, sin seguro gratis). */
+  /** «app»: el cliente lo encontró en la app (cita de 150 € al aceptarla). «invitado»: el cliente lo invitó (sin coste). */
   origen?: OrigenEncargo;
-  /** Invitado desde la lista de proveedores sin homologar: en esta primera obra nadie paga nada: ni acceso, ni visita, ni reserva ni fee. Después entra en la red con las reglas normales. */
+  /** Invitado desde la lista de proveedores sin homologar: en esta primera obra nadie paga nada: ni acceso ni cita. Después entra en la red con las reglas normales. */
   desdeNoHomologado?: boolean;
   /** Chat antes de la firma (para preparar la primera visita). Los contactos se ocultan automáticamente. */
   chat?: MensajeChat[];
+  /** Aviso al reformista de la nueva solicitud (email y WhatsApp; simulado en la demo) */
+  aviso?: { email: string; whatsapp: string };
+  /** Resultado que marca el reformista tras la cita: si vendió (y por cuánto, sin IVA) o no */
+  resultado?: { vendido: boolean; importe?: number; fecha: string };
   /** Veces que cada parte intentó compartir datos de contacto en el chat */
   intentosContacto?: { cliente: number; reformista: number };
 }
@@ -72,8 +85,6 @@ export const ORIGEN_ENCARGO: Record<OrigenEncargo, { texto: string; cls: string 
   app: { texto: "Cliente de la app", cls: "bg-teal-50 text-teal-800 ring-1 ring-teal-200" },
   invitado: { texto: "Cliente tuyo (te invitó)", cls: "bg-violet-50 text-violet-800 ring-1 ring-violet-200" },
 };
-/** Reserva de esta obra: 0 si el reformista viene invitado por el cliente. */
-export const reservaEncargo = (e: Pick<Encargo, "origen">, importeSinIva: number) => (e.origen === "invitado" ? 0 : reservaApp(importeSinIva));
 export const esInvitado = (e: Pick<Encargo, "origen">) => e.origen === "invitado";
 
 export const CAPITULOS = [...new Set(tarifasPorDefecto().precios.map((p) => p.capitulo))];
@@ -201,6 +212,7 @@ export function pedirVisitas(
       estado: "visita_pedida",
       visita: { preferencia },
       origen: "app",
+      aviso: { email: new Date().toISOString(), whatsapp: new Date().toISOString() },
     });
   }
 }
@@ -210,21 +222,155 @@ export function actualizarEncargo(id: string, cambio: (e: Encargo) => Encargo) {
   if (e) guardarEncargo(cambio(e));
 }
 
-/** El reformista confirma la visita y paga los 150 € de la visita (simulado en la demo). */
+/** El reformista acepta la cita presencial y paga los 150 € (simulado en la demo), o gasta un crédito si tiene. */
 export const fijarVisita = (id: string, fecha: string, nota: string) => {
   const e = leerEncargos().find((x) => x.id === id);
-  if (e && !e.visita.pagoReformista && !e.desdeNoHomologado && e.origen !== "invitado") registrarPago("visita_profesional", VISITAS.reformista, id);
-  actualizarEncargo(id, (e) => ({ ...e, estado: "visita_fijada", visita: { ...e.visita, fecha, nota, pagoReformista: e.visita.pagoReformista ?? new Date().toISOString() } }));
+  const paga = !!e && !e.visita.pagoReformista && !e.desdeNoHomologado && e.origen !== "invitado";
+  const conCredito = paga && creditosCita(e.reformistaId) > 0;
+  if (paga && !conCredito) registrarPago("cita_proveedor", COBRO.citaProveedor, id);
+  actualizarEncargo(id, (e) => ({ ...e, estado: "visita_fijada", visita: { ...e.visita, fecha, nota, pagoReformista: e.visita.pagoReformista ?? new Date().toISOString(), ...(conCredito && { conCredito: true }) } }));
 };
 
-const CLAVE_PAGO_VISITAS = "app-reformas:pago-visitas";
-/** Fecha en que el cliente pagó las visitas de este proyecto (150 €, una sola vez), o undefined. */
-export const visitasPagadas = (proyectoId: string) => leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {})[proyectoId];
-/** Pago simulado del cliente antes de pedir las visitas. */
-export function pagarVisitasCliente(proyectoId: string) {
-  if (!visitasPagadas(proyectoId)) registrarPago("visitas_cliente", VISITAS.cliente, proyectoId);
-  escribir(CLAVE_PAGO_VISITAS, { ...leer<Record<string, string>>(CLAVE_PAGO_VISITAS, {}), [proyectoId]: new Date().toISOString() });
+// ---------- Faltas a la cita (reglas del titular, 25/11/2026) ----------
+// Cliente que no va y no avisa: pierde el acceso y tiene que volver a pagar la cuota para pedir citas. El reformista recupera la cita como crédito.
+// Reformista que no va y no avisa: pierde los 150 € (sin crédito), aviso en su ficha durante 90 días y resta puntos;
+// con 2 faltas en 90 días, 30 días sin recibir clientes nuevos.
+// Quien avisa con antelación y da el motivo no tiene penalización.
+export const HORAS_DESMENTIR = 48;
+export const FALTAS = { diasAviso: 90, faltasSuspension: 2, diasSuspension: 30 };
+export const REGLA_FALTA_CLIENTE = `Si no vas a la cita y no avisas antes con el motivo, perderás tu acceso y tendrás que volver a pagar la cuota para pedir más citas.`;
+export const REGLA_FALTA_REFORMISTA = `Si no vas a la cita y no avisas antes al cliente con el motivo, pierdes los 150 € sin crédito, sale un aviso en tu ficha durante ${FALTAS.diasAviso} días y restas puntos. Con ${FALTAS.faltasSuspension} faltas en ${FALTAS.diasAviso} días, ${FALTAS.diasSuspension} días sin recibir clientes nuevos.`;
+const pasado = (iso: string, horas: number) => Date.now() - new Date(iso).getTime() >= horas * 36e5;
+type Marca = { fecha: string; desmentido?: string } | undefined;
+const estadoMarca = (m: Marca): "pendiente" | "confirmada" | "desmentido" | null => (!m ? null : m.desmentido ? "desmentido" : pasado(m.fecha, HORAS_DESMENTIR) ? "confirmada" : "pendiente");
+
+/** El reformista marca que el cliente no se presentó a la cita. */
+export const marcarNoPresento = (id: string) => actualizarEncargo(id, (e) => ({ ...e, noPresento: { fecha: new Date().toISOString() }, resultado: undefined }));
+/** El cliente desmiente que no se presentó (dentro de las 48 h). */
+export const desmentirNoPresento = (id: string) => actualizarEncargo(id, (e) => (e.noPresento ? { ...e, noPresento: { ...e.noPresento, desmentido: new Date().toISOString() } } : e));
+/** Estado del aviso de «no se presentó»: pendiente (dentro de plazo), crédito concedido o desmentido. */
+export const estadoNoPresento = (e: Pick<Encargo, "noPresento">): "pendiente" | "credito" | "desmentido" | null => {
+  const m = estadoMarca(e.noPresento);
+  return m === "confirmada" ? "credito" : m;
+};
+/** El cliente marca que el reformista no vino; el reformista puede desmentirlo en 48 h. */
+export const marcarReformistaNoVino = (id: string) => actualizarEncargo(id, (e) => ({ ...e, reformistaNoVino: { fecha: new Date().toISOString() } }));
+export const desmentirReformistaNoVino = (id: string) =>
+  actualizarEncargo(id, (e) => (e.reformistaNoVino ? { ...e, reformistaNoVino: { ...e.reformistaNoVino, desmentido: new Date().toISOString() } } : e));
+export const estadoReformistaNoVino = (e: Pick<Encargo, "reformistaNoVino">) => estadoMarca(e.reformistaNoVino);
+
+/** Cancelación avisada por el cliente: sin penalización; el reformista recupera la cita como crédito. */
+export const cancelarCitaCliente = (id: string, motivo: string) =>
+  actualizarEncargo(id, (e) => ({ ...e, estado: "descartado", cancelaCliente: { fecha: new Date().toISOString(), motivo } }));
+/** Cancelación avisada por el reformista: sin penalización; vuelve a quedar pendiente de fijar otra fecha (sin volver a pagar). */
+export const cancelarCitaReformista = (id: string, motivo: string) =>
+  actualizarEncargo(id, (e) => ({ ...e, estado: "visita_pedida", visita: { ...e.visita, fecha: undefined }, cancelaReformista: { fecha: new Date().toISOString(), motivo } }));
+
+/** Citas que el reformista puede aceptar sin pagar: créditos por clientes que no se presentaron o cancelaron, menos los ya usados. */
+export const creditosCita = (reformistaId: string) => {
+  const suyos = leerEncargos().filter((e) => e.reformistaId === reformistaId);
+  const ganados = suyos.filter((e) => e.visita.pagoReformista && !e.visita.conCredito && (estadoNoPresento(e) === "credito" || e.cancelaCliente)).length;
+  return Math.max(0, ganados - suyos.filter((e) => e.visita.conCredito).length);
+};
+
+/** Faltas sin avisar del reformista en los últimos 90 días (confirmadas) y si está suspendido. */
+export function faltasReformista(reformistaId: string) {
+  const desde = Date.now() - FALTAS.diasAviso * 864e5;
+  const faltas = leerEncargos()
+    .filter((e) => e.reformistaId === reformistaId && estadoReformistaNoVino(e) === "confirmada" && new Date(e.reformistaNoVino!.fecha).getTime() >= desde)
+    .map((e) => new Date(e.reformistaNoVino!.fecha).getTime())
+    .sort((a, b) => a - b);
+  const finSuspension = faltas.length >= FALTAS.faltasSuspension ? faltas[FALTAS.faltasSuspension - 1] + HORAS_DESMENTIR * 36e5 + FALTAS.diasSuspension * 864e5 : 0;
+  return { faltas: faltas.length, suspendidoHasta: finSuspension > Date.now() ? new Date(finSuspension).toISOString() : undefined };
 }
+
+/** El cliente faltó sin avisar después de pagar el acceso: tiene que volver a pagar. */
+export function clientePenalizado(desdeIso?: string) {
+  if (!desdeIso) return false;
+  const desde = new Date(desdeIso).getTime();
+  return leerEncargos().some((e) => estadoNoPresento(e) === "credito" && new Date(e.noPresento!.fecha).getTime() >= desde);
+}
+
+const CLAVE_ACCESO = "app-reformas:acceso-cliente";
+export interface AccesoCliente { fecha: string; metodo: MetodoPago; importe: number; devuelto?: string }
+/** Acceso del cliente a la red (pago único de 29,90 €, o 19,90 € con suscripción), o undefined. Sin acceso si se le devolvió por la garantía o si faltó a una cita sin avisar. */
+export const accesoPagado = () => {
+  const a = leer<AccesoCliente | null>(CLAVE_ACCESO, null);
+  return a && !a.devuelto && !clientePenalizado(a.fecha) ? a : undefined;
+};
+/** El cliente perdió su acceso por faltar a una cita sin avisar. */
+export const accesoPerdidoPorFalta = () => {
+  const a = leer<AccesoCliente | null>(CLAVE_ACCESO, null);
+  return !!a && !a.devuelto && clientePenalizado(a.fecha);
+};
+/** Pago simulado del acceso del cliente (tarjeta o Bizum). */
+export function pagarAcceso(metodo: MetodoPago, importe: number) {
+  if (accesoPagado()) return;
+  registrarPago("acceso_cliente", importe, metodo);
+  escribir(CLAVE_ACCESO, { fecha: new Date().toISOString(), metodo, importe });
+}
+
+/**
+ * Garantía de al menos una cita: si en 30 días desde el pago ningún proveedor ha aceptado una cita con el cliente,
+ * se le devuelve la cuota (simulado en la demo; en real, devolución automática por la pasarela).
+ */
+export function garantiaAcceso(): { estado: "en_plazo"; dias: number } | { estado: "cumplida" } | { estado: "devuelta"; importe: number } | null {
+  const a = leer<AccesoCliente | null>(CLAVE_ACCESO, null);
+  if (!a) return null;
+  if (a.devuelto) return { estado: "devuelta", importe: a.importe };
+  if (clientePenalizado(a.fecha)) return null;
+  const desde = new Date(a.fecha).getTime();
+  if (leerEncargos().some((e) => e.origen !== "invitado" && citaAceptada(e) && new Date(e.visita.pagoReformista ?? e.creado).getTime() >= desde)) return { estado: "cumplida" };
+  const dias = COBRO.diasGarantia - Math.floor((Date.now() - desde) / 864e5);
+  if (dias > 0) return { estado: "en_plazo", dias };
+  registrarPago("devolucion_acceso", a.importe, a.metodo);
+  escribir(CLAVE_ACCESO, { ...a, devuelto: new Date().toISOString() });
+  return { estado: "devuelta", importe: a.importe };
+}
+
+/** ¿Se vendió la obra? Lo marca el reformista tras la cita, o se da por hecho si firmaron el contrato en la app. */
+export const vendido = (e: Encargo) => (e.resultado ? e.resultado.vendido : e.estado === "firmado" || e.estado === "firmado_cliente");
+export const importeVendido = (e: Encargo) => (vendido(e) ? (e.resultado?.importe ?? e.final?.importe ?? e.baseInicial) : 0);
+
+/** Estadísticas de venta del reformista con los clientes que le llegan por la app. */
+export function estadisticasVenta(encargos: Encargo[]) {
+  const app = encargos.filter((e) => e.origen !== "invitado");
+  const conMensajeCliente = app.filter((e) => e.chat?.some((m) => m.de === "cliente"));
+  const respondidas = conMensajeCliente.filter((e) => e.chat?.some((m) => m.de === "reformista"));
+  // Primera respuesta del reformista desde que llegó la solicitud
+  const horas = app
+    .map((e) => e.chat?.find((m) => m.de === "reformista"))
+    .map((m, i) => (m ? (new Date(m.fecha).getTime() - new Date(app[i].creado).getTime()) / 36e5 : null))
+    .filter((h): h is number => h !== null && h >= 0);
+  const aceptadas = app.filter((e) => e.visita.pagoReformista && !e.desdeNoHomologado);
+  const noShow = aceptadas.filter((e) => estadoNoPresento(e) === "credito" || estadoNoPresento(e) === "pendiente");
+  // Citas que sí se hicieron (las de clientes que no se presentaron no cuentan para el % vendido)
+  const citas = aceptadas.filter((e) => !noShow.includes(e));
+  const ventas = citas.filter(vendido);
+  const pendientes = citas.filter((e) => !e.resultado && !vendido(e));
+  const gastado = Math.max(0, aceptadas.filter((e) => !e.visita.conCredito).length - noShow.filter((e) => estadoNoPresento(e) === "credito").length) * COBRO.citaProveedor;
+  const facturado = ventas.reduce((t, e) => t + importeVendido(e), 0);
+  return {
+    solicitudes: app.length,
+    respuestaChat: conMensajeCliente.length ? Math.round((respondidas.length / conMensajeCliente.length) * 100) : null,
+    horasRespuesta: horas.length ? horas.reduce((a, b) => a + b, 0) / horas.length : null,
+    citas: citas.length,
+    noShow: noShow.length,
+    faltas: app.filter((e) => estadoReformistaNoVino(e) === "confirmada").length,
+    aceptacion: app.length ? Math.round((aceptadas.length / app.length) * 100) : null,
+    ventas: ventas.length,
+    pctVendido: citas.length ? Math.round((ventas.length / citas.length) * 100) : null,
+    pendientes: pendientes.length,
+    gastado,
+    costePorVenta: ventas.length ? gastado / ventas.length : null,
+    facturado,
+    retorno: gastado ? facturado / gastado : null,
+  };
+}
+
+/** El reformista marca si vendió tras la cita (para sus estadísticas). */
+export const marcarResultado = (id: string, vendido: boolean, importe?: number) =>
+  actualizarEncargo(id, (e) => ({ ...e, resultado: { vendido, ...(vendido && importe ? { importe } : {}), fecha: new Date().toISOString() } }));
 
 export function enviarPresupuestoFinal(id: string, f: { importe: number; capitulos: Record<string, number>; plazoSemanas: number; notas: string }) {
   actualizarEncargo(id, (e) => {
@@ -238,24 +384,13 @@ export function firmarCliente(id: string) {
   const ahora = new Date().toISOString();
   const e = leerEncargos().find((x) => x.id === id);
   if (!e) return;
-  const reserva = reservaEncargo(e, e.final?.importe ?? e.baseInicial);
-  if (reserva > 0 && !e.desdeNoHomologado) registrarPago("reserva", reserva, e.id);
   escribir(
     CLAVE_ENCARGOS,
     leerEncargos().map((x) =>
       x.id === id ? { ...x, estado: "firmado_cliente" as const, firmas: { cliente: ahora } } : x.proyectoId === e.proyectoId && x.estado !== "firmado" ? { ...x, estado: "descartado" as const } : x,
     ),
   );
-  // Si pagó las visitas y al final firma en la app con un proveedor que trae él, se le devuelven los 150 € (simulado)
-  if (e.origen === "invitado" && visitasPagadas(e.proyectoId) && !visitasDevueltas(e.proyectoId)) {
-    escribir(CLAVE_DEVOLUCION, { ...leer<Record<string, string>>(CLAVE_DEVOLUCION, {}), [e.proyectoId]: ahora });
-    registrarPago("devolucion_visitas", VISITAS.cliente, e.proyectoId);
-  }
 }
-
-const CLAVE_DEVOLUCION = "app-reformas:devolucion-visitas";
-/** Fecha en que se devolvieron al cliente los 150 € de las visitas (firmó con un proveedor que trajo él). */
-export const visitasDevueltas = (proyectoId: string) => leer<Record<string, string>>(CLAVE_DEVOLUCION, {})[proyectoId];
 
 export const firmarReformista = (id: string) =>
   actualizarEncargo(id, (e) => ({ ...e, estado: "firmado", firmas: { ...e.firmas, reformista: new Date().toISOString() } }));
@@ -323,8 +458,8 @@ export function aceptarInvitacion(codigo: string, reformista: { id: string; codi
 export const descartarEncargo = (id: string) => actualizarEncargo(id, (e) => ({ ...e, estado: "descartado" }));
 
 export const ESTADO_ENCARGO: Record<EstadoEncargo, { texto: string; cls: string }> = {
-  visita_pedida: { texto: "Visita pedida", cls: "bg-amber-100 text-amber-900" },
-  visita_fijada: { texto: "Visita fijada", cls: "bg-sky-100 text-sky-900" },
+  visita_pedida: { texto: "Cita pedida", cls: "bg-amber-100 text-amber-900" },
+  visita_fijada: { texto: "Cita aceptada", cls: "bg-sky-100 text-sky-900" },
   presupuesto_final: { texto: "Presupuesto tras la visita", cls: "bg-teal-100 text-teal-900" },
   firmado_cliente: { texto: "Firmado por el cliente", cls: "bg-indigo-100 text-indigo-900" },
   firmado: { texto: "Contrato firmado", cls: "bg-emerald-100 text-emerald-800" },
@@ -342,8 +477,12 @@ export function alCambiar(fn: () => void) {
 }
 
 /** Envía un mensaje al chat del encargo ocultando contactos. Devuelve cuántos datos se han ocultado. */
+/** Cita presencial aceptada (y pagada) por el reformista: a partir de aquí ya pueden compartir contactos. */
+export const citaAceptada = (e: Pick<Encargo, "visita" | "estado">) => !!e.visita.pagoReformista || (e.estado !== "visita_pedida" && e.estado !== "descartado");
+
 export function enviarMensaje(id: string, de: MensajeChat["de"], texto: string, identidad?: Identidad): number {
-  const { texto: limpio, ocultos } = anonimizar(texto, identidad);
+  const e0 = leerEncargos().find((x) => x.id === id);
+  const { texto: limpio, ocultos } = e0 && citaAceptada(e0) ? { texto: texto.trim(), ocultos: 0 } : anonimizar(texto, identidad);
   if (!limpio) return 0;
   actualizarEncargo(id, (e) => {
     const intentos = e.intentosContacto ?? { cliente: 0, reformista: 0 };

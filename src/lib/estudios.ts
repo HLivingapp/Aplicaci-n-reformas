@@ -6,7 +6,7 @@ import { avisarCambio } from "./nube";
 
 /**
  * Estudios de arquitectura y arquitectos autónomos: alta, tarifas por servicio, encargos de
- * clientes, propuesta y contrato en la app. Mismo modelo de reserva que con los reformistas.
+ * clientes, propuesta y contrato en la app. Sin comisión sobre los honorarios (25/11/2026).
  * Demostración: todo se guarda en este navegador.
  */
 
@@ -56,7 +56,7 @@ export interface EncargoEstudio {
   nota: string;
   propuesta?: { importe: number; plazoSemanas: number; alcance: string; fecha: string };
   firmas?: { cliente?: string; estudio?: string };
-  /** «invitado»: cliente propio del estudio, que le invitó a la app. Sin reserva ni fee. */
+  /** «invitado»: cliente propio del estudio, que le invitó a la app. Sin coste. */
   origen?: "app" | "invitado";
 }
 
@@ -146,7 +146,7 @@ export function solicitarEstudio(est: Estudio, d: Pick<EncargoEstudio, "servicio
   guardar({ ...d, id: nuevoId(), estudioId: est.id, codigo: est.codigo, precioCalculado: precioServicio(est.tarifa, d.servicio, d.m2) ?? 0, creado: new Date().toISOString(), estado: "solicitado" });
 }
 
-/** Encargo de un cliente que ha invitado el propio estudio: sin reserva ni fee. */
+/** Encargo de un cliente que ha invitado el propio estudio: sin coste. */
 export function encargoInvitadoEstudio(d: Pick<EncargoEstudio, "estudioId" | "codigo" | "servicio" | "proyectoId" | "cliente" | "zona" | "m2" | "precioCalculado" | "nota">) {
   if (leerEncargosEstudio().some((x) => x.estudioId === d.estudioId && x.proyectoId === d.proyectoId)) return;
   guardar({ ...d, id: nuevoId(), creado: new Date().toISOString(), estado: "solicitado", origen: "invitado" });
@@ -177,6 +177,6 @@ export const ESTADO_ESTUDIO: Record<EstadoEncargoEstudio, { texto: string; cls: 
   descartado: { texto: "Descartado", cls: "bg-stone-200 text-stone-600" },
 };
 
-/** Compromiso de declarar las ventas que llegan por la app (mismo texto que para reformistas). Pendiente de revisión legal. */
+/** Compromiso del estudio con los clientes que llegan por la app. Pendiente de revisión legal. */
 export const TEXTO_COMPROMISO_ESTUDIO =
-  `Me comprometo a declarar íntegramente en la app todos los encargos, ampliaciones y trabajos adicionales con clientes que haya conocido a través de la app, aunque se cierren o cobren fuera de ella. Si no lo hago, ${TITULAR} podrá reclamarme judicialmente tres veces el fee de comercialización eludido y vetarme en la app.`;
+  `Me comprometo a responder a los clientes que me pidan propuesta a través de la app y a acudir a las citas que acepte o avisar antes con el motivo. ${TITULAR} no cobra comisión sobre mis honorarios.`;

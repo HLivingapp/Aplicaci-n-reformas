@@ -1,10 +1,12 @@
 "use client";
-import { RESPONSABLE, TEXTO_COMERCIALIZADORA, TITULAR } from "@/lib/legal";
+import { TEXTO_COMERCIALIZADORA } from "@/lib/legal";
 
 import { euros } from "@/lib/calc";
-import { COMERCIALIZACION, IVA_REFORMA, pctReserva, reservaEncargo, TEXTO_RESERVA, VISITAS, type Encargo } from "@/lib/encargos";
+import { IVA_REFORMA, type Encargo } from "@/lib/encargos";
 import { SeguroPromotor } from "./SeguroPromotor";
 import { textoDireccion } from "@/lib/proyecto";
+
+const APP_NO_COBRA = "La app no cobra nada sobre el precio de la obra.";
 
 const fecha = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "");
 
@@ -22,7 +24,6 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
   if (!f) return null;
   const iva = Math.round(f.importe * IVA_REFORMA) / 100;
   const total = f.importe + iva;
-  const reserva = reservaEncargo(e, f.importe);
   const invitado = e.origen === "invitado";
   const capitulos = [...new Set(f.lineas.map((l) => l.capitulo))].map((c) => ({
     c,
@@ -44,7 +45,7 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Objeto.</b> Reforma de la vivienda de {textoDireccion(e.vivienda.direccion)}, según las partidas, mediciones y acabados de este presupuesto, acordado tras la visita del {fecha(e.visita.fecha) || "día acordado"}.
         </li>
         <li>
-          <b>Precio.</b> {euros(f.importe)} sin IVA + {IVA_REFORMA} % de IVA ({euros(iva)}) = <b>{euros(total)}</b>. Solo cambia por trabajos nuevos o modificaciones que ambas partes acepten por escrito en la app.
+          <b>Precio.</b> {euros(f.importe)} sin IVA + {IVA_REFORMA} % de IVA ({euros(iva)}) = <b>{euros(total)}</b>. Solo cambia por trabajos nuevos o modificaciones que ambas partes acepten por escrito.
           <table className="mt-2 w-full text-xs">
             <tbody>
               {capitulos.map((x) => (
@@ -60,18 +61,12 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Plazo.</b> {f.plazoSemanas} semanas desde el inicio de la obra, salvo causas ajenas al contratista que se anotarán en la app.
         </li>
         <li>
-          <b>Pagos.</b>{" "}
-          {invitado ? (
-            <>Contratista invitado por la propiedad: no hay reserva en la app. Si la propiedad pagó {euros(VISITAS.cliente)} por visitas en esta reforma, se le devuelven al firmar. Todo se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
-          ) : (
-            <>Al firmar, la propiedad paga en la app una reserva de <b>{euros(reserva)}</b> ({TEXTO_RESERVA}) a {RESPONSABLE.razonSocial}, titular de la app. La reserva forma parte del precio y se descuenta del primer pago. De ella ya se pagaron {euros(VISITAS.cliente)} al pedir las visitas, así que a la firma quedan <b>{euros(Math.max(0, reserva - VISITAS.cliente))}</b>. Con el pago de la reserva se cotiza y se añade gratis el seguro de promotor. El resto se paga directamente al contratista, por hitos, al validar cada fase en la app:</>
-          )}
+          <b>Pagos.</b> Todo se paga directamente al contratista, por hitos, al validar cada fase. {APP_NO_COBRA}
           <ul className="mt-1 space-y-0.5">
-            {!invitado && <li className="flex justify-between gap-2 text-xs"><span>Reserva en la app ({euros(VISITAS.cliente)} ya pagados al pedir las visitas)</span><span>{euros(reserva)}</span></li>}
-            {HITOS.map((h, i) => (
+            {HITOS.map((h) => (
               <li key={h.texto} className="flex justify-between gap-2 text-xs">
-                <span>{h.pct} % · {h.texto}{i === 0 && !invitado ? " (menos la reserva)" : ""}</span>
-                <span>{euros((total * h.pct) / 100 - (i === 0 ? reserva : 0))}</span>
+                <span>{h.pct} % · {h.texto}</span>
+                <span>{euros((total * h.pct) / 100)}</span>
               </li>
             ))}
           </ul>
@@ -83,15 +78,11 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           <b>Garantía.</b> La legal sobre los trabajos ejecutados y la del fabricante en materiales y equipos.
         </li>
         <li>
-          <b>Seguro de promotor.</b>{" "}
-          {invitado
-            ? "Con un contratista invitado por la propiedad el seguro de promotor no va incluido gratis. La propiedad puede contratarlo online, con coste, desde la app."
-            : "Al contratar por la app, la propiedad recibe gratis un seguro de promotor de MAPFRE, con responsabilidad civil y defensa jurídica, durante la obra."}{" "}
-          Condiciones de la póliza pendientes de cerrar con la aseguradora.
-          {invitado && parte === "cliente" && <div className="mt-2"><SeguroPromotor e={e} /></div>}
+          <b>Seguro de promotor.</b> Recomendable para la propiedad durante la obra (responsabilidad civil y defensa jurídica). Puede contratarlo online, con coste, desde la app.
+          {parte === "cliente" && <div className="mt-2"><SeguroPromotor e={e} /></div>}
         </li>
         <li>
-          <b>Anulación.</b> La propiedad puede anular el contrato en la app. Se pagará lo ejecutado hasta ese momento.
+          <b>Anulación.</b> La propiedad puede anular el contrato. Se pagará lo ejecutado hasta ese momento.
         </li>
         {f.notas && (
           <li>
@@ -99,16 +90,9 @@ export function ContratoEncargo({ e, parte, alFirmar }: { e: Encargo; parte: "cl
           </li>
         )}
       </ol>
-      {parte === "reformista" && invitado && (
-        <p className="rounded-xl bg-violet-50 p-3 text-xs text-violet-900">
-          Cliente tuyo: te ha invitado él, así que en esta obra no pagas fee y el cliente no paga reserva. Los clientes que te lleguen a través de la app sí pagan la reserva habitual ({TEXTO_RESERVA}), que es tu fee. En esta demostración no se cobra nada.
-        </p>
-      )}
-      {parte === "reformista" && !invitado && (
-        <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
-          Fee de comercialización: la reserva que paga el cliente en la app al firmar, {euros(reserva)} ({TEXTO_RESERVA}). La cobra {TITULAR} y se descuenta de lo que cobras de la obra.{" "}
-          {reserva > (f.importe * COMERCIALIZACION.pct) / 100 && <b>Ojo: en esta obra se aplica el mínimo de {euros(COMERCIALIZACION.minimo)}, un {pctReserva(f.importe).toLocaleString("es-ES", { maximumFractionDigits: 1 })} % del importe. </b>}
-          Recuerda que firmaste declarar en la app todas las ventas con este cliente, incluidas ampliaciones. Si el cliente anula el contrato en la app, se te devuelve la parte del fee que corresponda a lo que quede por ejecutar. En esta demostración no se cobra nada.
+      {parte === "reformista" && (
+        <p className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-900">
+          Sin comisión: la app no cobra nada sobre esta obra. {invitado ? "Además, este cliente te invitó él, así que tampoco pagaste la cita." : "Lo único que pagaste fue la cita presencial."}
         </p>
       )}
       <div className="grid gap-2 text-xs text-stone-500 sm:grid-cols-2">

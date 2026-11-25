@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { APP } from "@/lib/marca";
 import { RESPONSABLE as R } from "@/lib/legal";
-import { COMERCIALIZACION, TEXTO_DESCUENTO_VISITA, VISITAS } from "@/lib/comercializacion";
+import { COBRO, PRECIO_ACCESO, PRECIO_ACCESO_SUSCRITO, PRECIO_CITA } from "@/lib/comercializacion";
 import { PUNTOS } from "@/lib/visibilidad";
 
 export const metadata: Metadata = { title: "Aviso legal" };
@@ -31,19 +31,24 @@ export default function AvisoLegal() {
       <section>
         <h2 className="mb-2 font-semibold">Cómo elegimos los profesionales que te proponemos</h2>
         <p>
-          Cuando un cliente pide presupuestos, la app le propone los {PUNTOS.propuestos} profesionales homologados con mejor encaje para su vivienda: primero por cercanía (que trabajen en su zona) y después por puntos de visibilidad. Los puntos suben con la facturación del profesional en la app, con las valoraciones de sus clientes y con cada cliente que trae a la app o que le invita.
+          Cuando un cliente pide presupuestos, la app le propone los {PUNTOS.propuestos} profesionales homologados con mejor encaje para su vivienda: primero por cercanía (que trabajen en su zona) y después por puntos de visibilidad. Los puntos suben con las ventas del profesional a clientes de la app, con las valoraciones de sus clientes y con cada cliente que trae a la app o que le invita.
         </p>
       </section>
       <section>
-        <h2 className="mb-2 font-semibold">Pago por visitas</h2>
+        <h2 className="mb-2 font-semibold">Qué se paga y quién lo cobra</h2>
         <p>
-          Para pedir visitas a profesionales de la app, el cliente paga {VISITAS.cliente} € una sola vez por reforma, que le dan de 1 a {VISITAS.maxVisitas} visitas de profesionales. Cada profesional paga {VISITAS.reformista} € por cada visita a la que va, al confirmarla. Los cobra {R.razonSocial}. {TEXTO_DESCUENTO_VISITA} No se cobra nada (ni visitas ni reserva) cuando el cliente invita a su propio profesional o el profesional trae a su cliente.
+          Ver cuántos profesionales hay en la zona y el presupuesto medio es gratis. Para ver la ficha ampliada y las tarifas de cada profesional, chatear con ellos y pedirles cita, el cliente paga una
+          cuota única de {PRECIO_ACCESO} ({PRECIO_ACCESO_SUSCRITO} si tiene una suscripción de servicios), con tarjeta o Bizum. Garantía: si en {COBRO.diasGarantia} días desde el pago ningún
+          profesional acepta una cita con él, se le devuelve la cuota. Cada profesional paga {PRECIO_CITA} cuando acepta una cita presencial con un cliente de la app, venda o no. Si marca que el
+          cliente no se presentó y este no lo desmiente en 48 horas, recupera la cita como crédito para la siguiente. Los cobra {R.razonSocial}. No se cobra nada cuando el cliente invita a su
+          propio profesional o el profesional trae a su cliente.
         </p>
       </section>
       <section>
-        <h2 className="mb-2 font-semibold">Reserva y fee de comercialización</h2>
+        <h2 className="mb-2 font-semibold">Sin comisión sobre la obra</h2>
         <p>
-          Cuando un cliente contrata en la app a un profesional que ha conocido a través de ella, paga al firmar una reserva del {COMERCIALIZACION.pct} % del presupuesto sin IVA, con un mínimo de {COMERCIALIZACION.minimo.toLocaleString("es-ES")} €. La cobra {R.razonSocial}, forma parte del precio de la obra y se descuenta del primer pago al profesional. En las obras de clientes que invita el propio profesional, o en las que el cliente invita a su profesional, no hay reserva.
+          {R.razonSocial} no cobra ningún porcentaje ni importe mínimo sobre el precio de las obras o de los honorarios, no es parte de los contratos entre cliente y profesional y no interviene en
+          su ejecución. El contrato estándar que ofrece la app es un modelo que las partes pueden usar si quieren.
         </p>
       </section>
       <section>

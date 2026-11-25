@@ -7,7 +7,7 @@ import { avisarCambio } from "./nube";
 
 /**
  * «Invita a tus clientes»: el reformista o arquitecto comparte un enlace con sus propios clientes.
- * Las obras de esos clientes no pagan reserva ni fee. El enlace lleva al asistente del presupuesto.
+ * Esos clientes no pagan acceso y al profesional no le cuestan citas. El enlace lleva al asistente del presupuesto.
  */
 export interface InvitacionPro {
   tipo: "reformista" | "estudio";

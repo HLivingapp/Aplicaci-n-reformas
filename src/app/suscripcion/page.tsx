@@ -6,7 +6,7 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CabeceraPublica } from "@/components/CabeceraPublica";
 import { conBaseDeDatos } from "@/lib/modo";
-import { guardarSuscripcion, PLANES, useSuscripcion, type Plan } from "@/lib/suscripcion";
+import { guardarSuscripcion, PLANES, precioPlan, useSuscripcion, type Plan } from "@/lib/suscripcion";
 import { useExigirRegistro } from "@/components/Registro";
 
 export default function Planes() {
@@ -19,7 +19,7 @@ export default function Planes() {
 
 const PREGUNTAS = [
   { q: "¿Tengo permanencia?", a: "No. Pagas mes a mes y cancelas cuando quieras desde la app, sin llamadas." },
-  { q: "¿Pago algo a los reformistas por usar la app?", a: "No. Los pagos de la obra van directamente al reformista que elijas, según los hitos del contrato. La suscripción solo da acceso a la red y al asistente." },
+  { q: "¿Y para ver a los reformistas y pedirles cita?", a: "Eso va aparte: una cuota única de 29,90 €, que con cualquier suscripción se queda en 19,90 €. Si en 30 días ningún reformista acepta una cita contigo, te la devolvemos. La obra la pagas directamente al reformista que elijas: la app no cobra nada sobre ella." },
   { q: "¿Qué gano frente a buscar por mi cuenta?", a: "Reformistas comprobados (certificado al corriente de pago, seguro RSC y prevención de riesgos; REA si lo tienen), un precio de referencia para comparar sus ofertas, contrato estándar y el seguimiento de la obra en un solo sitio." },
   { q: "¿El asistente IA sustituye a un técnico?", a: "No. Te orienta, te ayuda a preparar las preguntas y revisa presupuestos, pero las decisiones técnicas y los trámites los confirma un profesional o el Ayuntamiento." },
 ];
@@ -58,7 +58,7 @@ function VistaPlanes() {
                 {p.destacado && <div className="mb-2 self-start rounded-full bg-teal-700 px-2.5 py-0.5 text-xs font-medium text-white">El más elegido</div>}
                 <h2 className="text-lg font-semibold">{p.nombre}</h2>
                 <div className="mt-1">
-                  <span className="text-4xl font-semibold tracking-tight">{p.precio} €</span>
+                  <span className="text-4xl font-semibold tracking-tight">{precioPlan(p)}</span>
                   <span className="text-stone-500"> /mes</span>
                 </div>
                 <p className="mt-2 text-sm font-medium text-stone-700">{p.lema}</p>
@@ -78,7 +78,7 @@ function VistaPlanes() {
                     )
                   ) : (
                     <button onClick={() => exigir(() => setPagando(p.id))} className={`w-full rounded-xl py-2.5 text-sm font-semibold text-white ${p.id === "pro" ? "bg-indigo-700 hover:bg-indigo-800" : "bg-teal-700 hover:bg-teal-800"}`}>
-                      Suscribirme por {p.precio} €/mes
+                      Suscribirme por {precioPlan(p)}/mes
                     </button>
                   )}
                 </div>
@@ -90,7 +90,7 @@ function VistaPlanes() {
         {pagando && (
           <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 p-4 sm:items-center" onClick={() => setPagando(null)}>
             <div className="w-full max-w-md rounded-2xl bg-white p-5" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-lg font-semibold">Plan {PLANES.find((x) => x.id === pagando)?.nombre} · {PLANES.find((x) => x.id === pagando)?.precio} €/mes</h2>
+              <h2 className="text-lg font-semibold">Plan {PLANES.find((x) => x.id === pagando)?.nombre} · {precioPlan(PLANES.find((x) => x.id === pagando)!)}/mes</h2>
               <p className="mt-2 text-sm text-stone-600">El pago con tarjeta se hará en una pasarela segura (Stripe). Primer cobro hoy y luego cada mes; cancelas cuando quieras.</p>
               {conBaseDeDatos ? (
                 <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">El pago con tarjeta estará disponible muy pronto.</p>

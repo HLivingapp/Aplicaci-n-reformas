@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { enviarMensaje, type Encargo, type MensajeChat } from "@/lib/encargos";
+import { citaAceptada, enviarMensaje, type Encargo, type MensajeChat } from "@/lib/encargos";
 import type { Identidad } from "@/lib/anonimizar";
 import { PUNTOS } from "@/lib/visibilidad";
 import { inputCls } from "./ui";
 
 /**
- * Chat entre cliente y reformista para preparar la primera visita, antes de firmar.
- * Teléfonos, emails, webs, redes y nombres se ocultan solos; la cita se fija en la app, así que no hacen falta.
+ * Chat entre cliente y reformista para preparar la cita presencial.
+ * Hasta que el reformista acepta la cita, teléfonos, emails, webs, redes y nombres se ocultan solos; después, libre.
  */
 export function ChatEncargo({ e, parte, identidad }: { e: Encargo; parte: MensajeChat["de"]; identidad?: Identidad }) {
   const [texto, setTexto] = useState("");
@@ -22,8 +22,8 @@ export function ChatEncargo({ e, parte, identidad }: { e: Encargo; parte: Mensaj
     setAviso(
       n
         ? parte === "reformista"
-          ? `Hemos ocultado ${n} dato${n === 1 ? "" : "s"} de contacto. Antes de firmar no se pueden compartir: cada intento resta ${-PUNTOS.porIntentoContacto} puntos de visibilidad.`
-          : `Hemos ocultado ${n} dato${n === 1 ? "" : "s"} de contacto. La visita se fija en la app y, al firmar, os llegan los datos del otro.`
+          ? `Hemos ocultado ${n} dato${n === 1 ? "" : "s"} de contacto. Hasta aceptar la cita no se pueden compartir: cada intento resta ${-PUNTOS.porIntentoContacto} puntos de visibilidad.`
+          : `Hemos ocultado ${n} dato${n === 1 ? "" : "s"} de contacto. En cuanto el reformista acepte la cita, podréis compartirlos.`
         : null,
     );
   };
@@ -31,13 +31,15 @@ export function ChatEncargo({ e, parte, identidad }: { e: Encargo; parte: Mensaj
   return (
     <div className="mt-3 rounded-xl border border-stone-200 bg-white text-sm">
       <button type="button" onClick={() => setAbierto(!abierto)} className="flex w-full items-center justify-between px-3 py-2 text-left font-medium">
-        <span>💬 Chat para la visita{chat.length ? ` (${chat.length})` : ""}</span>
+        <span>💬 Chat{chat.length ? ` (${chat.length})` : ""}</span>
         <span className="text-xs text-teal-700">{abierto ? "Cerrar" : "Abrir"}</span>
       </button>
       {abierto && (
         <div className="space-y-2 border-t border-stone-100 p-3">
           <p className="rounded-lg bg-stone-50 p-2 text-xs text-stone-600">
-            🔒 Hasta firmar, no compartáis teléfonos, emails, webs ni redes: los ocultamos automáticamente. El día y la hora de la visita se fijan aquí en la app.
+            {citaAceptada(e)
+              ? "✓ Cita aceptada: ya podéis compartir teléfono o email."
+              : "🔒 Hasta que el reformista acepte la cita presencial, los teléfonos, emails, webs y redes se ocultan automáticamente. El día y la hora se fijan aquí."}
           </p>
           <ul className="max-h-64 space-y-1.5 overflow-y-auto">
             {chat.map((m, i) => (
