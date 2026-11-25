@@ -199,7 +199,7 @@ export default function PortalCliente() {
           </Link>
           <Link href="/asistente" className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm hover:border-indigo-600">
             <div className="font-semibold text-indigo-900">🤖 Pregunta al asistente IA de obra</div>
-            <div className="mt-1 text-indigo-900/80">Revisa tu presupuesto, trámites en Madrid y dudas técnicas. Plan Pro, 29,95 €/mes.</div>
+            <div className="mt-1 text-indigo-900/80">Revisa tu presupuesto, trámites en Madrid y dudas técnicas. Plan Pro, 29,95 €/mes (−30 % pagando el año).</div>
           </Link>
         </section>
       )}

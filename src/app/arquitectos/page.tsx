@@ -52,11 +52,12 @@ export default function AltaArquitectos() {
         </div>
       </div>
       <p className="text-sm text-stone-600">
-        Recibe encargos de clientes que ya están reformando su casa: proyectos de reforma, licencias, declaraciones responsables, legalizaciones, dirección de obra y certificados. Cargas tus precios una vez y la app te los calcula para cada vivienda.
+        Clientes que ya están reformando su casa te escriben para proyectos de reforma, licencias, declaraciones responsables, legalizaciones, dirección de obra y certificados. Cargas tus precios una vez y la app te los calcula para cada vivienda. Chateas gratis y, cuando quieres seguir con un cliente, pides su contacto por 99 €.
       </p>
       <div className="grid gap-2 text-sm sm:grid-cols-2">
         {[
-          ["💶", "Sin comisión", "No cobramos nada sobre tus honorarios. El cliente ya ha pagado por ver tu precio cuando te pide la propuesta."],
+          ["💶", "99 € por contacto, sin comisión", "Chatear con el cliente es gratis. Pagas 99 € solo cuando pides su contacto, acabe o no en encargo. Desde ahí la relación es directa y no cobramos nada sobre tus honorarios."],
+          ["💬", "Clientes que ya te han elegido", "Te escriben después de ver tu ficha y tu precio, y han pagado por acceder. Te avisamos por email y WhatsApp."],
           ["📐", "Encargos con la vivienda definida", "Llegan con m², distribución, presupuesto de obra y lo que el cliente quiere hacer."],
           ...BENEFICIOS_PROFESIONAL.filter((b) => b.t.startsWith("Menos impagos") || b.t.startsWith("Financiación") || b.t.startsWith("Memoria") || b.t.startsWith("Invita")).map((b) => [b.i, b.t, b.d]),
         ].map(([i, t, d]) => (
