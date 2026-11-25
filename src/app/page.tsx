@@ -1,14 +1,10 @@
 import Link from "next/link";
-import { COBRO, PRECIO_ACCESO, PRECIO_ACCESO_SUSCRITO, PRECIO_CITA, TEXTO_RED_PROVEEDORES } from "@/lib/comercializacion";
+import { CIFRAS_PORTADA, COBRO, miles, OBJETIVO_RATIO, PRECIO_ACCESO, PRECIO_ACCESO_SUSCRITO, PRECIO_CITA, TEXTO_RED_PROVEEDORES } from "@/lib/comercializacion";
 import { APP } from "@/lib/marca";
-import { BENEFICIOS_CLIENTE } from "@/lib/beneficios";
-import { ListaBeneficios } from "@/components/Beneficios";
-import { publico } from "@/lib/base";
 import { conBaseDeDatos } from "@/lib/modo";
-import { AntesDespues } from "@/components/portada/AntesDespues";
-import { Calculadora } from "@/components/portada/Calculadora";
 import { GaleriaObra } from "@/components/portada/GaleriaObra";
 import { Reportajes } from "@/components/portada/Reportajes";
+import { ComparativaEjemplo } from "@/components/portada/ComparativaEjemplo";
 import { CabeceraSitio } from "@/components/portada/CabeceraSitio";
 import { TarjetaVideo } from "@/components/portada/TarjetaVideo";
 import type { TemaPortada } from "@/lib/videos-portada";
@@ -42,13 +38,16 @@ const PASOS = [
   },
 ];
 
-const VENTAJAS = [
-  { i: "📋", t: "Precio claro desde el principio", href: "/nuevo", tema: "presupuesto" as TemaPortada, area: "calcular mi presupuesto", d: "Nada de «depende». Ves cada partida, qué incluye y qué no, antes de que nadie pise tu casa." },
-  { i: "✅", t: "Reformistas homologados", href: "/red", tema: "red" as TemaPortada, area: "la red de reformistas", d: "Comprobamos su certificado al corriente de pago, su seguro RSC (responsabilidad civil) y su prevención de riesgos laborales. Ves su currículum, fotos de sus trabajos y si está inscrito en el REA." },
-  { i: "🎨", t: "Tú eliges los acabados", href: "/materiales", tema: "acabados" as TemaPortada, area: "Materiales", d: "Suelos, baños, cocina, ventanas o puertas en tres niveles. El precio se actualiza al momento." },
-  { i: "✍️", t: "Contrato y seguimiento, si lo quieres", href: "/nuevo", tema: "contrato" as TemaPortada, area: "empezar mi reforma", d: "Tras la visita, podéis usar el contrato estándar de la app, con plazos, hitos de pago y fases de obra. La app no cobra nada sobre la obra." },
-  { i: "📆", t: "Fases y plazos claros", href: "/nuevo", tema: "fases" as TemaPortada, area: "empezar mi reforma", d: "Sabes qué se hace cada semana y cuándo toca cada pago, antes de empezar." },
-  { i: "🔒", t: "Tus datos, protegidos", href: "/privacidad", tema: "datos" as TemaPortada, area: "Privacidad", d: "Guardados en la Unión Europea y conforme al RGPD. Tu teléfono es opcional y ningún reformista lo ve hasta que tú lo eliges." },
+const RECURSOS: { i: string; t: string; d: string; href: string; plan?: "Gratis" | "Básico" | "Pro" }[] = [
+  { i: "🧾", t: "Precios de reformas", d: "Cuánto cuesta reformar un piso, un baño o la cocina en Madrid, por distrito.", href: "/precios", plan: "Gratis" },
+  { i: "💬", t: "Foro de reformas", d: "Experiencias reales y preguntas que responden profesionales.", href: "/comunidad", plan: "Gratis" },
+  { i: "🏛️", t: "Licencias y legalizaciones", d: "¿Licencia o declaración responsable? Qué trámite necesitas en Madrid.", href: "/tramites", plan: "Gratis" },
+  { i: "🧱", t: "Materiales y precios", d: "Azulejos, suelos, grifería o ventanas por gama, con precios públicos.", href: "/materiales", plan: "Gratis" },
+  { i: "🎨", t: "Diseña desde una foto", d: "Sube una foto de tu baño o cocina y mira materiales y precio.", href: "/disena", plan: "Gratis" },
+  { i: "🏦", t: "Reforma en tu hipoteca", d: "Comparativa de entidades para financiar la obra.", href: "/hipoteca", plan: "Básico" },
+  { i: "💶", t: "Ayudas y subvenciones", d: "Las ayudas para tu vivienda, con avisos cuando salen nuevas.", href: "/subvenciones", plan: "Básico" },
+  { i: "🏢", t: "Comunidades de vecinos", d: "Fachadas, tejados, ascensores y sus subvenciones.", href: "/comunidades" },
+  { i: "🤖", t: "Asistente IA de obra", d: "Revisa presupuestos y resuelve dudas técnicas y de trámites.", href: "/asistente", plan: "Pro" },
 ];
 
 const PREGUNTAS = [
@@ -68,126 +67,66 @@ export default function Inicio() {
     <div className="min-h-dvh bg-white text-stone-900">
       <CabeceraSitio />
 
-      {/* Portada */}
+      {/* Portada: dos puertas */}
       <section className="relative overflow-hidden bg-stone-950 text-white">
         <div className="pointer-events-none absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-teal-600/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-48 right-0 h-[28rem] w-[28rem] rounded-full bg-amber-500/20 blur-3xl" />
-        <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-20 pt-12 md:pt-20 lg:grid-cols-[1.05fr_1fr]">
-          <div className="aparecer min-w-0">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-teal-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Más de 300 reformas ejecutadas en Madrid
-            </p>
-            <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              Tu presupuesto de reforma <em className="font-medium text-amber-300">en 2 minutos</em>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-stone-300">
-              Únete gratis con tu email, escribe tu dirección y en 2 minutos ves tu presupuesto partida a partida <strong className="text-white">aquí mismo, sin esperar a que te llegue por correo</strong>. Gratis ves también cuántos reformistas hay en tu zona y el presupuesto medio.
-            </p>
-            <Link href={empezar} className="group mt-8 flex max-w-xl items-center gap-3 rounded-2xl bg-white p-2 pl-4 text-stone-500 shadow-2xl shadow-teal-900/40 ring-4 ring-white/10 transition hover:ring-amber-300/40">
-              <span className="text-xl">📍</span>
-              <span className="min-w-0 flex-1 truncate text-base">Escribe la dirección de tu casa…</span>
-              <span className="shrink-0 rounded-xl bg-teal-700 px-4 py-3 sm:px-5 font-semibold text-white transition group-hover:bg-teal-600">Calcular precio</span>
-            </Link>
-            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-300">
-              {["Gratis con tu email", "Datos del Catastro al momento", "Tu presupuesto en la app, no por email"].map((x) => (
-                <li key={x} className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span>{x}</li>
-              ))}
-            </ul>
-            <Link href="/#profesionales" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-amber-200 ring-1 ring-white/15 hover:bg-white/15">
-              ¿Eres reformista o arquitecto? Invita a tus clientes sin coste →
-            </Link>
-            <Link href="/comunidades" className="ml-0 mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-sky-200 ring-1 ring-white/15 hover:bg-white/15 sm:ml-2">
-              🏢 ¿Comunidad de vecinos? Fachadas y tejados →
-            </Link>
-          </div>
-
-          <div className="relative min-w-0 aparecer [animation-delay:200ms]">
-            <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={publico("/fotos/obra/cocina-salon.webp")} alt="Cocina abierta al salón en una reforma integral terminada" width={1024} height={683} fetchPriority="high" className="block aspect-[3/2] h-auto w-full object-cover" />
+        <div className="pointer-events-none absolute -bottom-48 right-0 h-[28rem] w-[28rem] rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-12 md:pt-16">
+          <h1 className="aparecer max-w-4xl font-display text-[2.4rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+            Compara presupuestos de <em className="font-medium text-amber-300">reformistas de tu zona</em>
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg text-stone-300">Los reformistas homologados han cargado sus tarifas: escribe tu dirección y en 2 minutos ves lo que te costaría con cada uno. Y si eres profesional, consigue visitas con clientes que ya saben lo que cuesta su reforma.</p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2" data-puertas>
+            <div className="aparecer rounded-3xl bg-white p-5 text-stone-900 shadow-2xl ring-1 ring-white/10 sm:p-6">
+              <div className="text-sm font-semibold uppercase tracking-wide text-teal-700">Quiero reformar</div>
+              <div className="mt-1 font-display text-2xl font-semibold">El precio de cada reformista para tu casa</div>
+              <Link href={empezar} className="group mt-4 flex items-center gap-3 rounded-2xl bg-stone-100 p-2 pl-4 text-stone-500 ring-1 ring-stone-200 transition hover:ring-teal-600">
+                <span className="text-xl">📍</span>
+                <span className="min-w-0 flex-1 truncate">Escribe tu dirección…</span>
+                <span className="shrink-0 rounded-xl bg-teal-700 px-4 py-3 font-semibold text-white transition group-hover:bg-teal-600">Comparar</span>
+              </Link>
+              <ul className="mt-4 space-y-1 text-sm text-stone-600">
+                {["Gratis: cuántos hay en tu zona y el precio medio", "Tu presupuesto partida a partida, aquí mismo y no por email", `Por ${PRECIO_ACCESO} una vez: chat y citas con los que elijas`].map((x) => (
+                  <li key={x} className="flex gap-2"><span className="text-teal-700">✓</span>{x}</li>
+                ))}
+              </ul>
             </div>
-            <div className="flotar absolute -left-4 top-8 w-60 rounded-2xl bg-white p-4 text-stone-900 shadow-2xl sm:-left-10">
-              <div className="text-xs text-stone-500">Piso de 80 m² · calidad media</div>
-              <div className="mt-1 font-display text-2xl font-semibold">88.000 €</div>
-              <div className="text-xs text-stone-500">+ IVA · todas las partidas desglosadas</div>
-              <div className="mt-2 flex h-1.5 overflow-hidden rounded-full">
-                <span className="w-[34%] bg-teal-700" /><span className="w-[22%] bg-teal-500" /><span className="w-[18%] bg-amber-400" /><span className="w-[14%] bg-amber-300" /><span className="flex-1 bg-stone-300" />
+            <div className="aparecer rounded-3xl bg-indigo-950/60 p-5 ring-1 ring-indigo-300/30 [animation-delay:150ms] sm:p-6">
+              <div className="text-sm font-semibold uppercase tracking-wide text-indigo-200">Soy profesional</div>
+              <div className="mt-1 font-display text-2xl font-semibold">Más visitas, mejor ratio de venta</div>
+              <p className="mt-3 text-sm text-stone-300">Reformistas, oficios, proveedores y arquitectos. Alta gratis en 5 minutos: carga tus tarifas y aparece en las comparativas de tu zona.</p>
+              <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+                <div className="rounded-xl bg-white/5 p-3 ring-1 ring-white/10"><div className="font-display text-2xl font-semibold text-amber-300">{PRECIO_CITA}</div><div className="text-xs text-stone-400">solo por cita aceptada</div></div>
+                <div className="rounded-xl bg-white/5 p-3 ring-1 ring-white/10"><div className="font-display text-2xl font-semibold text-amber-300">1 de {OBJETIVO_RATIO}</div><div className="text-xs text-stone-400">visitas en obra: tu objetivo</div></div>
               </div>
-            </div>
-            <div className="flotar-lento absolute -bottom-6 left-6 flex items-center gap-3 rounded-2xl bg-white p-3 pr-4 text-stone-900 shadow-2xl">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-lg">✓</span>
-              <span className="text-sm"><b>4 reformistas homologados</b><br /><span className="text-xs text-stone-500">en tu zona · comprobados hoy</span></span>
-            </div>
-            <div className="flotar absolute -right-2 bottom-24 hidden rounded-2xl bg-stone-900/90 p-3 text-xs text-white shadow-2xl ring-1 ring-white/10 sm:block">
-              <div className="text-stone-400">Tu obra</div>
-              <div className="font-semibold">Instalaciones · 60 %</div>
-              <div className="mt-1.5 h-1.5 w-32 rounded-full bg-white/15"><div className="h-1.5 w-[60%] rounded-full bg-emerald-400" /></div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link href="/reformistas" className="rounded-xl bg-amber-400 px-5 py-3 font-semibold text-stone-900 hover:bg-amber-300">Darme de alta gratis</Link>
+                <Link href="/arquitectos" className="rounded-xl px-4 py-3 text-sm font-semibold text-indigo-100 ring-1 ring-white/20 hover:bg-white/10">Soy arquitecto</Link>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Franja de garantías */}
-        <div className="relative border-t border-white/10 bg-white/[0.03]">
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6 text-sm md:grid-cols-4">
+        {/* Contador */}
+        <div className="relative border-t border-white/10 bg-white/[0.03]" data-contador>
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 py-6 text-center sm:grid-cols-3">
             {[
-              ["Partida a partida", "qué incluye y qué no", "/nuevo", "presupuesto", "calcular mi presupuesto"],
-              ["Al corriente de pago + seguro RSC + PRL", "comprobados en cada reformista", "/red", "red", "la red de reformistas"],
-              ["Contrato y pagos por hitos", "si los quieres usar", "/nuevo", "contrato", "empezar mi reforma"],
-              ["Datos en la UE", "conforme al RGPD", "/privacidad", "datos", "Privacidad"],
-            ].map(([a, b, h, t, ar]) => (
-              <TarjetaVideo key={a} tema={t as TemaPortada} titulo={a} href={h} area={ar} className="group rounded-xl p-1 hover:bg-white/5"><div className="font-semibold text-white group-hover:underline">{a} ▶</div><div className="text-stone-400">{b}</div></TarjetaVideo>
+              [`+${miles(CIFRAS_PORTADA.proveedores)}`, "proveedores con tarifas en tiempo real"],
+              [miles(CIFRAS_PORTADA.comparadosMes), "presupuestos comparados este mes"],
+              [`1 de cada ${CIFRAS_PORTADA.ratioRed}`, "citas acaba en obra"],
+            ].map(([n, t]) => (
+              <div key={t}><div className="font-display text-3xl font-semibold text-white">{n}</div><div className="text-sm text-stone-400">{t}</div></div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Vídeo de portada */}
-      <section className="bg-stone-950 text-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-300">En 75 segundos</p>
-            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Comprar y reformar: no es solo el presupuesto</h2>
-            <p className="mt-4 text-stone-300">
-              Lo que cuesta tu obra, qué saber de quien la hace y las 4 cosas que nadie te cuenta: la declaración responsable, la financiación, qué esperar de la empresa y las ayudas.
-            </p>
-          </div>
-          <div className="lg:col-span-3">
-            <video
-              className="aspect-video w-full rounded-2xl bg-black shadow-2xl ring-1 ring-white/10"
-              controls
-              playsInline
-              preload="none"
-              poster={publico("/videos/portada/comprar-y-reformar.jpg")}
-              src={publico("/videos/portada/comprar-y-reformar.mp4")}
-            />
-            <p className="mt-2 text-xs text-stone-400">Vídeo generado con inteligencia artificial. Contenido orientativo.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Calculadora */}
-      <section className="bg-gradient-to-b from-stone-100 to-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-20 lg:grid-cols-2">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">¿Cuánto cuesta reformar?</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Haz la cuenta en un segundo</h2>
-            <p className="mt-4 max-w-lg text-lg text-stone-600">
-              Precios reales de reformas integrales en Madrid, por metro cuadrado y según los acabados. Después, la app lo calcula con tu vivienda: baños, cocina, falsos techos, climatización y ventanas, partida a partida.
-            </p>
-            <ul className="mt-6 space-y-3 text-stone-700">
-              {["Cada partida con su medición y lo que incluye", "Marcas y modelos de referencia («o similar»)", "Cambia acabados y ve el precio al momento"].map((x) => (
-                <li key={x}><Link href={x.startsWith("Marcas") ? "/materiales" : empezar} className="flex gap-3 hover:text-teal-800 hover:underline"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs text-white">✓</span>{x}</Link></li>
-              ))}
-            </ul>
-          </div>
-          <Calculadora />
-        </div>
-      </section>
+      <ComparativaEjemplo empezar={empezar} />
 
       {/* Cómo funciona */}
       <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20">
         <p className="text-center text-sm font-semibold uppercase tracking-widest text-teal-700">Cómo funciona</p>
-        <h2 className="mt-3 text-center font-display text-4xl font-semibold tracking-tight sm:text-5xl">De la idea al reformista adecuado</h2>
+        <h2 className="mt-3 text-center font-display text-4xl font-semibold tracking-tight sm:text-5xl">De tu dirección al mejor reformista</h2>
         <ol className="mt-14 grid gap-6 md:grid-cols-3">
           {PASOS.map((p) => (
             <li key={p.n}>
@@ -205,98 +144,43 @@ export default function Inicio() {
       <GaleriaObra empezar={empezar} />
       <Reportajes empezar={empezar} />
 
-      {/* Antes y después */}
-      <section className="bg-stone-950 text-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 py-20 lg:grid-cols-2">
-          <AntesDespues />
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Antes de empezar</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Ves el después antes de mover un azulejo</h2>
-            <p className="mt-4 text-lg text-stone-300">Eliges los acabados, ves cómo cambia el precio y llegas al reformista sabiendo exactamente lo que quieres.</p>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {[
-                ["🧾", "Presupuesto de referencia", "para comparar cualquier oferta", "/nuevo", "presupuesto", "calcular mi presupuesto"],
-                ["⚖️", "Comparador de ofertas", "capítulo a capítulo, con lo que falta", "/suscripcion", "comparador", "los planes"],
-                ["📆", "Fases y plazos", "calculados para tu reforma", "/nuevo", "fases", "empezar mi reforma"],
-                ["💶", "Pagos por hitos", "confirmados por las dos partes", "/nuevo", "contrato", "empezar mi reforma"],
-              ].map(([i, a, b, h, t, ar]) => (
-                <li key={a}><TarjetaVideo tema={t as TemaPortada} titulo={a} href={h} area={ar} className="group block h-full w-full rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 transition hover:bg-white/10 hover:ring-amber-300/50"><div className="text-xl">{i}</div><div className="mt-1 font-semibold group-hover:underline">{a} ▶</div><div className="text-sm text-stone-400">{b}</div></TarjetaVideo></li>
-              ))}
-            </ul>
-            <Link href={empezar} className="mt-8 inline-block rounded-2xl bg-amber-400 px-6 py-3.5 font-semibold text-stone-900 hover:bg-amber-300">Empezar mi reforma</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Ventajas */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-20">
-          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Por qué con {NOMBRE}</p>
-          <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Una reforma sin sorpresas</h2>
-          <p className="mt-3 max-w-2xl text-lg text-stone-600">Todo lo que normalmente se descubre a mitad de obra, lo ves antes de empezar.</p>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {VENTAJAS.map((v) => (
-              <TarjetaVideo key={v.t} tema={v.tema} titulo={v.t} href={v.href} area={v.area} className="group block w-full rounded-3xl bg-stone-50 p-7 ring-1 ring-stone-200 transition hover:bg-white hover:shadow-xl hover:ring-teal-600">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm ring-1 ring-stone-200">{v.i}</div>
-                <h3 className="mt-4 text-lg font-semibold">{v.t}</h3>
-                <p className="mt-1.5 text-stone-600">{v.d}</p>
-                <p className="mt-3 text-sm font-semibold text-teal-700 group-hover:underline">▶ Ver vídeo</p>
-              </TarjetaVideo>
+      {/* Profesionales */}
+      <section id="profesionales" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16">
+        <div className="rounded-3xl bg-stone-950 p-8 text-white md:p-12">
+          <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">Para reformistas, proveedores, estudios de arquitectura y arquitectos</p>
+          <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Más visitas con clientes que ya saben lo que cuesta su reforma</h2>
+          <p className="mt-3 max-w-3xl text-stone-300">
+            Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Te avisamos por email y WhatsApp, chateas gratis y solo pagas {PRECIO_CITA} cuando aceptas una cita con un cliente que ya te ha elegido. Sin comisión sobre la obra.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3" data-ratio-pro>
+            {[
+              [`1 de cada ${OBJETIVO_RATIO}`, "visitas convertidas en obra: el objetivo que te marcamos"],
+              [`1 de cada ${CIFRAS_PORTADA.ratioRed}`, "lo que vende de media la red"],
+              ["Tu panel", "citas del mes, ratio de venta, puesto en tu zona y qué mejorar"],
+            ].map(([n, t]) => (
+              <div key={n} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10"><div className="font-display text-3xl font-semibold text-amber-300">{n}</div><div className="mt-1 text-sm text-stone-300">{t}</div></div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Beneficios */}
-      <section id="beneficios" className="scroll-mt-16 bg-teal-50/60">
-        <div className="mx-auto max-w-6xl px-4 py-20">
-          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Beneficios de hacerlo con la app</p>
-          <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Más que un presupuesto</h2>
-          <p className="mt-3 max-w-2xl text-lg text-stone-600">Lo que tienes al contratar tu reforma a través de la app.</p>
-          <div className="mt-10"><ListaBeneficios items={BENEFICIOS_CLIENTE} /></div>
-        </div>
-      </section>
-
-      {/* Diseña */}
-      <section className="mx-auto max-w-6xl px-4 pt-16">
-        <Link href="/disena" className="flex flex-col items-start gap-4 rounded-3xl bg-gradient-to-br from-teal-700 to-teal-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-teal-200">Nuevo</p>
-            <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight">Diseña tu baño o tu cocina desde una foto</h2>
-            <p className="mt-2 max-w-xl text-teal-50">Sube una foto, elige básico, medio o premium y mira los materiales y el precio al momento.</p>
-          </div>
-          <span className="shrink-0 rounded-xl bg-white px-5 py-3 font-semibold text-teal-800">Probar ahora →</span>
-        </Link>
-      </section>
-
-      {/* Comunidad */}
-      <section className="mx-auto max-w-6xl px-4 pt-16">
-        <div className="grid gap-8 md:grid-cols-2 md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Foro de reformas</p>
-            <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Lo que salió bien, lo que salió mal y cómo se resolvió</h2>
-            <p className="mt-3 text-stone-600">
-              Experiencias reales de gente que está reformando su casa. Pregunta tu problema y te responden otros clientes, reformistas homologados y el asistente IA. Con un apartado de legalizaciones urbanísticas en Madrid.
+          <div className="mt-6 rounded-2xl bg-violet-500/15 p-5 ring-1 ring-violet-300/40">
+            <div className="font-display text-2xl font-semibold text-violet-100">🤝 Invita a tus clientes: no te costará ni un euro</div>
+            <p className="mt-2 text-stone-200">
+              Desde tu área te damos un enlace para tus propios clientes. Calculan su presupuesto, podéis usar el contrato estándar y llevas los pagos por hitos y los avances. Con ellos no pagas citas y tu cliente no paga acceso.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Link href="/comunidad" className="inline-block rounded-xl bg-stone-900 px-5 py-3 font-semibold text-white hover:bg-stone-800">Entrar en el foro</Link>
-              <Link href="/tramites" className="inline-block rounded-xl border border-stone-300 bg-white px-5 py-3 font-semibold text-stone-900 hover:border-teal-600">🧭 ¿Qué trámite necesito?</Link>
-            </div>
           </div>
-          <ul className="space-y-2 text-sm">
+          <ul className="mt-6 grid gap-2 text-sm sm:grid-cols-2">
             {[
-              ["❓", "Moho en la junta del plato de ducha a los dos meses", "✓ Resuelto por un profesional"],
-              ["🏛️", "¿Licencia o declaración responsable para una reforma integral?", "🤖 Opinión IA con normativa"],
-              ["👎", "La obra se alargó 5 semanas por las ventanas", "💬 Consejos de reformistas"],
-            ].map(([i, t, e]) => (
-              <li key={t}>
-                <Link href="/comunidad" className="flex items-start gap-3 rounded-2xl border border-stone-200 bg-white p-4 hover:border-teal-600">
-                  <span className="text-xl">{i}</span>
-                  <span><span className="block font-medium text-stone-900">{t}</span><span className="text-xs text-stone-500">{e}</span></span>
-                </Link>
-              </li>
+              `Solo pagas ${PRECIO_CITA} por cita aceptada: chat gratis y sin comisión sobre la obra`,
+              "Menos impagos: pagos por hitos solicitados y confirmados en la app",
+              "Tus avances de obra, visibles para tu cliente",
+              "Financiación para tus clientes y ayuda con la memoria técnica",
+            ].map((x) => (
+              <li key={x}><TarjetaVideo tema="profesionales" titulo={x} href="/reformistas" area="el alta de reformistas" className="flex h-full w-full gap-2 rounded-xl bg-white/5 p-3 text-stone-200 ring-1 ring-white/10 transition hover:bg-white/10 hover:ring-amber-300/50"><span className="text-amber-300">✓</span><span className="flex-1">{x}</span><span className="text-amber-300">▶</span></TarjetaVideo></li>
             ))}
           </ul>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/reformistas" className="inline-block rounded-xl bg-amber-400 px-5 py-3 font-semibold text-stone-900 hover:bg-amber-300">Soy reformista o proveedor</Link>
+            <Link href="/arquitectos" className="inline-block rounded-xl border border-white/40 px-5 py-3 font-semibold text-white hover:bg-white/10">Soy arquitecto o estudio</Link>
+          </div>
         </div>
       </section>
 
@@ -319,34 +203,19 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* Profesionales */}
-      <section id="profesionales" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16">
-        <div className="rounded-3xl bg-stone-950 p-8 text-white md:p-12">
-          <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">Para reformistas, proveedores, estudios de arquitectura y arquitectos</p>
-          <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Clientes que ya saben lo que cuesta su reforma</h2>
-          <p className="mt-3 max-w-3xl text-stone-300">
-            Carga tus tarifas y la app calcula tu presupuesto a cada cliente de tu zona. Te avisamos por email y WhatsApp, chateas gratis y solo pagas {PRECIO_CITA} cuando aceptas una cita con un cliente que ya te ha elegido. Sin comisión sobre la obra.
-          </p>
-          <div className="mt-6 rounded-2xl bg-violet-500/15 p-5 ring-1 ring-violet-300/40">
-            <div className="font-display text-2xl font-semibold text-violet-100">🤝 Invita a tus clientes: no te costará ni un euro</div>
-            <p className="mt-2 text-stone-200">
-              Desde tu área te damos un enlace para tus propios clientes. Calculan su presupuesto, podéis usar el contrato estándar y llevas los pagos por hitos y los avances. Con ellos no pagas citas y tu cliente no paga acceso.
-            </p>
-          </div>
-          <ul className="mt-6 grid gap-2 text-sm sm:grid-cols-2">
-            {[
-              `Solo pagas ${PRECIO_CITA} por cita aceptada: chat gratis y sin comisión sobre la obra`,
-              "Menos impagos: pagos por hitos solicitados y confirmados en la app",
-              "Tus avances de obra, visibles para tu cliente",
-              "Financiación para tus clientes y ayuda con la memoria técnica",
-            ].map((x) => (
-              <li key={x}><TarjetaVideo tema="profesionales" titulo={x} href="/reformistas" area="el alta de reformistas" className="flex h-full w-full gap-2 rounded-xl bg-white/5 p-3 text-stone-200 ring-1 ring-white/10 transition hover:bg-white/10 hover:ring-amber-300/50"><span className="text-amber-300">✓</span><span className="flex-1">{x}</span><span className="text-amber-300">▶</span></TarjetaVideo></li>
-            ))}
-          </ul>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/reformistas" className="inline-block rounded-xl bg-amber-400 px-5 py-3 font-semibold text-stone-900 hover:bg-amber-300">Soy reformista o proveedor</Link>
-            <Link href="/arquitectos" className="inline-block rounded-xl border border-white/40 px-5 py-3 font-semibold text-white hover:bg-white/10">Soy arquitecto o estudio</Link>
-          </div>
+      {/* Recursos */}
+      <section className="mx-auto max-w-6xl px-4 pt-16" data-recursos>
+        <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">Recursos para tu reforma</p>
+        <h2 className="mt-2 font-display text-4xl font-semibold tracking-tight">Todo lo que necesitas saber antes de empezar</h2>
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {RECURSOS.filter((r) => r.href !== "/comunidades").map((r) => (
+            <Link key={r.t} href={r.href} className="group flex flex-col rounded-2xl border border-stone-200 bg-white p-4 transition hover:border-teal-600 hover:shadow-md">
+              <span className="text-2xl">{r.i}</span>
+              <span className="mt-2 font-semibold group-hover:underline">{r.t}</span>
+              <span className="mt-1 flex-1 text-sm text-stone-600">{r.d}</span>
+              {r.plan && <span className={`mt-3 self-start rounded-full px-2 py-0.5 text-xs font-medium ${r.plan === "Pro" ? "bg-indigo-50 text-indigo-800" : "bg-teal-50 text-teal-800"}`}>{r.plan === "Gratis" ? "Gratis" : `Plan ${r.plan}`}</span>}
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -390,6 +259,7 @@ export default function Inicio() {
           <Link href="/human-living" className="hover:underline">★ Empresa destacada: Human Living</Link>
           <Link href="/privacidad" className="hover:underline">Privacidad</Link>
           <Link href="/aviso-legal" className="hover:underline">Aviso legal</Link>
+          <Link href="/precios" className="hover:underline">Precios de reformas</Link>
           <Link href="/comunidad" className="hover:underline">Foro</Link>
           <Link href="/tramites" className="hover:underline">Trámites</Link>
           <Link href="/subvenciones" className="hover:underline">Subvenciones</Link>

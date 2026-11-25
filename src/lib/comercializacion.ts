@@ -49,3 +49,16 @@ export const SIN_COMISION = "Sin comisión ni porcentaje sobre la obra";
 /** Aviso al reformista donde carga sus tarifas y donde se explica lo que cobramos. */
 export const AVISO_TARIFAS = "Tus tarifas son las que ve el cliente: mantenlas al día";
 export const LETRA_PEQUENA_TARIFAS = `No cobramos comisión ni porcentaje sobre la obra: solo ${TEXTO_CITA_PROVEEDOR}. El cliente que te pide cita ya ha pagado para ver tu ficha y tus precios.`;
+
+/**
+ * Cifras de la portada. Son de la demo: antes del lanzamiento hay que sustituirlas por las reales
+ * (o calcularlas de la base de datos), porque se anuncian al público.
+ */
+export const CIFRAS_PORTADA = {
+  proveedores: PROVEEDORES_RED,
+  comparadosMes: 1240,
+  /** Ratio medio de la red: una obra vendida de cada N citas. */
+  ratioRed: 9,
+};
+/** Objetivo que proponemos a cada proveedor: vender una obra de cada 10 citas. */
+export const OBJETIVO_RATIO = 10;

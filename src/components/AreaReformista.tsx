@@ -19,6 +19,8 @@ import { Boton, inputCls, Tarjeta } from "./ui";
 import type { FichaRed } from "@/lib/red";
 import { PUNTOS, puntosVisibilidad, TEXTO_VISIBILIDAD } from "@/lib/visibilidad";
 import { conNube } from "@/lib/modo";
+import { cumpleObjetivo, panelVentas, textoRatio } from "@/lib/ventas";
+import { OBJETIVO_RATIO } from "@/lib/comercializacion";
 import { leerPresupuestoParaTarifa } from "@/lib/ia-nube";
 
 /** Tarifas del reformista: con ellas la app calcula su presupuesto a cada cliente de su zona. */
@@ -94,7 +96,7 @@ export function MisEncargos({ reformistaId, faltanDocs = [] }: { reformistaId: s
   return (
     <Tarjeta className="space-y-3">
       <h2 className="font-semibold">Tus clientes y obras</h2>
-      <EstadisticasVenta encargos={encargos} />
+      <EstadisticasVenta encargos={encargos} reformistaId={reformistaId} />
       {encargos.length > 0 && <p className="text-xs text-stone-500">Con los clientes de la app pagas {TEXTO_CITA_PROVEEDOR}. Chatear con ellos es gratis y no cobramos comisión sobre la obra. Los clientes que tú traes invitándote no te cuestan nada.</p>}
       {!encargos.length && <p className="text-sm text-stone-500">Todavía no te ha escrito nadie. Cuando un cliente te elija, te avisamos por email y WhatsApp y lo verás aquí con su vivienda y tu presupuesto calculado.</p>}
       {faltanDocs.length > 0 && encargos.length > 0 && (
@@ -218,36 +220,72 @@ const eur0 = (n: number) => `${Math.round(n).toLocaleString("es-ES", { useGroupi
 const fmtPct = (n: number | null) => (n === null ? "—" : `${n} %`);
 
 /** Estadísticas de venta del reformista: lo que le rinden las citas que paga. */
-export function EstadisticasVenta({ encargos }: { encargos: Encargo[] }) {
-  const v = estadisticasVenta(encargos);
-  const suspendido = encargos[0] ? faltasReformista(encargos[0].reformistaId).suspendidoHasta : undefined;
+export function EstadisticasVenta({ encargos, reformistaId }: { encargos: Encargo[]; reformistaId?: string }) {
+  const id = reformistaId ?? encargos[0]?.reformistaId ?? "";
+  const v = panelVentas(id, encargos);
+  const suspendido = id ? faltasReformista(id).suspendidoHasta : undefined;
   const horas = v.horasRespuesta === null ? "—" : v.horasRespuesta < 1 ? "< 1 h" : `${Math.round(v.horasRespuesta)} h`;
-  const fichas: { n: string; t: string; d?: string; fuerte?: boolean }[] = [
-    { n: fmtPct(v.pctVendido), t: "de tus citas vendidas", d: `${v.ventas} de ${v.citas} citas`, fuerte: true },
+  const ok = cumpleObjetivo(v.ratio);
+  // Barra de progreso hacia el objetivo: 1 de 10 o mejor = lleno
+  const progreso = v.ratio === null ? 0 : Math.min(100, Math.round((OBJETIVO_RATIO / v.ratio) * 100));
+  const max = Math.max(1, v.embudo[0].n);
+  const fichas: { n: string; t: string; d?: string }[] = [
     { n: v.costePorVenta === null ? "—" : eur0(v.costePorVenta), t: "coste por venta", d: `${eur0(v.gastado)} en citas` },
     { n: v.retorno === null ? "—" : `×${v.retorno.toLocaleString("es-ES", { maximumFractionDigits: 0 })}`, t: "vendido por cada € en citas", d: `${eur0(v.facturado)} vendidos sin IVA` },
     { n: fmtPct(v.respuestaChat), t: "de chats respondidos", d: `respuesta media: ${horas}` },
-    { n: String(v.solicitudes), t: "solicitudes recibidas", d: v.noShow ? `${v.noShow} cliente${v.noShow > 1 ? "s" : ""} no se present${v.noShow > 1 ? "aron" : "ó"}` : undefined },
-    { n: fmtPct(v.aceptacion), t: "de solicitudes con cita", d: `${v.citas} citas aceptadas` },
   ];
   return (
-    <div className="rounded-2xl bg-stone-900 p-4 text-white" data-estadisticas>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-semibold">📊 Tus estadísticas de venta</h3>
-        {v.pctVendido !== null && <span className="text-sm text-stone-300">Llevas vendido el <b className="text-amber-300">{v.pctVendido} %</b> de tus citas</span>}
+    <div className="space-y-3 rounded-2xl bg-stone-900 p-4 text-white" data-estadisticas>
+      <h3 className="font-semibold">📈 Tu panel de ventas</h3>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" data-panel-ventas>
+        <div className={`rounded-xl p-3 sm:col-span-1 ${ok ? "bg-emerald-400 text-stone-900" : "bg-amber-400 text-stone-900"}`}>
+          <div className="text-xs font-medium">Tu ratio de venta</div>
+          <div className="font-display text-3xl font-semibold">{textoRatio(v.ratio)}</div>
+          <div className="text-xs">visitas acaba en obra</div>
+          <div className="mt-2 h-1.5 rounded-full bg-black/15"><div className="h-1.5 rounded-full bg-stone-900" style={{ width: `${progreso}%` }} /></div>
+          <div className="mt-1 text-[11px]">Objetivo: 1 de cada {OBJETIVO_RATIO} o mejor</div>
+        </div>
+        <div className="rounded-xl bg-white/10 p-3">
+          <div className="text-xs text-stone-300">Citas este mes</div>
+          <div className="font-display text-3xl font-semibold">{v.citasMes}</div>
+          <div className="text-xs text-stone-400">{v.citas} citas en total · {v.ventas} vendida{v.ventas === 1 ? "" : "s"}</div>
+        </div>
+        <div className="rounded-xl bg-white/10 p-3">
+          <div className="text-xs text-stone-300">Tu puesto en tu zona</div>
+          <div className="font-display text-3xl font-semibold">{v.puesto}.º <span className="text-base font-normal text-stone-400">de {v.rivales}</span></div>
+          <div className="text-xs text-stone-400">por ratio de venta y respuesta</div>
+        </div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="rounded-xl bg-white/5 p-3" data-embudo>
+        <div className="text-xs font-medium text-stone-300">Tu embudo</div>
+        <div className="mt-2 space-y-1.5">
+          {v.embudo.map((x) => (
+            <div key={x.t} className="grid grid-cols-[minmax(0,9rem)_1fr_2.5rem] items-center gap-2 text-xs sm:grid-cols-[12rem_1fr_3rem]">
+              <span className="text-stone-300">{x.t}</span>
+              <div className="h-4 rounded bg-white/10"><div className="h-4 rounded bg-indigo-400" style={{ width: `${Math.max(2, (x.n / max) * 100)}%` }} /></div>
+              <span className="text-right tabular-nums">{x.n.toLocaleString("es-ES")}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {v.consejos.length > 0 && (
+        <ul className="space-y-1.5 rounded-xl bg-amber-300/10 p-3 text-sm text-amber-100 ring-1 ring-amber-300/30" data-consejos>
+          <li className="text-xs font-semibold uppercase tracking-wide text-amber-300">Para vender más</li>
+          {v.consejos.map((c) => <li key={c} className="flex gap-2"><span>→</span><span>{c}</span></li>)}
+        </ul>
+      )}
+      <div className="grid grid-cols-3 gap-2">
         {fichas.map((f) => (
-          <div key={f.t} className={`rounded-xl p-3 ${f.fuerte ? "bg-amber-400 text-stone-900" : "bg-white/10"}`}>
-            <div className="font-display text-2xl font-semibold">{f.n}</div>
-            <div className={`text-xs ${f.fuerte ? "text-stone-800" : "text-stone-300"}`}>{f.t}</div>
-            {f.d && <div className={`mt-0.5 text-[11px] ${f.fuerte ? "text-stone-700" : "text-stone-400"}`}>{f.d}</div>}
+          <div key={f.t} className="rounded-xl bg-white/10 p-3">
+            <div className="font-display text-xl font-semibold">{f.n}</div>
+            <div className="text-xs text-stone-300">{f.t}</div>
+            {f.d && <div className="mt-0.5 text-[11px] text-stone-400">{f.d}</div>}
           </div>
         ))}
       </div>
-      {v.faltas > 0 && <p className="mt-2 text-xs text-red-300">⚠ {v.faltas} falta{v.faltas > 1 ? "s" : ""} a citas sin avisar.{suspendido ? ` Suspendido hasta el ${new Date(suspendido).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}: no recibes clientes nuevos.` : ""}</p>}
-      {v.pendientes > 0 && <p className="mt-2 text-xs text-amber-200">Tienes {v.pendientes} cita{v.pendientes > 1 ? "s" : ""} sin marcar si vendiste. Márcalas abajo para que tus números sean reales.</p>}
-      <p className="mt-2 text-[11px] text-stone-400">Las ventas las marcas tú tras cada cita (la obra se contrata fuera de la app). Responder rápido en el chat sube tus opciones de que te pidan cita. Cada cita: {PRECIO_CITA}.</p>
+      {v.noShow > 0 && <p className="text-xs text-stone-300">{v.noShow} cliente{v.noShow > 1 ? "s" : ""} no se present{v.noShow > 1 ? "aron" : "ó"}: no cuenta{v.noShow > 1 ? "n" : ""} para tu ratio.</p>}
+      {v.faltas > 0 && <p className="text-xs text-red-300">⚠ {v.faltas} falta{v.faltas > 1 ? "s" : ""} a citas sin avisar.{suspendido ? ` Suspendido hasta el ${new Date(suspendido).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}: no recibes clientes nuevos.` : ""}</p>}
+      <p className="text-[11px] text-stone-400">Las ventas las marcas tú tras cada cita (la obra se contrata fuera de la app). Cada cita: {PRECIO_CITA}.</p>
     </div>
   );
 }
